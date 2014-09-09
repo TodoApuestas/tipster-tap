@@ -98,4 +98,9 @@ if ( is_admin() && ( ! defined( 'DOING_AJAX' ) || ! DOING_AJAX ) ) {
         require_once plugin_dir_path( __FILE__ ) . 'admin/includes/post-type-tipster.php';
         add_action( 'plugins_loaded', array( 'Tipster_Post_Type', 'get_instance' ) );
     }
+
+    if( !class_exists('Pick_Post_Type')){
+        require_once plugin_dir_path( __FILE__ ) . 'admin/includes/post-type-pick.php';
+        add_action( 'plugins_loaded', array( 'Pick_Post_Type', 'get_instance' ) );
+    }
 }
