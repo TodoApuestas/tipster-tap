@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name.
+ * Tipster TAP.
  *
  * @package   Tipster_TAP_Admin
  * @author    Alain Sanchez <asanchezg@inetzwerk.com>
@@ -16,7 +16,6 @@
  * If you're interested in introducing public-facing
  * functionality, then refer to `class-tipster-tap.php`
  *
- * @TODO: Rename this class to a proper name for your plugin.
  *
  * @package Tipster_TAP_Admin
  * @author  Your Name <email@example.com>
@@ -61,10 +60,6 @@ class Tipster_TAP_Admin {
 		/*
 		 * Call $plugin_slug from public plugin class.
 		 *
-		 * @TODO:
-		 *
-		 * - Rename "Tipster_TAP" to the name of your initial plugin class
-		 *
 		 */
 		$plugin = Tipster_TAP::get_instance();
 		$this->plugin_slug = $plugin->get_plugin_slug();
@@ -74,21 +69,11 @@ class Tipster_TAP_Admin {
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_scripts' ) );
 
 		// Add the options page and menu item.
-		add_action( 'admin_menu', array( $this, 'add_plugin_admin_menu' ) );
+//		add_action( 'admin_menu', array( $this, 'add_plugin_admin_menu' ) );
 
 		// Add an action link pointing to the options page.
 		$plugin_basename = plugin_basename( plugin_dir_path( realpath( dirname( __FILE__ ) ) ) . $this->plugin_slug . '.php' );
 		add_filter( 'plugin_action_links_' . $plugin_basename, array( $this, 'add_action_links' ) );
-
-		/*
-		 * Define custom functionality.
-		 *
-		 * Read more about actions and filters:
-		 * http://codex.wordpress.org/Plugin_API#Hooks.2C_Actions_and_Filters
-		 */
-		add_action( '@TODO', array( $this, 'action_method_name' ) );
-		add_filter( '@TODO', array( $this, 'filter_method_name' ) );
-
 	}
 
 	/**
@@ -214,37 +199,10 @@ class Tipster_TAP_Admin {
 
 		return array_merge(
 			array(
-				'settings' => '<a href="' . admin_url( 'options-general.php?page=' . $this->plugin_slug ) . '">' . __( 'Settings', $this->plugin_slug ) . '</a>'
+				'settings' => '<a href="' . admin_url( 'options-general.php?page=' . $this->plugin_slug.'/options' ) . '">' . __( 'Settings', $this->plugin_slug ) . '</a>'
 			),
 			$links
 		);
 
 	}
-
-	/**
-	 * NOTE:     Actions are points in the execution of a page or process
-	 *           lifecycle that WordPress fires.
-	 *
-	 *           Actions:    http://codex.wordpress.org/Plugin_API#Actions
-	 *           Reference:  http://codex.wordpress.org/Plugin_API/Action_Reference
-	 *
-	 * @since    1.0.0
-	 */
-	public function action_method_name() {
-		// @TODO: Define your action hook callback here
-	}
-
-	/**
-	 * NOTE:     Filters are points of execution in which WordPress modifies data
-	 *           before saving it or sending it to the browser.
-	 *
-	 *           Filters: http://codex.wordpress.org/Plugin_API#Filters
-	 *           Reference:  http://codex.wordpress.org/Plugin_API/Filter_Reference
-	 *
-	 * @since    1.0.0
-	 */
-	public function filter_method_name() {
-		// @TODO: Define your filter hook callback here
-	}
-
 }
