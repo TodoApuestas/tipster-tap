@@ -51,7 +51,7 @@ class Options_Interface{
      */
     function optionsframework_tabs() {
         $counter = 0;
-        $options = Options::get_instance()->optionsframework_options();
+        $options = Tipster_TAP_Options::get_instance()->optionsframework_options();
         $menu = '';
 
         foreach ( $options as $value ) {

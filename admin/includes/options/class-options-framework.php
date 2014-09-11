@@ -26,6 +26,15 @@ class Options_Framework {
     private $plugin_slug;
 
     /**
+     * Slug of the plugin screen.
+     *
+     * @since    1.0.0
+     *
+     * @var      string
+     */
+    protected $of_screen_hook_suffix = null;
+
+    /**
      * Instance of this class.
      *
      * @since    1.0.0
@@ -117,7 +126,7 @@ class Options_Framework {
         // Include the required files
         $this->options_interface = Options_Interface::get_instance();
         $this->options_medida_uploader = Options_Media_Uploader::get_instance();
-        $this->options = Options::get_instance();
+        $this->options = Tipster_TAP_Options::get_instance();
 
         // Load settings
         $optionsframework_settings = get_option('options_framework' );
@@ -215,17 +224,19 @@ class Options_Framework {
      * Add a subpage called "Plugin Options" to the appearance menu.
      */
     function optionsframework_add_page() {
-        $of_page = add_options_page(
-            __('Tipster TAP', 'options_framework'),
-            __('Tipster TAP', 'options_framework'),
-            'manage_options',
+        $this->of_screen_hook_suffix = add_submenu_page(
+            $this->plugin_slug,
+            __('Tipster TAP :: Options', 'options_framework'),
+            __('Options', 'options_framework'),
+            $this->optionsframework_page_capability(null),
             $this->plugin_slug.'/options',
-            array( $this, 'optionsframework_page' ));
+            array( $this, 'optionsframework_page' )
+        );
 
         // Load the required CSS and javscript
         add_action( 'admin_enqueue_scripts', array($this, 'optionsframework_load_scripts') );
-        add_action( 'admin_enqueue_scripts', array('Options_Media_Uploader', 'optionsframework_media_scripts') );
-        add_action( 'admin_print_styles-' . $of_page, array($this, 'optionsframework_load_styles') );
+        add_action( 'admin_enqueue_scripts', array($this, 'optionsframework_media_scripts') );
+        add_action( 'admin_print_styles-' . $this->of_screen_hook_suffix, array($this, 'optionsframework_load_styles') );
     }
 
     /**
@@ -267,6 +278,10 @@ class Options_Framework {
         // Inline scripts from options-interface.php
         add_action( 'admin_head', array($this, 'of_admin_head') );
 //        add_action('admin_head', array($this->options, 'optionsframework_custom_scripts') );
+    }
+
+    function optionsframework_media_scripts(){
+        $this->options_medida_uploader->optionsframework_media_scripts();
     }
 
     function of_admin_head() {
@@ -424,17 +439,17 @@ class Options_Framework {
     }
 
     /**
-     * Add Theme Options menu item to Admin Bar.
+     * Add Options menu item to Admin Bar.
      */
     function optionsframework_adminbar() {
 
         global $wp_admin_bar;
 
         $wp_admin_bar->add_menu( array(
-                'parent' => null,
+                'parent' => $this->plugin_slug,
                 'id' => 'of_plugin_options',
-                'title' => __( 'Tipster TAP', 'options_framework' ),
-                'href' => admin_url( 'options-general.php?page='.$this->plugin_slug.'/options' )
+                'title' => __( 'Options', 'options_framework' ),
+                'href' => admin_url( 'admin.php?page='.$this->plugin_slug.'/options' )
             ));
 
 

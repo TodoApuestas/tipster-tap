@@ -1,6 +1,6 @@
 <?php
 
-class Options{
+class Tipster_TAP_Options{
     /**
      * Instance of this class.
      *
