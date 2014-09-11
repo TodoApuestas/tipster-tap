@@ -69,11 +69,14 @@ class Tipster_TAP_Admin {
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_scripts' ) );
 
 		// Add the options page and menu item.
-//		add_action( 'admin_menu', array( $this, 'add_plugin_admin_menu' ) );
+		add_action( 'admin_menu', array( $this, 'add_plugin_admin_menu' ) );
+        add_action( 'wp_before_admin_bar_render', array( $this, 'add_plugin_adminbar' ) );
 
 		// Add an action link pointing to the options page.
 		$plugin_basename = plugin_basename( plugin_dir_path( realpath( dirname( __FILE__ ) ) ) . $this->plugin_slug . '.php' );
 		add_filter( 'plugin_action_links_' . $plugin_basename, array( $this, 'add_action_links' ) );
+
+        add_action( 'save_post', array( $this, 'save_post' ), 10, 2 );
 	}
 
 	/**
@@ -158,28 +161,49 @@ class Tipster_TAP_Admin {
 	public function add_plugin_admin_menu() {
 
 		/*
-		 * Add a settings page for this plugin to the Settings menu.
+		 * Add a settings page for this plugin to the menu.
 		 *
 		 * NOTE:  Alternative menu locations are available via WordPress administration menu functions.
 		 *
 		 *        Administration Menus: http://codex.wordpress.org/Administration_Menus
-		 *
-		 * @TODO:
-		 *
-		 * - Change 'Page Title' to the title of your plugin admin page
-		 * - Change 'Menu Text' to the text for menu item for the plugin settings page
-		 * - Change 'manage_options' to the capability you see fit
-		 *   For reference: http://codex.wordpress.org/Roles_and_Capabilities
 		 */
-		$this->plugin_screen_hook_suffix = add_options_page(
-			__( 'Page Title', $this->plugin_slug ),
-			__( 'Menu Text', $this->plugin_slug ),
-			'manage_options',
-			$this->plugin_slug,
-			array( $this, 'display_plugin_admin_page' )
-		);
+        $this->plugin_screen_hook_suffix = add_menu_page(
+            __( 'Tipster TAP', $this->plugin_slug ),
+            __( 'Tipster TAP', $this->plugin_slug ),
+            'manage_options',
+            $this->plugin_slug,
+            '',
+            'dashicons-admin-generic'
+        );
 
+        $this->plugin_screen_hook_suffix = add_submenu_page(
+            $this->plugin_slug,
+            __('Tipster TAP', $this->plugin_slug),
+            __('Informacion', $this->plugin_slug),
+            'manage_options',
+            $this->plugin_slug,
+            array( $this, 'display_plugin_admin_page' )
+        );
 	}
+
+    public function add_plugin_adminbar(){
+        global $wp_admin_bar;
+
+        $wp_admin_bar->add_menu(
+            array(
+                'parent' => null,
+                'id' => 'tipster_tap_plugin',
+                'title' => __( 'Tipster TAP', $this->plugin_slug ),
+                'href' => admin_url( 'admin.php?page='.$this->plugin_slug )
+            ),
+            array(
+                'parent' => $this->plugin_slug,
+                'id' => 'tipster_tap_plugin_informacion',
+                'title' => __( 'Informacion', $this->plugin_slug ),
+                'href' => admin_url( 'admin.php?page='.$this->plugin_slug )
+            )
+        );
+    }
 
 	/**
 	 * Render the settings page for this plugin.
@@ -199,10 +223,15 @@ class Tipster_TAP_Admin {
 
 		return array_merge(
 			array(
-				'settings' => '<a href="' . admin_url( 'options-general.php?page=' . $this->plugin_slug.'/options' ) . '">' . __( 'Settings', $this->plugin_slug ) . '</a>'
+				'settings' => '<a href="' . admin_url( 'admin.php?page=' . $this->plugin_slug ) . '">' . __( 'Settings', $this->plugin_slug ) . '</a>'
 			),
 			$links
 		);
 
 	}
+
+    public function save_post($post_id, $post = false){
+
+    }
+
 }
