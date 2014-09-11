@@ -57,6 +57,8 @@ class Tipster_TAP {
 	 */
 	protected static $instance = null;
 
+    private $default_options;
+
 	/**
 	 * Initialize the plugin by setting localization and loading public scripts
 	 * and styles.
@@ -75,12 +77,25 @@ class Tipster_TAP {
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_styles' ) );
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
 
-		/* Define custom functionality.
-		 * Refer To http://codex.wordpress.org/Plugin_API#Hooks.2C_Actions_and_Filters
-		 */
-		add_action( '@TODO', array( $this, 'action_method_name' ) );
-		add_filter( '@TODO', array( $this, 'filter_method_name' ) );
+        /**
+         * Define the default options
+         *
+         * @since     1.0
+         */
+        $this->default_options = array(
+            'url_sync_link' => 'http://www.todoapuestas.org/bookiesBlogEspJson.php'
+        );
 
+        /* Define custom functionality.
+         * Refer To http://codex.wordpress.org/Plugin_API#Hooks.2C_Actions_and_Filters
+         *
+         * add_action ( 'hook_name', 'your_function_name', [priority], [accepted_args] );
+         *
+         * add_filter ( 'hook_name', 'your_filter', [priority], [accepted_args] );
+         */
+
+        add_action( 'sync_hourly_event', array( $this, 'remote_sync' ) );
+        add_action( 'wp' , array( $this, 'active_remote_sync'));
 	}
 
 	/**
@@ -234,7 +249,9 @@ class Tipster_TAP {
 	 * @since    1.0.0
 	 */
 	private static function single_activate() {
-		// @TODO: Define activation functionality here
+
+        // execute initial synchronization
+        self::get_instance()->remote_sync();
 	}
 
 	/**
@@ -243,7 +260,8 @@ class Tipster_TAP {
 	 * @since    1.0.0
 	 */
 	private static function single_deactivate() {
-		// @TODO: Define deactivation functionality here
+        remove_action( 'sync_hourly_event', array( self::$instance, 'remote_sync' ) );
+        remove_action( 'wp' , array( self::$instance, 'active_remote_sync'));
 	}
 
 	/**
@@ -279,30 +297,33 @@ class Tipster_TAP {
 		wp_enqueue_script( $this->plugin_slug . '-plugin-script', plugins_url( 'assets/js/public.js', __FILE__ ), array( 'jquery' ), self::VERSION );
 	}
 
-	/**
-	 * NOTE:  Actions are points in the execution of a page or process
-	 *        lifecycle that WordPress fires.
-	 *
-	 *        Actions:    http://codex.wordpress.org/Plugin_API#Actions
-	 *        Reference:  http://codex.wordpress.org/Plugin_API/Action_Reference
-	 *
-	 * @since    1.0.0
-	 */
-	public function action_method_name() {
-		// @TODO: Define your action hook callback here
-	}
+    /**
+     * Activate remote synchronization hourly
+     *
+     * @since   1.0
+     */
+    public function active_remote_sync() {
+        if ( !wp_next_scheduled( 'sync_hourly_event' ) ) {
+            wp_schedule_event(time(), 'hourly', 'sync_hourly_event');
+        }
+    }
 
-	/**
-	 * NOTE:  Filters are points of execution in which WordPress modifies data
-	 *        before saving it or sending it to the browser.
-	 *
-	 *        Filters: http://codex.wordpress.org/Plugin_API#Filters
-	 *        Reference:  http://codex.wordpress.org/Plugin_API/Filter_Reference
-	 *
-	 * @since    1.0.0
-	 */
-	public function filter_method_name() {
-		// @TODO: Define your filter hook callback here
-	}
+    /**
+     * Execute synchronizations from todoapuestas.org server
+     *
+     * @since   1.0
+     * @return array|void
+     */
+    public function remote_sync() {
+        $option = get_option('tipster_tap_remote_info', $this->default_options);
+
+        $url_sync_link = esc_url($option['url_sync_link']);
+        $bookies = trim(@file_get_contents($url_sync_link));
+        $list_bookies = json_decode($bookies, true);
+
+        if(!empty($list_bookies)){
+            update_option('tipster_tap_bookies', $list_bookies);
+        }
+    }
 
 }
