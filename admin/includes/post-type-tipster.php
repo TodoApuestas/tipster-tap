@@ -139,7 +139,7 @@ class Tipster_Post_Type{
 
         } elseif ( 'tipster' == $screen->id ) {
 
-            $contextual_help = '<h2>Editing tipster</h2>
+            $contextual_help = '<h2>Editar tipster</h2>
         <p>Esta pagina le permite ver/modificar los detalles de un tipster. Por favor asegurece de llenar los campos de las cajas disponibles (nombre, imagen, enlace).</p>';
 
         }
