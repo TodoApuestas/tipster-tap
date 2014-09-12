@@ -94,13 +94,13 @@ if ( is_admin() && ( ! defined( 'DOING_AJAX' ) || ! DOING_AJAX ) ) {
 //        add_action( 'plugins_loaded', array( 'Options_Framework', 'get_instance' ) );
 //    }
 
-    if( !class_exists('Tipster_Post_Type')){
-        require_once plugin_dir_path( __FILE__ ) . 'admin/includes/post-type-tipster.php';
-        add_action( 'plugins_loaded', array( 'Tipster_Post_Type', 'get_instance' ) );
-    }
-
     if( !class_exists('Meta_Boxes_Post_Type')){
         require_once plugin_dir_path( __FILE__ ) . 'admin/includes/meta-boxes.php';
         add_action( 'plugins_loaded', array( 'Meta_Boxes_Post_Type', 'get_instance' ) );
     }
+}
+
+if( !class_exists('Tipster_Post_Type')){
+    require_once plugin_dir_path( __FILE__ ) . 'includes/post-type-tipster.php';
+    add_action( 'plugins_loaded', array( 'Tipster_Post_Type', 'get_instance' ) );
 }

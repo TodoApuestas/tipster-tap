@@ -91,7 +91,7 @@ class Tipster_Post_Type{
             'menu_icon'           => 'dashicons-admin-generic',
             'can_export'          => true,
             'has_archive'         => true,
-            'exclude_from_search' => true,
+            'exclude_from_search' => false,
             'publicly_queryable'  => true,
             'capability_type'     => 'page',
         );
