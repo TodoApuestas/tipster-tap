@@ -139,9 +139,8 @@ class Tipster_TAP_Options{
         return $options;
     }
 
-    /*
-     * This is an example of how to add custom scripts to the options panel.
-     * This example shows/hides an option when a checkbox is clicked.
+    /**
+     * Custom scripts.
      */
     function optionsframework_custom_scripts() { ?>
 
@@ -158,9 +157,7 @@ class Tipster_TAP_Options{
                 }
 
                 jQuery('input.of-radio').on('click', function() {
-                    console.log('begin input.of-radio click');
                     check_incluir_datos_iniciales();
-                    console.log('end input.of-radio click');
                 });
 
                 check_incluir_datos_iniciales();
