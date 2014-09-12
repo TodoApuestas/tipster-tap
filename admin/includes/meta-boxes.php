@@ -27,6 +27,7 @@ class Meta_Boxes_Post_Type {
      */
     private function __construct() {
         add_filter( 'cmb_meta_boxes', array( $this, 'post_type_pick_metabox' ) );
+        add_filter( 'cmb_meta_boxes', array( $this, 'post_type_tipster_metabox' ) );
         add_action( 'init', array( $this, 'cmb_initialize_cmb_meta_boxes' ), 9999 );
         add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
     }
@@ -86,7 +87,7 @@ class Meta_Boxes_Post_Type {
 
         $meta_boxes['post_type'] = array(
             'id'         => 'post_type',
-            'title'      => __( 'Tipo publicacion', 'epic' ),
+            'title'      => __( 'Tipo de publicacion', 'epic' ),
             'pages'      => array( 'post' ), // Tells CMB to use user_meta vs post_meta
             'show_names' => true,
             'cmb_styles' => true, // Show cmb bundled styles.. not needed on user profile page
@@ -221,6 +222,82 @@ class Meta_Boxes_Post_Type {
     }
 
     /**
+     * Define the metabox and field configurations for post-type tipster.
+     *
+     * @param  array $meta_boxes
+     * @return array
+     */
+    function post_type_tipster_metabox( array $meta_boxes ) {
+        global $post;
+        // Start with an underscore to hide fields from custom fields list
+        $prefix = '_tipster_';
+
+        $meta_boxes['tipster_datos_iniciales'] = array(
+            'id'         => 'tipster_datos_iniciales',
+            'title'      => __( 'Datos iniciales', 'epic' ),
+            'pages'      => array( 'tipster' ), // Tells CMB to use user_meta vs post_meta
+            'show_names' => true,
+            'cmb_styles' => true, // Show cmb bundled styles.. not needed on user profile page
+            'fields'     => array(
+                array(
+//                    'name'    => __('Incluir datos iniciales', 'epic'),
+                    'desc'    => __('Seleccionar si se utilizaran o no valores iniciales para realizar los calculos.', 'epic'),
+                    'id'      => $prefix.'incluir_datos_iniciales',
+                    'type'    => 'select',
+                    'options' => array(
+                        '0' => __('NO', 'epic'),
+                        '1' => __('SI', 'epic')
+                    ),
+                ),
+                array(
+                    'name' => __('Aciertos', 'epic'),
+                    'desc' => __( 'Escribir la cantidad inicial de aciertos', 'epic' ),
+                    'id'   => $prefix . 'aciertos_iniciales',
+                    'type' => 'text_small',
+                    'default' => 0
+                ),
+                array(
+                    'name' => __('Fallos', 'epic'),
+                    'desc' => __( 'Escribir la cantidad inicial de fallos', 'epic' ),
+                    'id'   => $prefix . 'fallos_iniciales',
+                    'type' => 'text_small',
+                    'default' => 0
+                ),
+                array(
+                    'name' => __('Nulos', 'epic'),
+                    'desc' => __( 'Escribir la cantidad inicial de datos nulos', 'epic' ),
+                    'id'   => $prefix . 'nulos_iniciales',
+                    'type' => 'text_small',
+                    'default' => 0
+                ),
+                array(
+                    'name' => __('Unidades jugadas', 'epic'),
+                    'desc' => __( 'Escribir la cantidad inicial de unidades jugadas', 'epic' ),
+                    'id'   => $prefix . 'unidades_jugadas_iniciales',
+                    'type' => 'text_small',
+                    'default' => 0
+                ),
+                array(
+                    'name' => __('Unidades ganadas', 'epic'),
+                    'desc' => __( 'Escribir la cantidad inicial de unidades ganadas', 'epic' ),
+                    'id'   => $prefix . 'unidades_ganadas_iniciales',
+                    'type' => 'text_small',
+                    'default' => 0
+                ),
+                array(
+                    'name' => __('Unidades perdidas', 'epic'),
+                    'desc' => __( 'Escribir la cantidad inicial de unidades perdidas', 'epic' ),
+                    'id'   => $prefix . 'unidades_perdidas_iniciales',
+                    'type' => 'text_small',
+                    'default' => 0
+                ),
+            )
+        );
+
+        return $meta_boxes;
+    }
+
+    /**
      * Initialize the metabox class.
      */
     function cmb_initialize_cmb_meta_boxes() {
@@ -232,8 +309,15 @@ class Meta_Boxes_Post_Type {
 
     function enqueue_scripts(){
         $screen = get_current_screen();
-        if ( "post" == $screen->id ) {
-            wp_enqueue_script( $this->plugin_slug . '-admin-metabox-script', plugins_url( 'assets/js/meta-boxes.js', dirname(__FILE__) ), array( 'jquery' ), Tipster_TAP::VERSION );
+        switch($screen->id){
+            case "post":
+                wp_enqueue_script( $this->plugin_slug . '-admin-metabox-script', plugins_url( 'assets/js/meta-boxes-post.js', dirname(__FILE__) ), array( 'jquery' ), Tipster_TAP::VERSION );
+                break;
+            case "tipster":
+                wp_enqueue_script( $this->plugin_slug . '-admin-metabox-script', plugins_url( 'assets/js/meta-boxes-tipster.js', dirname(__FILE__) ), array( 'jquery' ), Tipster_TAP::VERSION );
+                break;
+            default:
+                break;
         }
     }
 }
