@@ -294,13 +294,13 @@ class Tipster_TAP_Admin {
             }
 
             // Obtener número de apuestas acertadas, falladas y nulas pertenecientes al tipster asociado al post
-            $query_tipster_post = "SELECT p.ID
-                FROM wp_posts AS p
-                INNER JOIN wp_postmeta AS pm ON p.ID = pm.post_id
-                WHERE pm.meta_key = '_pick_tipster'
-                    AND pm.meta_value = ".$tipster_id."
-                    AND p.post_type = 'post'
-                    AND p.post_status = 'publish'";
+            $query_tipster_post = "SELECT p.ID".
+                " FROM wp_posts AS p".
+                " INNER JOIN wp_postmeta AS pm ON p.ID = pm.post_id".
+                " WHERE pm.meta_key = '_pick_tipster'".
+                    " AND pm.meta_value = ".$tipster_id."".
+                    " AND p.post_type = 'post'".
+                    " AND p.post_status = 'publish'";
 
             $query_tipster_post_result = $wpdb->get_results($query_tipster_post, OBJECT);
 
