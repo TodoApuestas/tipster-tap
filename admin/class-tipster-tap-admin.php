@@ -300,7 +300,11 @@ class Tipster_TAP_Admin {
                 " WHERE pm.meta_key = '_pick_tipster'".
                     " AND pm.meta_value = ".$tipster_id."".
                     " AND p.post_type = 'post'".
-                    " AND p.post_status = 'publish'";
+                    " AND p.post_status = 'publish'".
+                    " AND pm.post_id in (SELECT pm.post_id".
+                        " FROM wp_postmeta AS pm".
+                        " WHERE pm.meta_key = '_pick_resultado'".
+                        " AND (pm.meta_value = 'acierto' OR pm.meta_value = 'fallo' OR pm.meta_value = 'nulo'));";
 
             $query_tipster_post_result = $wpdb->get_results($query_tipster_post, OBJECT);
 
