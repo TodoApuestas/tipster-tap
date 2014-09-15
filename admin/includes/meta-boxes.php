@@ -70,6 +70,19 @@ class Meta_Boxes_Post_Type {
         $prefix = '_pick_';
 
         $bookies = get_option('tipster_tap_bookies');
+
+        $tipster_tap_deportes = get_option('tipster_tap_deportes');
+        $deportes = array();
+        foreach($tipster_tap_deportes as $k => $v){
+            $deportes[$k] = $v['nombre'];
+        }
+
+        $tipster_tap_competiciones = get_option('tipster_tap_competiciones');
+        $competiciones = array();
+        foreach($tipster_tap_competiciones as $k => $v){
+            $competiciones[$k] = $v['nombre'];
+        }
+
         $tipsters = array();
         $tipster_query = array(
             'post_type' => 'tipster',
@@ -181,21 +194,15 @@ class Meta_Boxes_Post_Type {
                     'name' => __('Competicion', 'epic'),
                     'desc' => __( 'Escribir el nombre de la competencion asociada a la apuesta', 'epic' ),
                     'id'   => $prefix . 'competencicion',
-                    'type' => 'text'
+                    'type' => 'select',
+                    'options' => $competiciones
                 ),
                 array(
                     'name' => __('Deporte', 'epic'),
                     'desc' => __( 'Seleccionar el deporte asociado a la apuesta', 'epic' ),
                     'id'   => $prefix . 'deporte',
                     'type' => 'select',
-                    'options' => array(
-                        'futbol'     => __('Futbol', 'epic'),
-                        'tenis'      => __('Tenis', 'epic'),
-                        'baloncesto' => __('Baloncesto', 'epic'),
-                        'balonmano'  => __('Balonmano', 'epic'),
-                        'formula1'   => __('Formula 1', 'epic'),
-                        'motos'      => __('Motos', 'epic')
-                    ),
+                    'options' => $deportes
                 ),
                 array(
                     'name'    => __('Resultado', 'epic'),
@@ -208,13 +215,7 @@ class Meta_Boxes_Post_Type {
                         'fallo'     => __('Fallo', 'epic'),
                         'nulo'      => __('Nulo', 'epic'),
                     ),
-                ),
-                array(
-                    'name' => __('Autor', 'epic'),
-                    'desc' => __( 'Escribir la url del profile en Google Plus del autor', 'epic' ),
-                    'id'   => $prefix . 'autor',
-                    'type' => 'text_url'
-                ),
+                )
             )
         );
 
@@ -290,6 +291,12 @@ class Meta_Boxes_Post_Type {
                     'id'   => $prefix . 'unidades_perdidas_iniciales',
                     'type' => 'text_small',
                     'default' => 0
+                ),
+                array(
+                    'name' => __('Google+', 'epic'),
+                    'desc' => __( 'Escribir la url del profile en Google Plus', 'epic' ),
+                    'id'   => $prefix . 'google_plus',
+                    'type' => 'text_url'
                 ),
             )
         );
