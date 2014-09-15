@@ -83,7 +83,9 @@ class Tipster_TAP {
          * @since     1.0
          */
         $this->default_options = array(
-            'url_sync_link' => 'http://www.todoapuestas.org/bookiesBlogEspJson.php'
+            'url_sync_link_bookies' => 'http://www.todoapuestas.org/bookiesBlogEspJson.php',
+            'url_sync_link_deportes' => 'http://www.todoapuestas.org/wp-services/getDeportesJson.php',
+            'url_sync_link_competiciones' => 'http://www.todoapuestas.org/wp-services/getCompeticionesJson.php',
         );
 
         /* Define custom functionality.
@@ -249,6 +251,10 @@ class Tipster_TAP {
 	 * @since    1.0.0
 	 */
 	private static function single_activate() {
+        add_option('tipster_tap_remote_info', self::get_instance()->default_options);
+        add_option('tipster_tap_bookies', array());
+        add_option('tipster_tap_deportes', array());
+        add_option('tipster_tap_competiciones', array());
 
         // execute initial synchronization
         self::get_instance()->remote_sync();
@@ -262,6 +268,11 @@ class Tipster_TAP {
 	private static function single_deactivate() {
         remove_action( 'sync_hourly_event', array( self::$instance, 'remote_sync' ) );
         remove_action( 'wp' , array( self::$instance, 'active_remote_sync'));
+
+        delete_option('tipster_tap_remote_info');
+        delete_option('tipster_tap_bookies');
+        delete_option('tipster_tap_deportes');
+        delete_option('tipster_tap_competiciones');
 	}
 
 	/**
@@ -317,12 +328,28 @@ class Tipster_TAP {
     public function remote_sync() {
         $option = get_option('tipster_tap_remote_info', $this->default_options);
 
-        $url_sync_link = esc_url($option['url_sync_link']);
-        $bookies = trim(@file_get_contents($url_sync_link));
+        $url_sync_link_bookies = esc_url($option['url_sync_link_bookies']);
+        $bookies = trim(@file_get_contents($url_sync_link_bookies));
         $list_bookies = json_decode($bookies, true);
 
         if(!empty($list_bookies)){
             update_option('tipster_tap_bookies', $list_bookies);
+        }
+
+        $url_sync_link_deportes = esc_url($option['url_sync_link_deportes']);
+        $deportes = trim(@file_get_contents($url_sync_link_deportes));
+        $list_deportes = json_decode($deportes, true);
+
+        if(!empty($list_deportes)){
+            update_option('tipster_tap_deportes', $list_deportes);
+        }
+
+        $url_sync_link_competiciones = esc_url($option['url_sync_link_competiciones']);
+        $competiciones = trim(@file_get_contents($url_sync_link_competiciones));
+        $list_competiciones = json_decode($competiciones, true);
+
+        if(!empty($list_deportes)){
+            update_option('tipster_tap_competiciones', $list_competiciones);
         }
     }
 
