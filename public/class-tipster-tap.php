@@ -83,7 +83,7 @@ class Tipster_TAP {
          * @since     1.0
          */
         $this->default_options = array(
-            'url_sync_link_bookies' => 'http://www.todoapuestas.org/bookiesBlogEspJson.php',
+            'url_sync_link_bookies' => 'http://www.todoapuestas.org/wp-services/getAllBookiesLicenciaEspJson.php',
             'url_sync_link_deportes' => 'http://www.todoapuestas.org/wp-services/getDeportesJson.php',
             'url_sync_link_competiciones' => 'http://www.todoapuestas.org/wp-services/getCompeticionesJson.php',
         );
