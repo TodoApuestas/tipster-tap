@@ -38,7 +38,7 @@ class Tipster_TAP_Admin {
 	 *
 	 * @var      string
 	 */
-	protected $plugin_screen_hook_suffix = null;
+	protected $plugin_screen_hook_suffix = array();
 
 	/**
 	 * Initialize the plugin by loading admin scripts & styles and adding a
@@ -118,12 +118,12 @@ class Tipster_TAP_Admin {
 	 */
 	public function enqueue_admin_styles() {
 
-		if ( ! isset( $this->plugin_screen_hook_suffix ) ) {
+		if ( ! isset( $this->plugin_screen_hook_suffix['root'] ) ) {
 			return;
 		}
 
 		$screen = get_current_screen();
-		if ( $this->plugin_screen_hook_suffix == $screen->id ) {
+		if ( $this->plugin_screen_hook_suffix['root'] == $screen->id ) {
 			wp_enqueue_style( $this->plugin_slug .'-admin-styles', plugins_url( 'assets/css/admin.css', __FILE__ ), array(), Tipster_TAP::VERSION );
 		}
 
@@ -142,12 +142,12 @@ class Tipster_TAP_Admin {
 	 */
 	public function enqueue_admin_scripts() {
 
-		if ( ! isset( $this->plugin_screen_hook_suffix ) ) {
+		if ( ! isset( $this->plugin_screen_hook_suffix['root'] ) ) {
 			return;
 		}
 
 		$screen = get_current_screen();
-		if ( $this->plugin_screen_hook_suffix == $screen->id ) {
+		if ( $this->plugin_screen_hook_suffix['root'] == $screen->id ) {
 			wp_enqueue_script( $this->plugin_slug . '-admin-script', plugins_url( 'assets/js/admin.js', __FILE__ ), array( 'jquery' ), Tipster_TAP::VERSION );
 		}
 
@@ -167,7 +167,7 @@ class Tipster_TAP_Admin {
 		 *
 		 *        Administration Menus: http://codex.wordpress.org/Administration_Menus
 		 */
-        $this->plugin_screen_hook_suffix = add_menu_page(
+        $this->plugin_screen_hook_suffix['root'] = add_menu_page(
             __( 'Tipster TAP', $this->plugin_slug ),
             __( 'Tipster TAP', $this->plugin_slug ),
             'manage_options',
@@ -176,13 +176,22 @@ class Tipster_TAP_Admin {
             'dashicons-admin-generic'
         );
 
-        $this->plugin_screen_hook_suffix = add_submenu_page(
+        $this->plugin_screen_hook_suffix['info'] = add_submenu_page(
             $this->plugin_slug,
             __('Tipster TAP', $this->plugin_slug),
             __('Informacion', $this->plugin_slug),
             'manage_options',
             $this->plugin_slug,
             array( $this, 'display_plugin_admin_page' )
+        );
+
+        $this->plugin_screen_hook_suffix['upgrade'] = add_submenu_page(
+            $this->plugin_slug,
+            __('Tipster TAP :: Upgrade Picks', $this->plugin_slug),
+            __('Upgrade Picks', $this->plugin_slug),
+            'manage_options',
+            $this->plugin_slug.'/upgrade-picks-information',
+            array( $this, 'upgrade_picks_info_page' )
         );
 	}
 
@@ -214,6 +223,15 @@ class Tipster_TAP_Admin {
 		include_once( 'views/admin.php' );
 	}
 
+    /**
+     * Render the upgrade picks information page
+     *
+     * @since    1.1.0
+     */
+    public function upgrade_picks_info_page(){
+        include_once ( 'views/upgrade-picks-information.php');
+    }
+
 	/**
 	 * Add settings action link to the plugins page.
 	 *
@@ -230,6 +248,11 @@ class Tipster_TAP_Admin {
 
 	}
 
+    /**
+     * Render the upgrade picks information page
+     *
+     * @since    1.0.0
+     */
     public function save_post($post_id, $post = false){
         global $wpdb;
         $tipo_publicacion = get_post_meta($post_id, '_post_tipo_publicacion', true);
