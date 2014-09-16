@@ -94,7 +94,6 @@ class Meta_Boxes_Post_Type {
             }
         }
 
-
         $tipsters = array();
         $tipster_query = array(
             'post_type' => 'tipster',
@@ -205,7 +204,7 @@ class Meta_Boxes_Post_Type {
                 array(
                     'name' => __('Competicion', 'epic'),
                     'desc' => __( 'Escribir el nombre de la competencion asociada a la apuesta', 'epic' ),
-                    'id'   => $prefix . 'competencicion',
+                    'id'   => $prefix . 'competicion',
                     'type' => 'select',
                     'options' => $competiciones
                 ),
