@@ -4,7 +4,7 @@ Donate link: http://todoapuestas.org/
 Tags: tipster, picks
 Requires at least: 3.5.1
 Tested up to: 3.9.2
-Stable tag: 1.0.0
+Stable tag: 1.1.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -56,10 +56,14 @@ Nothing for now
 = 1.0 =
 * Initial release.
 
+= 1.1.0 =
+* Updated some Pick's metabox fields.
+* Created a plugin option page to upgrade Pick information to the new postmeta definitions.
+
 
 == Upgrade Notice ==
 
-Nothing for now
+Upgrade to version 1.1.0 as soon as posible. See Changelog section for details
 
 
 == Arbitrary section ==
