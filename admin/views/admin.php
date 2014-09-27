@@ -21,7 +21,7 @@
     <p><?php _e('Por tanto para tener las estadisticas de los Tipster actualizadas puedes', Tipster_TAP::get_instance()->get_plugin_slug()); ?>:</p>
     <ul>
         <li>- <?php _e('Al crear un nuevo Pick, en el post que creais incluir en los campos que aparecen en la sección Pick (un poco mas abajo de la zona donde incluis el contenido/explicación), rellenar los campos: Categoria, Tipster, Cuota, Stake, Resultado', Tipster_TAP::get_instance()->get_plugin_slug())?></li>
-        <li>- <?php printf( __( 'Acceder a la pagina de <a href="%s">Opciones</a> y cambiar los datos, empezando por la seccion <em>Incluir datos iniciales</em> seleccionando la opcion <em>Si</em>.', Tipster_TAP::get_instance()->get_plugin_slug()), admin_url( 'admin.php?page='.Tipster_TAP::get_instance()->get_plugin_slug().'/options' )  ); ?></li>
+        <li>- <?php printf( __( 'Acceder a la pagina de <a href="%s">Opciones</a> y cambiar los datos, empezando por la seccion <em>Incluir datos iniciales</em> seleccionando la opcion <em>Si</em>.', Tipster_TAP::get_instance()->get_plugin_slug()), admin_url( 'admin.php?page='.Tipster_TAP::get_instance()->get_plugin_slug().'/upgrade-picks-information' )  ); ?></li>
     </ul>
 
 </div>

@@ -15,7 +15,7 @@
  * Plugin Name:       Tipster TAP
  * Plugin URI:       http://www.todoapuestas.org
  * Description:       Plugin para gestionar apuestas
- * Version:           1.1.0
+ * Version:           1.1.1
  * Author:       Alain Sanchez
  * Author URI:       http://www.inetzwerk.com
  * Text Domain:       tipster-tap
@@ -87,12 +87,6 @@ if ( is_admin() && ( ! defined( 'DOING_AJAX' ) || ! DOING_AJAX ) ) {
 
     require_once( plugin_dir_path( __FILE__ ) . 'admin/class-tipster-tap-admin.php' );
     add_action( 'plugins_loaded', array( 'Tipster_TAP_Admin', 'get_instance' ) );
-
-//    if ( !class_exists('Options_Framework') ) {
-//        define( 'TIPSTER_TAP_OPTIONS_FRAMEWORK_DIRECTORY', plugin_dir_url(__FILE__) . 'admin/includes/options/' );
-//        require_once plugin_dir_path( __FILE__ ) . 'admin/includes/options/class-options-framework.php';
-//        add_action( 'plugins_loaded', array( 'Options_Framework', 'get_instance' ) );
-//    }
 
     if( !class_exists('Meta_Boxes_Post_Type')){
         require_once plugin_dir_path( __FILE__ ) . 'admin/includes/meta-boxes.php';
