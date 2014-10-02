@@ -70,7 +70,7 @@ class Tipster_TAP_Admin {
 
 		// Add the options page and menu item.
 		add_action( 'admin_menu', array( $this, 'add_plugin_admin_menu' ) );
-        add_action( 'wp_before_admin_bar_render', array( $this, 'add_plugin_adminbar' ) );
+//        add_action( 'wp_before_admin_bar_render', array( $this, 'add_plugin_adminbar' ) );
 
 		// Add an action link pointing to the options page.
 		$plugin_basename = plugin_basename( plugin_dir_path( realpath( dirname( __FILE__ ) ) ) . $this->plugin_slug . '.php' );
@@ -187,11 +187,11 @@ class Tipster_TAP_Admin {
 
         $this->plugin_screen_hook_suffix['upgrade'] = add_submenu_page(
             $this->plugin_slug,
-            __('Tipster TAP :: Upgrade Picks', $this->plugin_slug),
-            __('Upgrade Picks', $this->plugin_slug),
+            __('Tipster TAP :: Update Picks', $this->plugin_slug),
+            __('Update Picks', $this->plugin_slug),
             'manage_options',
-            $this->plugin_slug.'/upgrade-picks-information',
-            array( $this, 'upgrade_picks_info_page' )
+            $this->plugin_slug.'/update-picks-information',
+            array( $this, 'update_picks_info_page' )
         );
 	}
 
@@ -228,8 +228,8 @@ class Tipster_TAP_Admin {
      *
      * @since    1.1.0
      */
-    public function upgrade_picks_info_page(){
-        include_once ( 'views/upgrade-picks-information.php');
+    public function update_picks_info_page(){
+        include_once ( 'views/update-picks-information.php');
     }
 
 	/**
@@ -241,7 +241,7 @@ class Tipster_TAP_Admin {
 
 		return array_merge(
 			array(
-				'settings' => '<a href="' . admin_url( 'admin.php?page=' . $this->plugin_slug ) . '">' . __( 'Settings', $this->plugin_slug ) . '</a>'
+				'settings' => '<a href="' . admin_url( 'admin.php?page=' . $this->plugin_slug ) . '">' . __( 'Informacion', $this->plugin_slug ) . '</a>'
 			),
 			$links
 		);
@@ -318,14 +318,14 @@ class Tipster_TAP_Admin {
 
             // Obtener número de apuestas acertadas, falladas y nulas pertenecientes al tipster asociado al post
             $query_tipster_post = "SELECT p.ID".
-                " FROM wp_posts AS p".
-                " INNER JOIN wp_postmeta AS pm ON p.ID = pm.post_id".
+                " FROM ".$wpdb->posts." AS p".
+                " INNER JOIN ".$wpdb->postmeta." AS pm ON p.ID = pm.post_id".
                 " WHERE pm.meta_key = '_pick_tipster'".
                     " AND pm.meta_value = ".$tipster_id."".
                     " AND p.post_type = 'post'".
                     " AND p.post_status = 'publish'".
                     " AND pm.post_id in (SELECT pm.post_id".
-                        " FROM wp_postmeta AS pm".
+                        " FROM ".$wpdb->postmeta." AS pm".
                         " WHERE pm.meta_key = '_pick_resultado'".
                         " AND (pm.meta_value = 'acierto' OR pm.meta_value = 'fallo' OR pm.meta_value = 'nulo'));";
 

@@ -21,21 +21,30 @@ $tipster_tap_deportes = get_option('tipster_tap_deportes');
 $tipster_tap_competiciones = get_option('tipster_tap_competiciones');
 $tipster_id = $casa_apuesta = $deporte = $competicion = null;
 
-if(isset($_POST['upgrade']) && isset($_POST['tipster'])){
+if(isset($_POST['update']) && isset($_POST['tipster'])){
     $tipster_id = $_POST['tipster'];
     $casa_apuesta = $_POST['bookie'];
     $deporte = $_POST['deporte'];
     $competicion = $_POST['competicion'];
 
-    $post_query = "SELECT p.ID".
-        " FROM wp_posts AS p".
-        " INNER JOIN wp_postmeta AS pm ON p.ID = pm.post_id".
+    $post_query = "SELECT p.ID, p.post_author".
+        " FROM ".$wpdb->posts." AS p".
+        " INNER JOIN ".$wpdb->postmeta." AS pm ON p.ID = pm.post_id".
         " WHERE (pm.meta_key = 'resultado' AND pm.meta_value <> 'none') OR (pm.meta_key = 'evento' AND pm.meta_value <> '')".
         " GROUP BY p.ID;";
     $post_query_result = $wpdb->get_results($post_query, OBJECT);
 
     foreach($post_query_result as $p){
         update_post_meta($p->ID, '_post_tipo_publicacion', 'pick');
+
+        $autor = $p->post_author;
+        $tipster_query = "SELECT p.ID ".
+            " FROM ".$wpdb->posts." AS p".
+            " WHERE p.post_type = 'tipster' AND p.post_author = ".$autor.";";
+        $tipster = $wpdb->get_row($tipster_query, OBJECT);
+        if(!is_null($tipster)){
+            $tipster_id = $tipster->ID;
+        }
 
         $evento = get_post_meta($p->ID, 'evento', true);
         update_post_meta($p->ID, '_pick_evento', $evento);
@@ -84,7 +93,7 @@ if(isset($_POST['upgrade']) && isset($_POST['tipster'])){
 
     <p><?php _e('Hacer clic en el boton para actualizar la informacion de los metadatos de las publicaciones de tipo Picks', Tipster_TAP::get_instance()->get_plugin_slug()) ?></p>
 
-    <form id="form-upgrade-picks-information" method="post" action="<?php admin_url( 'admin.php?page='.Tipster_TAP::get_instance()->get_plugin_slug()."/upgrade-picks-information?settings-updated=1" ) ?>">
+    <form id="form-update-picks-information" method="post" action="<?php echo admin_url( 'admin.php?page='.Tipster_TAP::get_instance()->get_plugin_slug()."/update-picks-information&settings-updated=1" ) ?>">
         <p>
             <label for="tipster"><?php _e('Tipster', Tipster_TAP::get_instance()->get_plugin_slug()) ?></label>
             <select id="tipster" name="tipster"><?php
@@ -139,7 +148,7 @@ if(isset($_POST['upgrade']) && isset($_POST['tipster'])){
             } ?>
             </select>
         </p>
-        <input type="hidden" name="upgrade" value="1">
+        <input type="hidden" name="update" value="1">
         <p class="submit">
             <input type="submit" id="upgrade" value="<?php _e('Actualizar informacion',  Tipster_TAP::get_instance()->get_plugin_slug())?> &raquo;"/>
         </p>
