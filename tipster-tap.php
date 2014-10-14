@@ -15,7 +15,7 @@
  * Plugin Name:       Tipster TAP
  * Plugin URI:       http://www.todoapuestas.org
  * Description:       Plugin para gestionar apuestas
- * Version:           1.1.2
+ * Version:           1.1.3
  * Author:       Alain Sanchez
  * Author URI:       http://www.inetzwerk.com
  * Text Domain:       tipster-tap
@@ -36,30 +36,17 @@ if ( ! defined( 'WPINC' ) ) {
  *----------------------------------------------------------------------------*/
 
 /*
- * @TODO:
- *
- * - replace `class-tipster-tap.php` with the name of the plugin's class file
- *
  */
 require_once( plugin_dir_path( __FILE__ ) . 'public/class-tipster-tap.php' );
 
 /*
  * Register hooks that are fired when the plugin is activated or deactivated.
  * When the plugin is deleted, the uninstall.php file is loaded.
- *
- * @TODO:
- *
- * - replace Tipster_TAP with the name of the class defined in
- *   `class-tipster-tap.php`
  */
 register_activation_hook( __FILE__, array( 'Tipster_TAP', 'activate' ) );
 register_deactivation_hook( __FILE__, array( 'Tipster_TAP', 'deactivate' ) );
 
 /*
- * @TODO:
- *
- * - replace Tipster_TAP with the name of the class defined in
- *   `class-tipster-tap.php`
  */
 add_action( 'plugins_loaded', array( 'Tipster_TAP', 'get_instance' ) );
 
@@ -68,11 +55,6 @@ add_action( 'plugins_loaded', array( 'Tipster_TAP', 'get_instance' ) );
  *----------------------------------------------------------------------------*/
 
 /*
- * @TODO:
- *
- * - replace `class-tipster-tap-admin.php` with the name of the plugin's admin file
- * - replace Tipster_TAP_Admin with the name of the class defined in
- *   `class-tipster-tap-admin.php`
  *
  * If you want to include Ajax within the dashboard, change the following
  * conditional to:

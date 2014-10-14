@@ -4,7 +4,7 @@ Donate link: http://todoapuestas.org/
 Tags: tipster, picks
 Requires at least: 3.5.1
 Tested up to: 3.9.2
-Stable tag: 1.1.2
+Stable tag: 1.1.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -53,11 +53,14 @@ Nothing for now
 
 == Changelog ==
 
+= 1.1.3 =
+* Fixed a bug detected in method `save_post` of `admin/class-tipster-tap-admin.php` file
+
 = 1.1.2 =
-* Fixed a bug detected in admin/view/update-picks-information.php file
+* Fixed a bug detected in `admin/view/update-picks-information.php` file
 
 = 1.1.1 =
-* Fixed a bug detected in admin/views/admin.php file
+* Fixed a bug detected in `admin/views/admin.php` file
 * Deleted unnecesary files and code lines
 
 = 1.1.0 =

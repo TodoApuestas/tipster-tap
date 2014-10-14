@@ -249,15 +249,17 @@ class Tipster_TAP_Admin {
 	}
 
     /**
-     * Render the upgrade picks information page
+     * Calculates the statistics values
      *
-     * @since    1.0.0
+     * @since    1.1.3
      */
     public function save_post($post_id, $post = false){
         global $wpdb;
         $tipo_publicacion = get_post_meta($post_id, '_post_tipo_publicacion', true);
+        $resultado = get_post_meta($post_id, '_pick_resultado', true);
 
-        if($post->post_type == "post" && $tipo_publicacion == "pick"){
+        if($post->post_type == "post" && $tipo_publicacion == "pick"
+           && ($resultado == "acierto" || $resultado == "fallo" || $resultado == "nulo" )){
             // ai apuestas iniciales - entendiendo apuestas como el numero de veces que ha apostado.
             // ui unidades iniciales - entendiendo unidades como el valor en stake apostado.
             $aiAcertadas = 0;
@@ -318,16 +320,16 @@ class Tipster_TAP_Admin {
 
             // Obtener número de apuestas acertadas, falladas y nulas pertenecientes al tipster asociado al post
             $query_tipster_post = "SELECT p.ID".
-                " FROM ".$wpdb->posts." AS p".
-                " INNER JOIN ".$wpdb->postmeta." AS pm ON p.ID = pm.post_id".
-                " WHERE pm.meta_key = '_pick_tipster'".
-                    " AND pm.meta_value = ".$tipster_id."".
-                    " AND p.post_type = 'post'".
-                    " AND p.post_status = 'publish'".
-                    " AND pm.post_id in (SELECT pm.post_id".
-                        " FROM ".$wpdb->postmeta." AS pm".
-                        " WHERE pm.meta_key = '_pick_resultado'".
-                        " AND (pm.meta_value = 'acierto' OR pm.meta_value = 'fallo' OR pm.meta_value = 'nulo'));";
+                                  " FROM ".$wpdb->posts." AS p".
+                                  " INNER JOIN ".$wpdb->postmeta." AS pm ON p.ID = pm.post_id".
+                                  " WHERE pm.meta_key = '_pick_tipster'".
+                                  " AND pm.meta_value = ".$tipster_id."".
+                                  " AND p.post_type = 'post'".
+                                  " AND p.post_status = 'publish'".
+                                  " AND pm.post_id in (SELECT pm.post_id".
+                                  " FROM ".$wpdb->postmeta." AS pm".
+                                  " WHERE pm.meta_key = '_pick_resultado'".
+                                  " AND (pm.meta_value = 'acierto' OR pm.meta_value = 'fallo' OR pm.meta_value = 'nulo'));";
 
             $query_tipster_post_result = $wpdb->get_results($query_tipster_post, OBJECT);
 
@@ -350,21 +352,6 @@ class Tipster_TAP_Admin {
                     $stake = (float)$stake;
 
                 switch($resultado){
-                    case "acierto":
-                        $aAcertadas += 1;
-
-                        $cuota_x_acierto = str_replace(',', '.', get_post_meta($tipster_post->ID, '_pick_cuota', true));
-                        if(!is_float((float)$cuota_x_acierto))
-                            $cuota_x_acierto = 0;
-                        else
-                            $cuota_x_acierto = (float)$cuota_x_acierto;
-                        $totalCuotasAcertadas = $totalCuotasAcertadas + $cuota_x_acierto;
-
-                        // Jugadas que ha resultado en acierto
-                        $unidadesAcertadas = $unidadesAcertadas + $stake;
-                        $unidadesGanadas = $unidadesGanadas + ( ( $cuota_x_acierto * $stake ) - $stake );
-
-                        break;
                     case "fallo":
                         $aFalladas += 1;
 
@@ -379,7 +366,19 @@ class Tipster_TAP_Admin {
                         $unidadesNulas = $unidadesNulas + $stake;
 
                         break;
-                    default:
+                    default: // "acierto"
+                        $aAcertadas += 1;
+
+                        $cuota_x_acierto = str_replace(',', '.', get_post_meta($tipster_post->ID, '_pick_cuota', true));
+                        if(!is_float((float)$cuota_x_acierto))
+                            $cuota_x_acierto = 0;
+                        else
+                            $cuota_x_acierto = (float)$cuota_x_acierto;
+                        $totalCuotasAcertadas = $totalCuotasAcertadas + $cuota_x_acierto;
+
+                        // Jugadas que ha resultado en acierto
+                        $unidadesAcertadas = $unidadesAcertadas + $stake;
+                        $unidadesGanadas = $unidadesGanadas + ( ( $cuota_x_acierto * $stake ) - $stake );
                         break;
                 }
             }
