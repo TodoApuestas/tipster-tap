@@ -55,9 +55,10 @@ Nothing for now
 
 = 1.1.4 =
 * Fixed a bug detected in `__construct` function of `admin/class-tipster-tap-admin.php` file
+* Added check for post's status `published` in `save_post` function of `admin/class-tipster-tap-admin.php` file
 
 = 1.1.3 =
-* Fixed a bug detected in method `save_post` of `admin/class-tipster-tap-admin.php` file
+* Fixed a bug detected in `save_post` function of `admin/class-tipster-tap-admin.php` file
 
 = 1.1.2 =
 * Fixed a bug detected in `admin/view/update-picks-information.php` file
