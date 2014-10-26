@@ -76,7 +76,7 @@ class Tipster_TAP_Admin {
 		$plugin_basename = plugin_basename( plugin_dir_path( realpath( dirname( __FILE__ ) ) ) . $this->plugin_slug . '.php' );
 		add_filter( 'plugin_action_links_' . $plugin_basename, array( $this, 'add_action_links' ) );
 
-        add_action( 'save_post', array( $this, 'save_post' ), 10, 2 );
+        add_action( 'save_post', array( $this, 'save_post' ), 20, 2 );
 	}
 
 	/**
@@ -258,7 +258,7 @@ class Tipster_TAP_Admin {
         $tipo_publicacion = get_post_meta($post_id, '_post_tipo_publicacion', true);
         $resultado = get_post_meta($post_id, '_pick_resultado', true);
 
-        if($post->post_type == "post" && $tipo_publicacion == "pick"
+        if($post && $post->post_type == "post" && $tipo_publicacion == "pick"
            && ($resultado == "acierto" || $resultado == "fallo" || $resultado == "nulo" )){
             // ai apuestas iniciales - entendiendo apuestas como el numero de veces que ha apostado.
             // ui unidades iniciales - entendiendo unidades como el valor en stake apostado.
