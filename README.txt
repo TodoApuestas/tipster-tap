@@ -76,7 +76,7 @@ Nothing for now
 
 == Upgrade Notice ==
 
-Upgrade to version 1.1.0 as soon as posible. See Changelog section for details
+Upgrade to lastest version 1.1.x as soon as posible. See Changelog section for details
 
 
 == Arbitrary section ==
