@@ -258,7 +258,7 @@ class Tipster_TAP_Admin {
         $tipo_publicacion = get_post_meta($post_id, '_post_tipo_publicacion', true);
         $resultado = get_post_meta($post_id, '_pick_resultado', true);
 
-        if($post && $post->post_type == "post" && $tipo_publicacion == "pick"
+        if($post && $post->post_type == "post" && $post->post_status == "publish" && $tipo_publicacion == "pick"
            && ($resultado == "acierto" || $resultado == "fallo" || $resultado == "nulo" )){
             // ai apuestas iniciales - entendiendo apuestas como el numero de veces que ha apostado.
             // ui unidades iniciales - entendiendo unidades como el valor en stake apostado.
