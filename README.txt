@@ -53,6 +53,9 @@ Nothing for now
 
 == Changelog ==
 
+= 1.1.5 =
+* Added to delete all metadatas when post's metadata `_post_tipo_publicacion` equal `post` in `save_post` function of `admin/class-tipster-tap-admin.php` file
+
 = 1.1.4 =
 * Fixed a bug detected in `__construct` function of `admin/class-tipster-tap-admin.php` file
 * Added check for post's status `published` in `save_post` function of `admin/class-tipster-tap-admin.php` file

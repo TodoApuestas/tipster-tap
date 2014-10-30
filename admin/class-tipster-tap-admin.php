@@ -258,6 +258,21 @@ class Tipster_TAP_Admin {
         $tipo_publicacion = get_post_meta($post_id, '_post_tipo_publicacion', true);
         $resultado = get_post_meta($post_id, '_pick_resultado', true);
 
+        if($post && $post->post_type == "post" && $post->post_status == "publish" && $tipo_publicacion == "post")
+        {
+            delete_post_meta($post_id, '_pick_evento');
+            delete_post_meta($post_id, '_pick_fecha_evento');
+            delete_post_meta($post_id, '_pick_hora_evento');
+            delete_post_meta($post_id, '_pick_pronostico');
+            delete_post_meta($post_id, '_pick_cuota');
+            delete_post_meta($post_id, '_pick_casa_apuesta');
+            delete_post_meta($post_id, '_pick_tipo_apuesta');
+            delete_post_meta($post_id, '_pick_tipster');
+            delete_post_meta($post_id, '_pick_competicion');
+            delete_post_meta($post_id, '_pick_deporte');
+            delete_post_meta($post_id, '_pick_resultado');
+        }
+
         if($post && $post->post_type == "post" && $post->post_status == "publish" && $tipo_publicacion == "pick"
            && ($resultado == "acierto" || $resultado == "fallo" || $resultado == "nulo" )){
             // ai apuestas iniciales - entendiendo apuestas como el numero de veces que ha apostado.
@@ -327,9 +342,9 @@ class Tipster_TAP_Admin {
                                   " AND p.post_type = 'post'".
                                   " AND p.post_status = 'publish'".
                                   " AND pm.post_id in (SELECT pm.post_id".
-                                  " FROM ".$wpdb->postmeta." AS pm".
-                                  " WHERE pm.meta_key = '_pick_resultado'".
-                                  " AND (pm.meta_value = 'acierto' OR pm.meta_value = 'fallo' OR pm.meta_value = 'nulo'));";
+                                      " FROM ".$wpdb->postmeta." AS pm".
+                                      " WHERE pm.meta_key = '_pick_resultado'".
+                                      " AND (pm.meta_value = 'acierto' OR pm.meta_value = 'fallo' OR pm.meta_value = 'nulo'));";
 
             $query_tipster_post_result = $wpdb->get_results($query_tipster_post, OBJECT);
 
