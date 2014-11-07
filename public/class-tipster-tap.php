@@ -256,6 +256,8 @@ class Tipster_TAP {
         add_option('tipster_tap_deportes', array());
         add_option('tipster_tap_competiciones', array());
 
+        //execute create statistics table
+        self::get_instance()->create_statistics_table();
         // execute initial synchronization
         self::get_instance()->remote_sync();
 	}
@@ -353,4 +355,31 @@ class Tipster_TAP {
         }
     }
 
+    public function create_statistics_table()
+    {
+        global $wpdb;
+
+        $query_create_table_statistics = "CREATE TABLE IF NOT EXISTS `statistics` (".
+        "  `id` int(11) NOT NULL AUTO_INCREMENT,".
+        "  `corrects` int(11) NOT NULL,".
+        "  `wrongs` int(11) NOT NULL,".
+        "  `voids` int(11) NOT NULL,".
+        "  `total_units` float NOT NULL,".
+        "  `win_units` float NOT NULL,".
+        "  `lost_units` float NOT NULL,".
+        "  `yield` float NOT NULL,".
+        "  `last_stat` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,".
+        "  `last_stat_date` date DEFAULT NULL,".
+        "  `user_id` int(11) NOT NULL,".
+        "  PRIMARY KEY (`id`),".
+        "  KEY `user_id` (`user_id`),".
+        "  KEY `user_group_units` (`user_id`,`total_units`),".
+        "  KEY `total_units` (`total_units`),".
+        "  KEY `last_stat_date` (`last_stat_date`),".
+        "  KEY `last_stat_date_total_units` (`total_units`,`last_stat_date`),".
+        "  KEY `user_date_units` (`user_id`,`last_stat_date`,`total_units`)".
+        ") ENGINE=MyISAM DEFAULT CHARSET=latin1;";
+
+        $wpdb->query($query_create_table_statistics);
+    }
 }

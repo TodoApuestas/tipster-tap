@@ -4,7 +4,7 @@ Donate link: http://todoapuestas.org/
 Tags: tipster, picks
 Requires at least: 3.5.1
 Tested up to: 4.0
-Stable tag: 1.1.4
+Stable tag: 1.1.6
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -52,6 +52,9 @@ Nothing for now
 
 
 == Changelog ==
+
+= 1.1.6 =
+* Added function to create statistics table on plugin installation
 
 = 1.1.5 =
 * Added to delete all metadatas when post's metadata `_post_tipo_publicacion` equal `post` in `save_post` function of `admin/class-tipster-tap-admin.php` file
