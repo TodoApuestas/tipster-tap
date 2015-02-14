@@ -40,8 +40,6 @@ class Tipster_Post_Type{
     public static function get_instance() {
 
         /*
-         * @TODO :
-         *
          * - Uncomment following lines if the admin class should only be available for super admins
          */
         /* if( ! is_super_admin() ) {

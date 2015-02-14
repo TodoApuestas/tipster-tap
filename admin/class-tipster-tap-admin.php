@@ -49,8 +49,6 @@ class Tipster_TAP_Admin {
 	private function __construct() {
 
 		/*
-		 * @TODO :
-		 *
 		 * - Uncomment following lines if the admin class should only be available for super admins
 		 */
 		/* if( ! is_super_admin() ) {
@@ -89,8 +87,6 @@ class Tipster_TAP_Admin {
 	public static function get_instance() {
 
 		/*
-		 * @TODO :
-		 *
 		 * - Uncomment following lines if the admin class should only be available for super admins
 		 */
 		/* if( ! is_super_admin() ) {
@@ -108,9 +104,6 @@ class Tipster_TAP_Admin {
 	/**
 	 * Register and enqueue admin-specific style sheet.
 	 *
-	 * @TODO:
-	 *
-	 * - Rename "Tipster_TAP" to the name your plugin
 	 *
 	 * @since     1.0.0
 	 *
@@ -132,9 +125,6 @@ class Tipster_TAP_Admin {
 	/**
 	 * Register and enqueue admin-specific JavaScript.
 	 *
-	 * @TODO:
-	 *
-	 * - Rename "Tipster_TAP" to the name your plugin
 	 *
 	 * @since     1.0.0
 	 *

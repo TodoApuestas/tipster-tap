@@ -16,7 +16,6 @@
  * If you're interested in introducing administrative or dashboard
  * functionality, then refer to `class-tipster-tap-admin.php`
  *
- * @TODO: Rename this class to a proper name for your plugin.
  *
  * @package Tipster_TAP
  * @author  Your Name <email@example.com>
@@ -33,8 +32,6 @@ class Tipster_TAP {
 	const VERSION = '1.0.0';
 
 	/**
-	 * @TODO - Rename "tipster-tap" to the name of your plugin
-	 *
 	 * Unique identifier for your plugin.
 	 *
 	 *
@@ -81,11 +78,13 @@ class Tipster_TAP {
          * Define the default options
          *
          * @since     1.0
+         * @updated   2.0.0
          */
         $this->default_options = array(
-            'url_sync_link_bookies' => 'http://www.todoapuestas.org/wp-services/getAllBookiesLicenciaEspJson.php',
-            'url_sync_link_deportes' => 'http://www.todoapuestas.org/wp-services/getDeportesJson.php',
-            'url_sync_link_competiciones' => 'http://www.todoapuestas.org/wp-services/getCompeticionesJson.php',
+            'url_sync_link_bookies' => 'http://www.todoapuestas.org/tdapuestas/web/api/%s/bookie/listado-as-array.json/?_=%s',
+            'url_sync_link_deportes' => 'http://www.todoapuestas.org/tdapuestas/web/api/%s/deporte/listado-visible-blogs.json/?_=%s',
+            'url_sync_link_competiciones' => 'http://www.todoapuestas.org/tdapuestas/web/api/%s/competicion/listado.json/?_=%s',
+	        'url_check_ip' => 'http://www.todoapuestas.org/tdapuestas/web/api/%s/geoip/country-by-ip.json/%s/?_=%s'
         );
 
         /* Define custom functionality.
@@ -329,32 +328,37 @@ class Tipster_TAP {
      */
     public function remote_sync() {
         $option = get_option('tipster_tap_remote_info', $this->default_options);
+	    $apiKey = get_option('TAP_API_KEY');
+	    $timestamp = new DateTime("now");
 
-        $url_sync_link_bookies = esc_url($option['url_sync_link_bookies']);
+	    $url_sync_link_bookies = esc_url(sprintf($option['url_sync_link_bookies'], $apiKey, $timestamp->getTimestamp()));
         $bookies = trim(@file_get_contents($url_sync_link_bookies));
         $list_bookies = json_decode($bookies, true);
 
-        if(!empty($list_bookies)){
-            update_option('tipster_tap_bookies', $list_bookies);
+        if(!empty($list_bookies['bookies'])){
+            update_option('tipster_tap_bookies', $list_bookies['bookies']);
         }
 
-        $url_sync_link_deportes = esc_url($option['url_sync_link_deportes']);
+	    $url_sync_link_deportes = esc_url(sprintf($option['url_sync_link_deportes'], $apiKey, $timestamp->getTimestamp()));
         $deportes = trim(@file_get_contents($url_sync_link_deportes));
         $list_deportes = json_decode($deportes, true);
 
-        if(!empty($list_deportes)){
-            update_option('tipster_tap_deportes', $list_deportes);
+        if(!empty($list_deportes['deporte'])){
+            update_option('tipster_tap_deportes', $list_deportes['deporte']);
         }
 
-        $url_sync_link_competiciones = esc_url($option['url_sync_link_competiciones']);
+	    $url_sync_link_competiciones = esc_url(sprintf($option['url_sync_link_competiciones'], $apiKey, $timestamp->getTimestamp()));
         $competiciones = trim(@file_get_contents($url_sync_link_competiciones));
         $list_competiciones = json_decode($competiciones, true);
 
-        if(!empty($list_deportes)){
-            update_option('tipster_tap_competiciones', $list_competiciones);
+        if(!empty($list_competiciones['competicion'])){
+            update_option('tipster_tap_competiciones', $list_competiciones['competicion']);
         }
     }
 
+	/**
+	 * @since     1.1.6
+	 */
     public function create_statistics_table()
     {
         global $wpdb;
