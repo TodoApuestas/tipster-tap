@@ -53,6 +53,9 @@ Nothing for now
 
 == Changelog ==
 
+= 2.0.0 =
+* Added support for TAP Api REST's services
+
 = 1.1.6 =
 * Added function to create statistics table on plugin installation
 
