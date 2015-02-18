@@ -21,7 +21,7 @@ This section describes how to install the plugin and get it working.
 = Using The WordPress Dashboard =
 
 1. Navigate to the 'Add New' in the plugins dashboard
-2. Search for 'plugin-name'
+2. Search for 'tipster-tap'
 3. Click 'Install Now'
 4. Activate the plugin on the Plugin dashboard
 
@@ -29,15 +29,15 @@ This section describes how to install the plugin and get it working.
 
 1. Navigate to the 'Add New' in the plugins dashboard
 2. Navigate to the 'Upload' area
-3. Select `plugin-name.zip` from your computer
+3. Select `tipster-tap.zip` from your computer
 4. Click 'Install Now'
 5. Activate the plugin in the Plugin dashboard
 
 = Using FTP =
 
-1. Download `plugin-name.zip`
-2. Extract the `plugin-name` directory to your computer
-3. Upload the `plugin-name` directory to the `/wp-content/plugins/` directory
+1. Download `tipster-tap.zip`
+2. Extract the `tipster-tap` directory to your computer
+3. Upload the `tipster-tap` directory to the `/wp-content/plugins/` directory
 4. Activate the plugin in the Plugin dashboard
 
 
