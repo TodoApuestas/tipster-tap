@@ -15,7 +15,7 @@
  * Plugin Name:       Tipster TAP
  * Plugin URI:       http://www.todoapuestas.org
  * Description:       Plugin para gestionar apuestas
- * Version:           2.0.0
+ * Version:           2.0.1
  * Author:       Alain Sanchez
  * Author URI:       http://www.inetzwerk.com
  * Text Domain:       tipster-tap
