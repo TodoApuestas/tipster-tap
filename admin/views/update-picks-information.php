@@ -6,9 +6,9 @@
  * The User Interface to the end user.
  *
  * @package   Tipster_TAP
- * @author    Alain Sanchez <asanchezg@inetzwerk.com>
+ * @author    Alain Sanchez <luka.ghost@gmail.com>
  * @license   GPL-2.0+
- * @link      http://www.inetzwerk.com
+ * @link      http://www.linkedin.com/in/mrbrazzi/
  * @copyright 2014 Alain Sanchez
  */
 ?>

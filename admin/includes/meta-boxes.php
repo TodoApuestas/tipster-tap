@@ -134,6 +134,18 @@ class Meta_Boxes_Post_Type {
             'cmb_styles' => true, // Show cmb bundled styles.. not needed on user profile page
             'fields'     => array(
                 array(
+                    'name' => __('Pronostico de pago', 'epic'),
+                    'desc' => __( 'Seleccionar si es un pronostico de pago', 'epic' ),
+                    'id'   => $prefix . 'pronostico_pago',
+                    'type' => 'checkbox'
+                ),
+                array(
+                    'name' => __('Live', 'epic'),
+                    'desc' => __( 'Seleccionar si es live', 'epic' ),
+                    'id'   => $prefix . 'live',
+                    'type' => 'checkbox'
+                ),
+                array(
                     'name' => __('Evento', 'epic'),
                     'desc' => __( 'Escribir el nombre del evento deportivo, social o lo que sea que permita una apuesta', 'epic' ),
                     'id'   => $prefix . 'evento',

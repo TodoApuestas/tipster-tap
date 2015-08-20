@@ -6,18 +6,18 @@
  * also follow WordPress Coding Standards and PHP best practices.
  *
  * @package   Tipster_TAP
- * @author    Alain Sanchez <asanchezg@inetzwerk.com>
+ * @author    Alain Sanchez <luka.ghost@gmail.com>
  * @license   GPL-2.0+
- * @link      http://www.inetzwerk.com
+ * @link      http://www.linkedin.com/in/mrbrazzi/
  * @copyright 2014 Alain Sanchez
  *
  * @wordpress-plugin
  * Plugin Name:       Tipster TAP
  * Plugin URI:       http://www.todoapuestas.org
  * Description:       Plugin para gestionar apuestas
- * Version:           2.0.1
+ * Version:           2.1.1
  * Author:       Alain Sanchez
- * Author URI:       http://www.inetzwerk.com
+ * Author URI:       http://www.linkedin.com/in/mrbrazzi/
  * Text Domain:       tipster-tap
  * License:           GPL-2.0+
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt

@@ -3,9 +3,9 @@
  * Plugin Name.
  *
  * @package   Tipster_TAP
- * @author    Alain Sanchez <asanchezg@inetzwerk.com>
+ * @author    Alain Sanchez <luka.ghost@gmail.com>
  * @license   GPL-2.0+
- * @link      http://www.inetzwerk.com
+ * @link      http://www.linkedin.com/in/mrbrazzi/
  * @copyright 2014 Alain Sanchez
  */
 
@@ -26,10 +26,11 @@ class Tipster_TAP {
 	 * Plugin version, used for cache-busting of style and script file references.
 	 *
 	 * @since   1.0.0
+     * @updated 2.1.1
 	 *
 	 * @var     string
 	 */
-	const VERSION = '1.0.0';
+	const VERSION = '2.1.1';
 
 	/**
 	 * Unique identifier for your plugin.
@@ -81,10 +82,12 @@ class Tipster_TAP {
          * @updated   2.0.0
          */
         $this->default_options = array(
-            'url_sync_link_bookies' => 'http://www.todoapuestas.org/tdapuestas/web/api/%s/bookie/listado-as-array.json/?_=%s',
-            'url_sync_link_deportes' => 'http://www.todoapuestas.org/tdapuestas/web/api/%s/deporte/listado-visible-blogs.json/?_=%s',
-            'url_sync_link_competiciones' => 'http://www.todoapuestas.org/tdapuestas/web/api/%s/competicion/listado.json/?_=%s',
-	        'url_check_ip' => 'http://www.todoapuestas.org/tdapuestas/web/api/%s/geoip/country-by-ip.json/%s/?_=%s'
+            'url_sync_link_bookies' => 'http://www.todoapuestas.org/tdapuestas/web/api/blocks-bookies/%s/%s/listado-bonos-bookies.json/?access_token=%s&_=%s',
+            'url_sync_link_deportes' => 'http://www.todoapuestas.org/tdapuestas/web/api/deporte/listado-visible-blogs.json/?access_token=%s&_=%s',
+            'url_sync_link_competiciones' => 'http://www.todoapuestas.org/tdapuestas/web/api/competicion/listado.json/?access_token=%s&_=%s',
+	        'url_check_ip' => 'http://www.todoapuestas.org/tdapuestas/web/api/geoip/country-by-ip.json/%s/?access_token=%s&_=%s',
+            'tracked_web_category' => 'apuestas',
+            'tracker' => $_SERVER['HTTP_HOST']
         );
 
         /* Define custom functionality.
@@ -94,7 +97,7 @@ class Tipster_TAP {
          *
          * add_filter ( 'hook_name', 'your_filter', [priority], [accepted_args] );
          */
-
+		add_action( 'tipster_tap_remote_sync', array( $this, 'remote_sync' ) );
         add_action( 'sync_hourly_event', array( $this, 'remote_sync' ) );
         add_action( 'wp' , array( $this, 'active_remote_sync'));
 	}
@@ -267,6 +270,7 @@ class Tipster_TAP {
 	 * @since    1.0.0
 	 */
 	private static function single_deactivate() {
+		remove_action( 'tipster_tap_remote_sync', array( self::$instance, 'remote_sync' ) );
         remove_action( 'sync_hourly_event', array( self::$instance, 'remote_sync' ) );
         remove_action( 'wp' , array( self::$instance, 'active_remote_sync'));
 
@@ -324,33 +328,63 @@ class Tipster_TAP {
      * Execute synchronizations from todoapuestas.org server
      *
      * @since   1.0
-     * @return array|void
+     * @updated 2.1.1
+     * @return void
+     * @throws Exception
      */
     public function remote_sync() {
         $option = get_option('tipster_tap_remote_info', $this->default_options);
-	    $apiKey = get_option('TAP_API_KEY');
-	    $timestamp = new DateTime("now");
-
-	    $url_sync_link_bookies = esc_url(sprintf($option['url_sync_link_bookies'], $apiKey, $timestamp->getTimestamp()));
-        $bookies = trim(@file_get_contents($url_sync_link_bookies));
-        $list_bookies = json_decode($bookies, true);
-
-        if(!empty($list_bookies['bookies'])){
-            update_option('tipster_tap_bookies', $list_bookies['bookies']);
+        $oauthUrl = get_option('TAP_OAUTH_CLIENT_CREDENTIALS_URL');
+        $publicId = get_option('TAP_PUBLIC_ID');
+        $secretKey = get_option('TAP_SECRET_KEY');
+        if(empty($publicId) || empty($secretKey)){
+            throw new Exception('No public o secret key given');
         }
 
-	    $url_sync_link_deportes = esc_url(sprintf($option['url_sync_link_deportes'], $apiKey, $timestamp->getTimestamp()));
-        $deportes = trim(@file_get_contents($url_sync_link_deportes));
-        $list_deportes = json_decode($deportes, true);
+        $oauthUrl = sprintf($oauthUrl, $publicId, $secretKey);
+        $oauthResponse = wp_remote_get($oauthUrl);
+        if(strcmp($oauthResponse['response']['code'], '200') != 0){
+            throw new Exception('Invalid OAuth response');
+        }
 
+        $oauthResponseBody = json_decode($oauthResponse['body']);
+        $oauthAccessToken = null;
+        if(!is_object($oauthResponseBody)){
+            throw new Exception('Invalid OAuth access token');
+        }
+        $oauthAccessToken = $oauthResponseBody->access_token;
+
+	    $timestamp = new DateTime("now");
+
+        $apiUrl = esc_url(sprintf($option['url_sync_link_bookies'], $option['tracked_web_category'], $option['tracker'], $oauthAccessToken, $timestamp->getTimestamp()));
+        $apiResponse = wp_remote_get($apiUrl);
+        if(strcmp($apiResponse['response']['code'], '200') != 0){
+            throw new Exception('Invalid API response');
+        }
+        $list_bookies = json_decode($apiResponse['body'], true);
+
+        if(!empty($list_bookies)){
+            update_option('tipster_tap_bookies', $list_bookies);
+        }
+
+        $apiUrl = esc_url(sprintf($option['url_sync_link_deportes'], $oauthAccessToken, $timestamp->getTimestamp()));
+        $apiResponse = wp_remote_get($apiUrl);
+        if(strcmp($apiResponse['response']['code'], '200') != 0){
+            throw new Exception('Invalid API response');
+        }
+
+        $list_deportes = json_decode($apiResponse['body'], true);
         if(!empty($list_deportes['deporte'])){
             update_option('tipster_tap_deportes', $list_deportes['deporte']);
         }
 
-	    $url_sync_link_competiciones = esc_url(sprintf($option['url_sync_link_competiciones'], $apiKey, $timestamp->getTimestamp()));
-        $competiciones = trim(@file_get_contents($url_sync_link_competiciones));
-        $list_competiciones = json_decode($competiciones, true);
+        $apiUrl = esc_url(sprintf($option['url_sync_link_competiciones'], $oauthAccessToken, $timestamp->getTimestamp()));
+        $apiResponse = wp_remote_get($apiUrl);
+        if(strcmp($apiResponse['response']['code'], '200') != 0){
+            throw new Exception('Invalid API response');
+        }
 
+        $list_competiciones = json_decode($apiResponse['body'], true);
         if(!empty($list_competiciones['competicion'])){
             update_option('tipster_tap_competiciones', $list_competiciones['competicion']);
         }
