@@ -1,5 +1,6 @@
 <?php
 
+namespace TipsterTAP\Backend\Common;
 
 /**
  * Include and setup custom metaboxes and fields.
@@ -97,7 +98,7 @@ class Meta_Boxes_Post_Type {
             'order' => 'ASC',
             'orderby' => 'name'
         );
-        $tipster_query_result = new WP_Query($tipster_query);
+        $tipster_query_result = new \WP_Query($tipster_query);
         if($tipster_query_result->have_posts()){
             while($tipster_query_result->have_posts()){
                 $tipster_query_result->the_post();
@@ -250,6 +251,7 @@ class Meta_Boxes_Post_Type {
      */
     function post_type_tipster_metabox( array $meta_boxes ) {
         global $post;
+
         // Start with an underscore to hide fields from custom fields list
         $prefix = '_tipster_';
 

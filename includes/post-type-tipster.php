@@ -1,4 +1,7 @@
 <?php
+
+namespace TipsterTAP\Common;
+
 /**
  * Tipster post type.
  *

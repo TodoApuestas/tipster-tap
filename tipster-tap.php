@@ -15,7 +15,7 @@
  * Plugin Name:       Tipster TAP
  * Plugin URI:       http://www.todoapuestas.org
  * Description:       Plugin para gestionar apuestas
- * Version:           2.1.1
+ * Version:           2.2.0
  * Author:       Alain Sanchez
  * Author URI:       http://www.linkedin.com/in/mrbrazzi/
  * Text Domain:       tipster-tap
@@ -25,6 +25,8 @@
  * GitHub Plugin URI: https://github.com/<owner>/<repo>
  * WordPress-Plugin-Boilerplate: v2.6.1
  */
+
+namespace TipsterTAP;
 
 // If this file is called directly, abort.
 if ( ! defined( 'WPINC' ) ) {
@@ -43,12 +45,12 @@ require_once( plugin_dir_path( __FILE__ ) . 'public/class-tipster-tap.php' );
  * Register hooks that are fired when the plugin is activated or deactivated.
  * When the plugin is deleted, the uninstall.php file is loaded.
  */
-register_activation_hook( __FILE__, array( 'Tipster_TAP', 'activate' ) );
-register_deactivation_hook( __FILE__, array( 'Tipster_TAP', 'deactivate' ) );
+register_activation_hook( __FILE__, array( '\TipsterTAP\Frontend\Tipster_TAP', 'activate' ) );
+register_deactivation_hook( __FILE__, array( '\TipsterTAP\Frontend\Tipster_TAP', 'deactivate' ) );
 
 /*
  */
-add_action( 'plugins_loaded', array( 'Tipster_TAP', 'get_instance' ) );
+add_action( 'plugins_loaded', array( '\TipsterTAP\Frontend\Tipster_TAP', 'get_instance' ) );
 
 /*----------------------------------------------------------------------------*
  * Dashboard and Administrative Functionality
@@ -68,15 +70,15 @@ add_action( 'plugins_loaded', array( 'Tipster_TAP', 'get_instance' ) );
 if ( is_admin() && ( ! defined( 'DOING_AJAX' ) || ! DOING_AJAX ) ) {
 
     require_once( plugin_dir_path( __FILE__ ) . 'admin/class-tipster-tap-admin.php' );
-    add_action( 'plugins_loaded', array( 'Tipster_TAP_Admin', 'get_instance' ) );
+    add_action( 'plugins_loaded', array( '\TipsterTAP\Backend\Tipster_TAP_Admin', 'get_instance' ) );
 
-    if( !class_exists('Meta_Boxes_Post_Type')){
+    if( !class_exists('\TipsterTAP\Backend\Common\Meta_Boxes_Post_Type')){
         require_once plugin_dir_path( __FILE__ ) . 'admin/includes/meta-boxes.php';
-        add_action( 'plugins_loaded', array( 'Meta_Boxes_Post_Type', 'get_instance' ) );
+        add_action( 'plugins_loaded', array( '\TipsterTAP\Backend\Common\Meta_Boxes_Post_Type', 'get_instance' ) );
     }
 }
 
-if( !class_exists('Tipster_Post_Type')){
+if( !class_exists('\TipsterTAP\Common\Tipster_Post_Type')){
     require_once plugin_dir_path( __FILE__ ) . 'includes/post-type-tipster.php';
-    add_action( 'plugins_loaded', array( 'Tipster_Post_Type', 'get_instance' ) );
+    add_action( 'plugins_loaded', array( '\TipsterTAP\Common\Tipster_Post_Type', 'get_instance' ) );
 }

@@ -1,4 +1,7 @@
 <?php
+
+namespace TipsterTAP\Backend\Common;
+
 /**
  * Pick post type.
  *

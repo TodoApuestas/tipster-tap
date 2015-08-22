@@ -9,6 +9,10 @@
  * @copyright 2014 Alain Sanchez
  */
 
+namespace TipsterTAP\Backend;
+
+use TipsterTAP\Frontend\Tipster_TAP;
+
 /**
  * Plugin class. This class should ideally be used to work with the
  * administrative side of the WordPress site.

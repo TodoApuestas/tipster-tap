@@ -9,6 +9,8 @@
  * @copyright 2014 Alain Sanchez
  */
 
+namespace TipsterTAP\Frontend;
+
 /**
  * Plugin class. This class should ideally be used to work with the
  * public-facing side of the WordPress site.
