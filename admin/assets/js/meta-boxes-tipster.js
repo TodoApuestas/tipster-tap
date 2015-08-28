@@ -4,7 +4,7 @@
 	$(function () {
 
     /**
-     * Metabox of Post
+     * Metabox of Tipster
      */
     $('select#_tipster_incluir_datos_iniciales').each(function() {
       var post_custom_option = $(this).children('option:selected').val();
@@ -58,7 +58,7 @@
       }
     });
     /**
-     * End Post
+     * End Tipster
      */
 
 	});

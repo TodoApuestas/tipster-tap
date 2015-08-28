@@ -2,6 +2,8 @@
 
 namespace TipsterTAP\Backend\Common;
 
+use TipsterTAP\Frontend\Tipster_TAP;
+
 /**
  * Include and setup custom metaboxes and fields.
  *
@@ -20,6 +22,8 @@ class Meta_Boxes_Post_Type {
      */
     protected static $instance = null;
 
+    private $plugin_slug;
+
     /**
      * Initialize the plugin by loading admin scripts & styles and adding a
      * settings page and menu.
@@ -27,8 +31,9 @@ class Meta_Boxes_Post_Type {
      * @since     1.0.0
      */
     private function __construct() {
+        $this->plugin_slug = Tipster_TAP::get_instance()->get_plugin_slug();
         add_filter( 'cmb_meta_boxes', array( $this, 'post_type_pick_metabox' ) );
-        add_filter( 'cmb_meta_boxes', array( $this, 'post_type_tipster_metabox' ) );
+        add_filter( 'cmb_meta_boxes', array( $this, 'post_type_tipster_metabox' ), 100 );
         add_action( 'init', array( $this, 'cmb_initialize_cmb_meta_boxes' ), 9999 );
         add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
     }
@@ -341,6 +346,7 @@ class Meta_Boxes_Post_Type {
         switch($screen->id){
             case "post":
                 wp_enqueue_script( $this->plugin_slug . '-admin-metabox-script', plugins_url( 'assets/js/meta-boxes-post.js', dirname(__FILE__) ), array( 'jquery' ), Tipster_TAP::VERSION );
+                wp_enqueue_script( 'datepicker-es', plugins_url( 'assets/js/datepicker.es.js', dirname(__FILE__) ), array( 'jquery' ), Tipster_TAP::VERSION );
                 break;
             case "tipster":
                 wp_enqueue_script( $this->plugin_slug . '-admin-metabox-script', plugins_url( 'assets/js/meta-boxes-tipster.js', dirname(__FILE__) ), array( 'jquery' ), Tipster_TAP::VERSION );
