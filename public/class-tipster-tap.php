@@ -332,7 +332,7 @@ class Tipster_TAP {
      * @since   1.0
      * @updated 2.1.1
      * @return void
-     * @throws Exception
+     * @throws \Exception
      */
     public function remote_sync() {
         $option = get_option('tipster_tap_remote_info', $this->default_options);
@@ -340,28 +340,28 @@ class Tipster_TAP {
         $publicId = get_option('TAP_PUBLIC_ID');
         $secretKey = get_option('TAP_SECRET_KEY');
         if(empty($publicId) || empty($secretKey)){
-            throw new Exception('No public o secret key given');
+            throw new \Exception('No public o secret key given');
         }
 
         $oauthUrl = sprintf($oauthUrl, $publicId, $secretKey);
         $oauthResponse = wp_remote_get($oauthUrl);
         if(strcmp($oauthResponse['response']['code'], '200') != 0){
-            throw new Exception('Invalid OAuth response');
+            throw new \Exception('Invalid OAuth response');
         }
 
         $oauthResponseBody = json_decode($oauthResponse['body']);
         $oauthAccessToken = null;
         if(!is_object($oauthResponseBody)){
-            throw new Exception('Invalid OAuth access token');
+            throw new \Exception('Invalid OAuth access token');
         }
         $oauthAccessToken = $oauthResponseBody->access_token;
 
-	    $timestamp = new DateTime("now");
+	    $timestamp = new \DateTime("now");
 
         $apiUrl = esc_url(sprintf($option['url_sync_link_bookies'], $option['tracked_web_category'], $option['tracker'], $oauthAccessToken, $timestamp->getTimestamp()));
         $apiResponse = wp_remote_get($apiUrl);
         if(strcmp($apiResponse['response']['code'], '200') != 0){
-            throw new Exception('Invalid API response');
+            throw new \Exception('Invalid API response');
         }
         $list_bookies = json_decode($apiResponse['body'], true);
 
@@ -372,7 +372,7 @@ class Tipster_TAP {
         $apiUrl = esc_url(sprintf($option['url_sync_link_deportes'], $oauthAccessToken, $timestamp->getTimestamp()));
         $apiResponse = wp_remote_get($apiUrl);
         if(strcmp($apiResponse['response']['code'], '200') != 0){
-            throw new Exception('Invalid API response');
+            throw new \Exception('Invalid API response');
         }
 
         $list_deportes = json_decode($apiResponse['body'], true);
@@ -383,7 +383,7 @@ class Tipster_TAP {
         $apiUrl = esc_url(sprintf($option['url_sync_link_competiciones'], $oauthAccessToken, $timestamp->getTimestamp()));
         $apiResponse = wp_remote_get($apiUrl);
         if(strcmp($apiResponse['response']['code'], '200') != 0){
-            throw new Exception('Invalid API response');
+            throw new \Exception('Invalid API response');
         }
 
         $list_competiciones = json_decode($apiResponse['body'], true);
