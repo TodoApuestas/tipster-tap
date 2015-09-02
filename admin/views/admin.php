@@ -11,6 +11,9 @@
  * @link      http://www.linkedin.com/in/mrbrazzi/
  * @copyright 2014 Alain Sanchez
  */
+
+use TipsterTAP\Frontend\Tipster_TAP;
+
 ?>
 
 <div class="wrap">

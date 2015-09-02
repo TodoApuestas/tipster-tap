@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name.
+ * Tipster Tap.
  *
  * @package   Tipster_TAP
  * @author    Alain Sanchez <luka.ghost@gmail.com>
@@ -32,7 +32,7 @@ class Tipster_TAP {
 	 *
 	 * @var     string
 	 */
-	const VERSION = '2.1.1';
+	const VERSION = '2.2.2';
 
 	/**
 	 * Unique identifier for your plugin.
