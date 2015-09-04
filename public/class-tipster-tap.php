@@ -32,7 +32,7 @@ class Tipster_TAP {
 	 *
 	 * @var     string
 	 */
-	const VERSION = '2.2.2';
+	const VERSION = '2.3.0';
 
 	/**
 	 * Unique identifier for your plugin.
@@ -336,57 +336,25 @@ class Tipster_TAP {
      */
     public function remote_sync() {
         $option = get_option('tipster_tap_remote_info', $this->default_options);
-        $oauthUrl = get_option('TAP_OAUTH_CLIENT_CREDENTIALS_URL');
-        $publicId = get_option('TAP_PUBLIC_ID');
-        $secretKey = get_option('TAP_SECRET_KEY');
-        if(empty($publicId) || empty($secretKey)){
-            throw new \Exception('No public o secret key given');
-        }
 
-        $oauthUrl = sprintf($oauthUrl, $publicId, $secretKey);
-        $oauthResponse = wp_remote_get($oauthUrl);
-        if(strcmp($oauthResponse['response']['code'], '200') != 0){
-            throw new \Exception('Invalid OAuth response');
-        }
-
-        $oauthResponseBody = json_decode($oauthResponse['body']);
-        $oauthAccessToken = null;
-        if(!is_object($oauthResponseBody)){
-            throw new \Exception('Invalid OAuth access token');
-        }
-        $oauthAccessToken = $oauthResponseBody->access_token;
+        $oauthAccessToken = $this->get_oauth_access_token();
 
 	    $timestamp = new \DateTime("now");
 
         $apiUrl = esc_url(sprintf($option['url_sync_link_bookies'], $option['tracked_web_category'], $option['tracker'], $oauthAccessToken, $timestamp->getTimestamp()));
-        $apiResponse = wp_remote_get($apiUrl);
-        if(strcmp($apiResponse['response']['code'], '200') != 0){
-            throw new \Exception('Invalid API response');
-        }
-        $list_bookies = json_decode($apiResponse['body'], true);
-
+        $list_bookies = $this->get_result_from_api($apiUrl);
         if(!empty($list_bookies)){
             update_option('tipster_tap_bookies', $list_bookies);
         }
 
         $apiUrl = esc_url(sprintf($option['url_sync_link_deportes'], $oauthAccessToken, $timestamp->getTimestamp()));
-        $apiResponse = wp_remote_get($apiUrl);
-        if(strcmp($apiResponse['response']['code'], '200') != 0){
-            throw new \Exception('Invalid API response');
-        }
-
-        $list_deportes = json_decode($apiResponse['body'], true);
+        $list_deportes = $this->get_result_from_api($apiUrl);
         if(!empty($list_deportes['deporte'])){
             update_option('tipster_tap_deportes', $list_deportes['deporte']);
         }
 
         $apiUrl = esc_url(sprintf($option['url_sync_link_competiciones'], $oauthAccessToken, $timestamp->getTimestamp()));
-        $apiResponse = wp_remote_get($apiUrl);
-        if(strcmp($apiResponse['response']['code'], '200') != 0){
-            throw new \Exception('Invalid API response');
-        }
-
-        $list_competiciones = json_decode($apiResponse['body'], true);
+        $list_competiciones = $this->get_result_from_api($apiUrl);
         if(!empty($list_competiciones['competicion'])){
             update_option('tipster_tap_competiciones', $list_competiciones['competicion']);
         }
@@ -421,5 +389,64 @@ class Tipster_TAP {
         ") ENGINE=MyISAM DEFAULT CHARSET=latin1;";
 
         $wpdb->query($query_create_table_statistics);
+    }
+
+    /**
+     * @since 2.3.0
+     * @return string
+     * @throws \Exception
+     */
+    private function get_oauth_access_token()
+    {
+        session_start();
+        if(isset($_SESSION['TAP_OAUTH_CLIENT'])){
+            $now = new \DateTime('now');
+            if($now->getTimestamp() <= intval($_SESSION['TAP_OAUTH_CLIENT']['expires_in'])){
+                $oauthAccessToken = $_SESSION['TAP_OAUTH_CLIENT']['access_token'];
+                return $oauthAccessToken;
+            }
+            unset($_SESSION['TAP_OAUTH_CLIENT']);
+        }
+
+        $oauthUrl = get_option('TAP_OAUTH_CLIENT_CREDENTIALS_URL');
+        $publicId = get_option('TAP_PUBLIC_ID');
+        $secretKey = get_option('TAP_SECRET_KEY');
+        if(empty($publicId) || empty($secretKey)){
+            throw new \Exception('No public or secret key given');
+        }
+
+        $oauthUrl = sprintf($oauthUrl, $publicId, $secretKey);
+        $oauthResponse = wp_remote_get($oauthUrl);
+        if($oauthResponse instanceof \WP_Error || strcmp($oauthResponse['response']['code'], '200') !== 0){
+            throw new \Exception('Invalid OAuth response');
+        }
+
+        $oauthResponseBody = json_decode($oauthResponse['body']);
+        $oauthAccessToken = null;
+        if($oauthResponseBody instanceof \WP_Error || !is_object($oauthResponseBody)){
+            throw new \Exception('Invalid OAuth access token');
+        }
+        $oauthAccessToken = $oauthResponseBody->access_token;
+
+        if(!isset($_SESSION['TAP_OAUTH_CLIENT'])){
+            $now = new \DateTime('now');
+            $_SESSION['TAP_OAUTH_CLIENT'] = array(
+                'access_token' => $oauthAccessToken,
+                'expires_in' => $now->getTimestamp() + intval($oauthResponseBody->expires_in)
+            );
+        }
+
+        return $oauthAccessToken;
+    }
+
+    private function get_result_from_api($url)
+    {
+        $apiResponse = wp_remote_get($url);
+        if(strcmp($apiResponse['response']['code'], '200') != 0){
+            throw new \Exception('Invalid API response');
+        }
+        $result = json_decode($apiResponse['body'], true);
+
+        return $result;
     }
 }

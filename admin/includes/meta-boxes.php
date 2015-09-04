@@ -110,6 +110,7 @@ class Meta_Boxes_Post_Type {
                 $tipster = $post;
                 $tipsters[$tipster->ID] = $tipster->post_title;
             }
+            wp_reset_query();
         }
 
         $meta_boxes['post_type'] = array(
@@ -200,13 +201,16 @@ class Meta_Boxes_Post_Type {
                     'id'      => $prefix . 'tipo_apuesta',
                     'type'    => 'select',
                     'options' => array(
-                        'ganador'   => __('Ganador', 'epic'),
-                        'perdedor'  => __('Perdedor', 'epic'),
-                        'under'     => __('Under', 'epic'),
-                        'over'      => __('Over', 'epic'),
-                        'handicap'  => __('Handicap', 'epic'),
-                        'resultado' => __('Resultado concreto', 'epic'),
-                        'otro'      => __('Otro', 'epic'),
+                        'ganador'   => __( 'Ganador', 'epic' ),
+                        'perdedor'  => __( 'Perdedor', 'epic' ),
+                        'under'     => __( 'Under', 'epic' ),
+                        'over'      => __( 'Over', 'epic' ),
+                        'handicap'  => __( 'Handicap', 'epic' ),
+                        'resultado' => __( 'Resultado concreto', 'epic' ),
+                        'combinada' => __( 'Combinada', 'epic' ),
+                        'funbet'    => __( 'Funbet', 'epic' ),
+                        'reto'      => __( 'Reto', 'epic' ),
+                        'otro'      => __( 'Otro', 'epic' ),
                     ),
                 ),
                 array(
