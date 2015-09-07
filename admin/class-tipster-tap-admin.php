@@ -250,10 +250,11 @@ class Tipster_TAP_Admin {
     public function save_post($post_id, $post = false){
         global $wpdb;
         $tipo_publicacion = get_post_meta($post_id, '_post_tipo_publicacion', true);
-        $resultado = get_post_meta($post_id, '_pick_resultado', true);
 
         if($post && $post->post_type == "post" && $post->post_status == "publish" && $tipo_publicacion == "post")
         {
+            delete_post_meta($post_id, '_pick_pronostico_pago');
+            delete_post_meta($post_id, '_pick_live');
             delete_post_meta($post_id, '_pick_evento');
             delete_post_meta($post_id, '_pick_fecha_evento');
             delete_post_meta($post_id, '_pick_hora_evento');
@@ -265,8 +266,10 @@ class Tipster_TAP_Admin {
             delete_post_meta($post_id, '_pick_competicion');
             delete_post_meta($post_id, '_pick_deporte');
             delete_post_meta($post_id, '_pick_resultado');
+            return;
         }
 
+        $resultado = get_post_meta($post_id, '_pick_resultado', true);
         if($post && $post->post_type == "post" && $post->post_status == "publish" && $tipo_publicacion == "pick"
            && ($resultado == "acierto" || $resultado == "fallo" || $resultado == "nulo" )){
             // ai apuestas iniciales - entendiendo apuestas como el numero de veces que ha apostado.
