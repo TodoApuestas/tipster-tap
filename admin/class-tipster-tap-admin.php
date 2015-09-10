@@ -78,7 +78,7 @@ class Tipster_TAP_Admin {
 		$plugin_basename = plugin_basename( plugin_dir_path( realpath( dirname( __FILE__ ) ) ) . $this->plugin_slug . '.php' );
 		add_filter( 'plugin_action_links_' . $plugin_basename, array( $this, 'add_action_links' ) );
 
-        add_action( 'save_post', array( $this, 'save_post' ), 20, 2 );
+        add_action( 'wp_insert_post', array( $this, 'save_post' ), 20, 3 );
 	}
 
 	/**
@@ -247,11 +247,11 @@ class Tipster_TAP_Admin {
      *
      * @since    1.1.3
      */
-    public function save_post($post_id, $post = false){
+    public function save_post($post_id, $post = false, $update = false){
         global $wpdb;
         $tipo_publicacion = get_post_meta($post_id, '_post_tipo_publicacion', true);
 
-        if($post && $post->post_type == "post" && $post->post_status == "publish" && $tipo_publicacion == "post")
+        if(false === wp_is_post_revision($post) && strcmp($post->post_type, 'post') === 0 && strcmp($post->post_status, 'publish') === 0 && strcmp($tipo_publicacion, 'post') === 0)
         {
             delete_post_meta($post_id, '_pick_pronostico_pago');
             delete_post_meta($post_id, '_pick_live');
@@ -270,8 +270,8 @@ class Tipster_TAP_Admin {
         }
 
         $resultado = get_post_meta($post_id, '_pick_resultado', true);
-        if($post && $post->post_type == "post" && $post->post_status == "publish" && $tipo_publicacion == "pick"
-           && ($resultado == "acierto" || $resultado == "fallo" || $resultado == "nulo" )){
+        if(false === wp_is_post_revision($post) && strcmp($post->post_type, 'post') === 0 && strcmp($post->post_status, 'publish') === 0 && strcmp($tipo_publicacion, 'pick') === 0
+           && (strcmp($resultado, 'acierto') === 0 || strcmp($resultado, 'fallo') === 0 || strcmp($resultado, 'nulo') === 0 )){
             // ai apuestas iniciales - entendiendo apuestas como el numero de veces que ha apostado.
             // ui unidades iniciales - entendiendo unidades como el valor en stake apostado.
             $aiAcertadas = 0;
