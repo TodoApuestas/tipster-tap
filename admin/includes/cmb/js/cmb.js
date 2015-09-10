@@ -599,9 +599,9 @@ window.CMB = (function(window, document, $, undefined){
 		$selector.timePicker({
 			startTime: "00:00",
 			endTime: "23:59",
-			show24Hours: false,
+			show24Hours: true,
 			separator: ':',
-			step: 30
+			step: 15
 		});
 	};
 
