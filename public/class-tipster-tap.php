@@ -28,11 +28,11 @@ class Tipster_TAP {
 	 * Plugin version, used for cache-busting of style and script file references.
 	 *
 	 * @since   1.0.0
-     * @updated 2.1.1
+     * @updated 2.4.0
 	 *
 	 * @var     string
 	 */
-	const VERSION = '2.3.2';
+	const VERSION = '2.4.0';
 
 	/**
 	 * Unique identifier for your plugin.
@@ -398,7 +398,8 @@ class Tipster_TAP {
      */
     private function get_oauth_access_token()
     {
-        session_start();
+        $session_id = session_id();
+        if(empty($session_id)) @session_start();
         if(isset($_SESSION['TAP_OAUTH_CLIENT'])){
             $now = new \DateTime('now');
             if($now->getTimestamp() <= intval($_SESSION['TAP_OAUTH_CLIENT']['expires_in'])){
