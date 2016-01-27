@@ -27,12 +27,11 @@ class Tipster_TAP {
 	/**
 	 * Plugin version, used for cache-busting of style and script file references.
 	 *
-	 * @since   1.0.0
-     * @updated 2.4.0
+	 * @since   2.4.1
 	 *
 	 * @var     string
 	 */
-	const VERSION = '2.4.0';
+	const VERSION = '2.4.1';
 
 	/**
 	 * Unique identifier for your plugin.
@@ -99,9 +98,8 @@ class Tipster_TAP {
          *
          * add_filter ( 'hook_name', 'your_filter', [priority], [accepted_args] );
          */
-		add_action( 'tipster_tap_remote_sync', array( $this, 'remote_sync' ) );
-        add_action( 'sync_hourly_event', array( $this, 'remote_sync' ) );
-        add_action( 'wp' , array( $this, 'active_remote_sync'));
+		add_action( 'wp' , array( $this, 'active_remote_sync'));
+		add_action( 'tipster_tap_hourly_remote_sync', array( $this, 'remote_sync' ) );
 	}
 
 	/**
@@ -272,8 +270,7 @@ class Tipster_TAP {
 	 * @since    1.0.0
 	 */
 	private static function single_deactivate() {
-		remove_action( 'tipster_tap_remote_sync', array( self::$instance, 'remote_sync' ) );
-        remove_action( 'sync_hourly_event', array( self::$instance, 'remote_sync' ) );
+		remove_action( 'tipster_tap_hourly_remote_sync', array( self::$instance, 'remote_sync' ) );
         remove_action( 'wp' , array( self::$instance, 'active_remote_sync'));
 
         delete_option('tipster_tap_remote_info');
@@ -321,8 +318,8 @@ class Tipster_TAP {
      * @since   1.0
      */
     public function active_remote_sync() {
-        if ( !wp_next_scheduled( 'sync_hourly_event' ) ) {
-            wp_schedule_event(time(), 'hourly', 'sync_hourly_event');
+        if ( !wp_next_scheduled( 'tipster_tap_hourly_remote_sync' ) ) {
+            wp_schedule_event(time(), 'hourly', 'tipster_tap_hourly_remote_sync');
         }
     }
 
