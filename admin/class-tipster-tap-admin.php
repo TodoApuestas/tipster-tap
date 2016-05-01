@@ -331,21 +331,46 @@ class Tipster_TAP_Admin {
             }
 
             // Obtener número de apuestas acertadas, falladas y nulas pertenecientes al tipster asociado al post
-            $query_tipster_post = "SELECT p.ID".
-                                  " FROM ".$wpdb->posts." AS p".
-                                  " INNER JOIN ".$wpdb->postmeta." AS pm ON p.ID = pm.post_id".
-                                  " WHERE pm.meta_key = '_pick_tipster'".
-                                  " AND pm.meta_value = ".$tipster_id."".
-                                  " AND p.post_type = 'post'".
-                                  " AND p.post_status = 'publish'".
-                                  " AND pm.post_id in (SELECT pm.post_id".
-                                      " FROM ".$wpdb->postmeta." AS pm".
-                                      " WHERE pm.meta_key = '_pick_resultado'".
-                                      " AND (pm.meta_value = 'acierto' OR pm.meta_value = 'fallo' OR pm.meta_value = 'nulo'));";
+	        $query_tipster_post = array(
+		        'post_type' => 'post',
+		        'post_status' => 'publish',
+		        'order' => 'DESC',
+		        'meta_query' => array(
+			        'relation' => 'AND',
+			        array(
+				        'key' => '_post_tipo_publicacion',
+				        'value' => 'pick',
+				        'compare' => '=',
+			        ),
+			        array(
+				        'key' => '_pick_tipster',
+				        'value' => $tipster_id,
+				        'compare' => '=',
+			        ),
+			        array(
+				        'relation' => 'OR',
+				        array(
+					        'key' => '_pick_resultado',
+					        'value' => 'acierto',
+					        'compare' => '=',
+				        ),
+				        array(
+					        'key' => '_pick_resultado',
+					        'value' => 'fallo',
+					        'compare' => '=',
+				        ),
+				        array(
+					        'key' => '_pick_resultado',
+					        'value' => 'nulo',
+					        'compare' => '=',
+				        ),
+			        ),
+		        )
+	        );
+	        $query_result = new \WP_Query($query_tipster_post);
+	        $query_tipster_post_result = $query_result->get_posts();
 
-            $query_tipster_post_result = $wpdb->get_results($query_tipster_post, OBJECT);
-
-            $aAcertadas = 0; // apuestas acertadas
+	        $aAcertadas = 0; // apuestas acertadas
             $aFalladas = 0;  // apuestas falladas
             $aNulas = 0;     // apuestas nulas
             $totalCuotasAcertadas = 0;
@@ -403,7 +428,6 @@ class Tipster_TAP_Admin {
 
             // Obtener yield
             // Yield = ( Beneficios / TotalApostado ) x 100
-            // Beneficio = TotalGanado - TotalPerdido
             $yield = 0;
 
             //se verifica si unidades totales esta vacia
@@ -412,7 +436,45 @@ class Tipster_TAP_Admin {
             //modificar la base de datos con las nuevas estadisticas
             $insert_array =  array( 'corrects' => ($aAcertadas+$aiAcertadas), 'wrongs' => ($aFalladas+$aiFalladas), 'voids' =>($aNulas+$aiNulas), 'total_units' => $unidadesTotales, 'win_units' => ($unidadesGanadas+$uiGanadas), 'lost_units' => ($unidadesFalladas+$uiPerdidas), 'yield' => $yield, 'user_id' => $tipster_id);
             $wpdb->insert('statistics', $insert_array);
+
+	        $total_picks = $this->tipster_total_picks($tipster_id, 5000);
+	        $total_picks = number_format($total_picks,0,'.','');
+	        update_post_meta($tipster_id, '_tipster_tips', $total_picks);
+	        $rating = (floatval($total_picks) * floatval($yield)) / 100;
+	        $rating = number_format($rating,2,'.','');
+	        update_post_meta($tipster_id, '_tipster_rating', $rating);
+	        $yield = number_format($yield,2,'.',',');
+	        update_post_meta($tipster_id, '_tipster_yield', $yield);
+	        $beneficio = number_format($unidadesGanadas+$uiGanadas,2,'.','');
+	        update_post_meta($tipster_id, '_tipster_beneficio', $beneficio);
         }
     }
 
+	function tipster_total_picks($tipster_id, $limit = -1){
+		$count_picks = 0;
+		$query = array(
+			'post_type' => 'post',
+			'posts_per_page' => $limit,
+			'meta_query' => array(
+				'relation' => 'AND',
+				array(
+					'key' => '_post_tipo_publicacion',
+					'value' => 'pick',
+					'compare' => '=',
+				),
+				array(
+					'key' => '_pick_tipster',
+					'value' => $tipster_id,
+					'compare' => '=',
+				)
+			)
+		);
+		$query_result = new \WP_Query($query);
+		if($query_result->have_posts()){
+			$count_picks = $query_result->post_count;
+		}
+		wp_reset_query();
+
+		return $count_picks;
+	}
 }
