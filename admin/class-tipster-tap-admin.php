@@ -309,21 +309,21 @@ class Tipster_TAP_Admin {
                     $aiNulas = (int)$aiNulas;
 
                 //Unidades totales que ha jugado
-                $uiJugadas =  str_replace(',', '.', get_post_meta($tipster_id, '_tipster_unidades_jugadas_iniciales', true));
+                $uiJugadas =  (float)str_replace(',', '.', get_post_meta($tipster_id, '_tipster_unidades_jugadas_iniciales', true));
                 if(!is_float((float)$uiJugadas))
                     $uiJugadas = 0;
                 else
                     $uiJugadas = (float)$uiJugadas;
 
                 //Unidades totales que ha gando
-                $uiGanadas =  str_replace(',', '.', get_post_meta($tipster_id, '_tipster_unidades_ganadas_iniciales', true));
+                $uiGanadas =  (float)str_replace(',', '.', get_post_meta($tipster_id, '_tipster_unidades_ganadas_iniciales', true));
                 if(!is_float((float)$uiGanadas))
                     $uiGanadas = 0;
                 else
                     $uiGanadas = (float)$uiGanadas;
 
                 //Unidades totales que ha perdido
-                $uiPerdidas =  str_replace(',', '.', get_post_meta($tipster_id, '_tipster_unidades_perdidas_iniciales', true));
+                $uiPerdidas =  (float)str_replace(',', '.', get_post_meta($tipster_id, '_tipster_unidades_perdidas_iniciales', true));
                 if(!is_float((float)$uiPerdidas))
                     $uiPerdidas = 0;
                 else
@@ -382,56 +382,56 @@ class Tipster_TAP_Admin {
             foreach ($query_tipster_post_result as $tipster_post) {
                 $resultado = get_post_meta($tipster_post->ID, '_pick_resultado', true);
 
-                $stake = str_replace(',', '.', get_post_meta($tipster_post->ID, '_pick_stake', true));
-                if(!is_float((float)$stake))
-                    $stake = 0;
-                else
-                    $stake = (float)$stake;
+                $stake = (float)str_replace(',', '.', get_post_meta($tipster_post->ID, '_pick_stake', true));
+//                if(!is_float((float)$stake))
+//                    $stake = 0;
+//                else
+//                    $stake = (float)$stake;
 
                 switch($resultado){
                     case "fallo":
                         $aFalladas += 1;
 
                         // Unidades falladas
-                        $unidadesFalladas = $unidadesFalladas + $stake;
+                        $unidadesFalladas = $unidadesFalladas - $stake;
 
                         break;
                     case "nulo":
                         $aNulas += 1;
 
                         // Unidades Nulas
-                        $unidadesNulas = $unidadesNulas + $stake;
+//                        $unidadesNulas = $unidadesNulas + $stake;
 
                         break;
                     default: // "acierto"
                         $aAcertadas += 1;
 
-                        $cuota_x_acierto = str_replace(',', '.', get_post_meta($tipster_post->ID, '_pick_cuota', true));
-                        if(!is_float((float)$cuota_x_acierto))
-                            $cuota_x_acierto = 0;
-                        else
-                            $cuota_x_acierto = (float)$cuota_x_acierto;
+                        $cuota_x_acierto = (float)str_replace(',', '.', get_post_meta($tipster_post->ID, '_pick_cuota', true));
+//                        if(!is_float((float)$cuota_x_acierto))
+//                            $cuota_x_acierto = 0;
+//                        else
+//                            $cuota_x_acierto = (float)$cuota_x_acierto;
                         $totalCuotasAcertadas = $totalCuotasAcertadas + $cuota_x_acierto;
 
                         // Jugadas que ha resultado en acierto
-                        $unidadesAcertadas = $unidadesAcertadas + $stake;
+//                        $unidadesAcertadas = $unidadesAcertadas + $stake;
                         $unidadesGanadas = $unidadesGanadas + ( ( $cuota_x_acierto * $stake ) - $stake );
                         break;
                 }
             }
 
             // Obtener cuota media acertada
-            $average_cuota_acertada = $aAcertadas > 0 ? $totalCuotasAcertadas/$aAcertadas : 0;
+//            $average_cuota_acertada = $aAcertadas > 0 ? $totalCuotasAcertadas/$aAcertadas : 0;
 
             // Total apostado por el tipster = (StakeAcertado + StakeFallado + StakeNulo + total unidades iniciales jugadas).
-            $unidadesTotales = $unidadesAcertadas + $unidadesFalladas + $unidadesNulas + $uiJugadas;
+            $unidadesTotales = $unidadesGanadas + $unidadesFalladas + $unidadesNulas + $uiJugadas;
 
             // Obtener yield
             // Yield = ( Beneficios / TotalApostado ) x 100
             $yield = 0;
 
             //se verifica si unidades totales esta vacia
-            $yield = $unidadesTotales > 0 ? ( (($unidadesGanadas+$uiGanadas)-($unidadesFalladas+$uiPerdidas))/$unidadesTotales ) * 100 : 0;
+            $yield = $unidadesTotales <> 0 ? ( (($unidadesGanadas+$uiGanadas)-($unidadesFalladas+$uiPerdidas))/$unidadesTotales ) * 100 : $yield;
 
             //modificar la base de datos con las nuevas estadisticas
             $insert_array =  array( 'corrects' => ($aAcertadas+$aiAcertadas), 'wrongs' => ($aFalladas+$aiFalladas), 'voids' =>($aNulas+$aiNulas), 'total_units' => $unidadesTotales, 'win_units' => ($unidadesGanadas+$uiGanadas), 'lost_units' => ($unidadesFalladas+$uiPerdidas), 'yield' => $yield, 'user_id' => $tipster_id);

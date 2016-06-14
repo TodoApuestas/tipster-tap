@@ -27,11 +27,11 @@ class Tipster_TAP {
 	/**
 	 * Plugin version, used for cache-busting of style and script file references.
 	 *
-	 * @since   2.4.2
+	 * @since   2.4.3
 	 *
 	 * @var     string
 	 */
-	const VERSION = '2.4.2';
+	const VERSION = '2.4.3';
 
 	/**
 	 * Unique identifier for your plugin.

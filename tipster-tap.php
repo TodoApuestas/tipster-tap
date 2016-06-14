@@ -15,14 +15,15 @@
  * Plugin Name:       Tipster TAP
  * Plugin URI:       http://www.todoapuestas.org
  * Description:       Plugin para gestionar apuestas
- * Version:           2.4.1
+ * Version:           2.4.3
  * Author:       Alain Sanchez
  * Author URI:       http://www.linkedin.com/in/mrbrazzi/
  * Text Domain:       tipster-tap
  * License:           GPL-2.0+
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
  * Domain Path:       /languages
- * GitHub Plugin URI: https://github.com/<owner>/<repo>
+ * Bitbucket Plugin URI: https://bitbucket.org/osirisagain/tipster-tap
+ * Bitbucket Branch: master
  * WordPress-Plugin-Boilerplate: v2.6.1
  */
 

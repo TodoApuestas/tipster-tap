@@ -4,7 +4,7 @@ Donate link: http://todoapuestas.org/
 Tags: tipster, picks
 Requires at least: 3.5.1
 Tested up to: 4.4
-Stable tag: 2.4.2
+Stable tag: 2.4.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -52,6 +52,10 @@ Nothing for now
 
 
 == Changelog ==
+
+= 2.4.3 =
+* Added some improvements
+* Fixed some bugs detected
 
 = 2.4.2 =
 * Added some improvements
