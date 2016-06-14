@@ -22,7 +22,7 @@
  * License:           GPL-2.0+
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
  * Domain Path:       /languages
- * Bitbucket Plugin URI: https://bitbucket.org/osirisagain/tipster-tap
+ * Bitbucket Plugin URI: https://bitbucket.org/tapnetwork/tipster-tap.git
  * Bitbucket Branch: master
  * WordPress-Plugin-Boilerplate: v2.6.1
  */
