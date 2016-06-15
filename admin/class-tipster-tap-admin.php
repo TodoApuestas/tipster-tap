@@ -334,6 +334,8 @@ class Tipster_TAP_Admin {
 	        $query_tipster_post = array(
 		        'post_type' => 'post',
 		        'post_status' => 'publish',
+		        'post_per_page' => -1,
+		        'nopaging' => true,
 		        'order' => 'DESC',
 		        'meta_query' => array(
 			        'relation' => 'AND',
