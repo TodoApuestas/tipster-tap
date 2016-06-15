@@ -270,7 +270,7 @@ class Tipster_TAP_Admin {
         }
 
         $resultado = get_post_meta($post_id, '_pick_resultado', true);
-        if(false === wp_is_post_revision($post) && strcmp($post->post_type, 'post') === 0 && strcmp($post->post_status, 'publish') === 0 && strcmp($tipo_publicacion, 'pick') === 0
+        if(false === wp_is_post_revision($post) && strcmp($post->post_type, 'post') === 0 && strcmp($tipo_publicacion, 'pick') === 0
            && (strcmp($resultado, 'acierto') === 0 || strcmp($resultado, 'fallo') === 0 || strcmp($resultado, 'nulo') === 0 )){
             // ai apuestas iniciales - entendiendo apuestas como el numero de veces que ha apostado.
             // ui unidades iniciales - entendiendo unidades como el valor en stake apostado.
@@ -380,6 +380,7 @@ class Tipster_TAP_Admin {
             $unidadesGanadas =  0; // Unidades ganadas = Ganado - Apostado. Datos actual.
             $unidadesFalladas = 0; // Las unidades falladas y las unidade sperdidas son lo mismo. Solo en el blog actual.
             $unidadesNulas = 0; // Solo en el blog actual
+	        $unidadesTotales = $uiJugadas;
 
             foreach ($query_tipster_post_result as $tipster_post) {
                 $resultado = get_post_meta($tipster_post->ID, '_pick_resultado', true);
@@ -389,6 +390,8 @@ class Tipster_TAP_Admin {
 //                    $stake = 0;
 //                else
 //                    $stake = (float)$stake;
+
+	            $unidadesTotales = $unidadesTotales + $stake;
 
                 switch($resultado){
                     case "fallo":
@@ -426,14 +429,13 @@ class Tipster_TAP_Admin {
 //            $average_cuota_acertada = $aAcertadas > 0 ? $totalCuotasAcertadas/$aAcertadas : 0;
 
             // Total apostado por el tipster = (StakeAcertado + StakeFallado + StakeNulo + total unidades iniciales jugadas).
-            $unidadesTotales = $unidadesGanadas + $unidadesFalladas + $unidadesNulas + $uiJugadas;
 
             // Obtener yield
             // Yield = ( Beneficios / TotalApostado ) x 100
             $yield = 0;
 
             //se verifica si unidades totales esta vacia
-            $yield = $unidadesTotales <> 0 ? ( (($unidadesGanadas+$uiGanadas)-($unidadesFalladas+$uiPerdidas))/$unidadesTotales ) * 100 : $yield;
+            $yield = $unidadesTotales <> 0 ? ( (($unidadesGanadas+$uiGanadas)+($unidadesFalladas+$uiPerdidas))/$unidadesTotales ) * 100 : $yield;
 
             //modificar la base de datos con las nuevas estadisticas
             $insert_array =  array( 'corrects' => ($aAcertadas+$aiAcertadas), 'wrongs' => ($aFalladas+$aiFalladas), 'voids' =>($aNulas+$aiNulas), 'total_units' => $unidadesTotales, 'win_units' => ($unidadesGanadas+$uiGanadas), 'lost_units' => ($unidadesFalladas+$uiPerdidas), 'yield' => $yield, 'user_id' => $tipster_id);
