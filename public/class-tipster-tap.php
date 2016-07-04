@@ -396,7 +396,7 @@ class Tipster_TAP {
     private function get_oauth_access_token()
     {
         $session_id = session_id();
-        if(empty($session_id)) @session_start();
+        if(empty($session_id) && !headers_sent()) @session_start();
         if(isset($_SESSION['TAP_OAUTH_CLIENT'])){
             $now = new \DateTime('now');
             if($now->getTimestamp() <= intval($_SESSION['TAP_OAUTH_CLIENT']['expires_in'])){
