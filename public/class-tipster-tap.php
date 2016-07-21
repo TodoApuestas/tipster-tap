@@ -31,7 +31,7 @@ class Tipster_TAP {
 	 *
 	 * @var     string
 	 */
-	const VERSION = '2.4.5';
+	const VERSION = '2.4.6';
 
 	/**
 	 * Unique identifier for your plugin.
@@ -364,25 +364,25 @@ class Tipster_TAP {
     {
         global $wpdb;
 
-        $query_create_table_statistics = "CREATE TABLE IF NOT EXISTS `statistics` (".
-        "  `id` int(11) NOT NULL AUTO_INCREMENT,".
-        "  `corrects` int(11) NOT NULL,".
-        "  `wrongs` int(11) NOT NULL,".
-        "  `voids` int(11) NOT NULL,".
-        "  `total_units` float NOT NULL,".
-        "  `win_units` float NOT NULL,".
-        "  `lost_units` float NOT NULL,".
-        "  `yield` float NOT NULL,".
-        "  `last_stat` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,".
-        "  `last_stat_date` date DEFAULT NULL,".
-        "  `user_id` int(11) NOT NULL,".
-        "  PRIMARY KEY (`id`),".
-        "  KEY `user_id` (`user_id`),".
-        "  KEY `user_group_units` (`user_id`,`total_units`),".
-        "  KEY `total_units` (`total_units`),".
-        "  KEY `last_stat_date` (`last_stat_date`),".
-        "  KEY `last_stat_date_total_units` (`total_units`,`last_stat_date`),".
-        "  KEY `user_date_units` (`user_id`,`last_stat_date`,`total_units`)".
+        $query_create_table_statistics = "CREATE TABLE IF NOT EXISTS statistics (".
+        "  id int(11) NOT NULL AUTO_INCREMENT,".
+        "  corrects int(11) NOT NULL,".
+        "  wrongs int(11) NOT NULL,".
+        "  voids int(11) NOT NULL,".
+        "  total_units float NOT NULL,".
+        "  win_units float NOT NULL,".
+        "  lost_units float NOT NULL,".
+        "  yield float NOT NULL,".
+        "  last_stat timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,".
+        "  last_stat_date date DEFAULT NULL,".
+        "  user_id int(11) NOT NULL,".
+        "  PRIMARY KEY (id),".
+        "  KEY user_id (user_id),".
+        "  KEY user_group_units (user_id,total_units),".
+        "  KEY total_units (total_units),".
+        "  KEY last_stat_date (last_stat_date),".
+        "  KEY last_stat_date_total_units (total_units,last_stat_date),".
+        "  KEY user_date_units (user_id,last_stat_date,total_units)".
         ") ENGINE=MyISAM DEFAULT CHARSET=latin1;";
 
         $wpdb->query($query_create_table_statistics);
