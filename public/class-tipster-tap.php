@@ -31,7 +31,7 @@ class Tipster_TAP {
 	 *
 	 * @var     string
 	 */
-	const VERSION = '2.4.6';
+	const VERSION = '2.5';
 
 	/**
 	 * Unique identifier for your plugin.
@@ -69,6 +69,8 @@ class Tipster_TAP {
 		// Load plugin text domain
 		add_action( 'init', array( $this, 'load_plugin_textdomain' ) );
 
+		add_action( 'customize_register', array( $this, 'customizations' ) );
+
 		// Activate plugin when new blog is added
 		add_action( 'wpmu_new_blog', array( $this, 'activate_new_site' ) );
 
@@ -100,6 +102,10 @@ class Tipster_TAP {
          */
 		add_action( 'wp' , array( $this, 'active_remote_sync'));
 		add_action( 'tipster_tap_hourly_remote_sync', array( $this, 'remote_sync' ) );
+
+		add_filter( 'tipster_tap_get_tipster_picks', array( $this, 'get_tipster_picks' ), 10, 4 );
+
+		add_filter( 'tipster_tap_default_avatar', array( $this, 'default_avatar' ), 10, 3 );
 	}
 
 	/**
@@ -294,6 +300,78 @@ class Tipster_TAP {
 
 	}
 
+	public function customizations(\WP_Customize_Manager $wp_customize)
+	{
+		$domain = $this->plugin_slug;
+		$wp_customize->add_section( 'tipster_tap', array(
+			'title' 	=> __( 'Tipsters', $domain ),
+			'description' => '',
+			'priority' 	=> 2,
+		) );
+
+		// Avatar por defecto para tipsters
+//		$wp_customize->add_setting('tipster_tap_default_avatar', array(
+//			'default'           => plugin_dir_url(__FILE__).'../assets/img/tipster.png',
+//			'default'           => null,
+//			'capability'        => 'edit_theme_options',
+//			'sanitize_callback' => 'sanitize_text_field'
+//		));
+		$wp_customize->add_setting( 'tipster_tap_default_avatar', array( 'sanitize_callback' => 'sanitize_text_field' ) );
+
+		$wp_customize->add_control( new \WP_Customize_Image_Control( $wp_customize, 'tipster_avatar', array(
+			'label'         => __( 'Avatar por defecto', $domain ),
+			'description'   => __( 'Seleccionar la imagen a utilizar como avatar por defecto. La dimensiones minimas deben ser de 200x200.', $domain ),
+			'section'       => 'tipster_tap',
+			'settings'      => 'tipster_tap_default_avatar',
+		) ) );
+		// Default avatar
+
+		// Limite de picks
+		$wp_customize->add_setting( 'tipster_tap_limit_total_picks', array(
+			'default'           => 5000,
+			'capability'        => 'edit_theme_options',
+			'sanitize_callback' => 'sanitize_text_field',
+		) );
+
+		$wp_customize->add_control( 'tipster_tap_limit_total_picks', array(
+			'type'        => 'number',
+			'label'       => __( 'Total de picks', $domain ),
+			'description' => __( 'Escribir la cantidad maxima de registros no pendientes (Aciertos, Fallos, Nulos) a procesar para calculos de Yield, Beneficio, Estadisticas, etc.', $domain ),
+			'section'     => 'tipster_tap',
+			'settings'    => 'tipster_tap_limit_total_picks',
+		) );
+
+		// Racha
+		$wp_customize->add_setting( 'tipster_tap_limit_racha_picks_no_pendientes', array(
+			'default'           => 10,
+			'capability'        => 'edit_theme_options',
+			'sanitize_callback' => 'sanitize_text_field',
+		) );
+
+		$wp_customize->add_control( 'tipster_tap_limit_racha_picks_no_pendientes', array(
+			'type'        => 'number',
+			'label'       => __( 'Racha', $domain ),
+			'description' => __( 'Escribir la cantidad maxima de registros no pendientes (Aciertos, Fallos, Nulos) a visualizar como racha', $domain ),
+			'section'     => 'tipster_tap',
+			'settings'    => 'tipster_tap_limit_racha_picks_no_pendientes',
+		) );
+
+		// Estadisticas
+		$wp_customize->add_setting( 'tipster_tap_limit_statistics', array(
+			'default'           => 6,
+			'capability'        => 'edit_theme_options',
+			'sanitize_callback' => 'sanitize_text_field',
+		) );
+
+		$wp_customize->add_control( 'tipster_tap_limit_statistics', array(
+			'type'        => 'number',
+			'label'       => __( 'Estadisticas', $domain ),
+			'description' => __( 'Escribir la cantidad de meses a obtener registros para graficar en las estadisticas. Por defecto se asumen 6 meses.', $domain ),
+			'section'     => 'tipster_tap',
+			'settings'    => 'tipster_tap_limit_statistics',
+		) );
+	}
+
 	/**
 	 * Register and enqueue public-facing style sheet.
 	 *
@@ -388,11 +466,10 @@ class Tipster_TAP {
         $wpdb->query($query_create_table_statistics);
     }
 
-    /**
-     * @since 2.3.0
-     * @return string
-     * @throws \Exception
-     */
+	/**
+	 * @since 2.3.0
+	 * @return array|null
+	 */
     private function get_oauth_access_token()
     {
         $session_id = session_id();
@@ -410,19 +487,22 @@ class Tipster_TAP {
         $publicId = get_option('TAP_PUBLIC_ID');
         $secretKey = get_option('TAP_SECRET_KEY');
         if(empty($publicId) || empty($secretKey)){
-            throw new \Exception('No public or secret key given');
+            $_SESSION['TIPSTER_TAP_ERRORS'][] = 'No public or secret key given';
+	        return null;
         }
 
         $oauthUrl = sprintf($oauthUrl, $publicId, $secretKey);
         $oauthResponse = wp_remote_get($oauthUrl);
         if($oauthResponse instanceof \WP_Error || strcmp($oauthResponse['response']['code'], '200') !== 0){
-            throw new \Exception('Invalid OAuth response');
+            $_SESSION['TIPSTER_TAP_ERRORS'][] = 'Invalid OAuth response';
+	        return null;
         }
 
         $oauthResponseBody = json_decode($oauthResponse['body']);
         $oauthAccessToken = null;
         if($oauthResponseBody instanceof \WP_Error || !is_object($oauthResponseBody)){
-            throw new \Exception('Invalid OAuth access token');
+            $_SESSION['TIPSTER_TAP_ERRORS'][] = 'Invalid OAuth access token';
+	        return null;
         }
         $oauthAccessToken = $oauthResponseBody->access_token;
 
@@ -447,4 +527,96 @@ class Tipster_TAP {
 
         return $result;
     }
+
+	/**
+	 * @param $title
+	 * @param $class
+	 * @param $style
+	 *
+	 * @return string
+	 */
+    public function default_avatar($title, $class, $style)
+    {
+    	$image = sprintf('<img src="%1$s" class="%2$s" alt="%3$s" title="%3$s" style="%4$s">', get_theme_mod('tipster_tap_default_avatar'), $class, $title, $style);
+
+	    return $image;
+    }
+
+	public function get_tipster_picks($tipster, $limit = -1, $start = 1, $pendientes = false)
+	{
+		$tipster_picks = array();
+		$total = 0;
+
+		// Obtener apuestas acertadas, falladas y nulas pertenecientes al tipster asociado al post
+		$meta_query = array(
+			'relation' => 'AND'
+		);
+
+		$meta_query[] = array(
+			'key'     => '_post_tipo_publicacion',
+			'value'   => 'pick',
+			'compare' => '=',
+		);
+
+		$meta_query[] = array(
+			'key'     => '_pick_tipster',
+			'value'   => $tipster,
+			'compare' => '=',
+		);
+
+		if($pendientes){
+			$meta_query[] = array(
+				'key'     => '_pick_resultado',
+				'value'   => 'pendiente',
+				'compare' => '=',
+			);
+		}else{
+			$meta_query[] = array(
+				'relation' => 'OR',
+				array(
+					'key'     => '_pick_resultado',
+					'value'   => 'acierto',
+					'compare' => '=',
+				),
+				array(
+					'key'     => '_pick_resultado',
+					'value'   => 'fallo',
+					'compare' => '=',
+				),
+				array(
+					'key'     => '_pick_resultado',
+					'value'   => 'nulo',
+					'compare' => '=',
+				),
+			);
+		}
+
+		$query = array(
+			'post_type'              => 'post',
+			'post_status'            => 'publish',
+			'posts_per_page'         => $limit,
+			'paged'                  => $start,
+			'order'                  => 'DESC',
+			'meta_query'             => $meta_query,
+			'cache_results'          => false,
+			'update_post_meta_cache' => false,
+			'update_post_term_cache' => false,
+		);
+
+		$query_result = new \WP_Query($query);
+		if($query_result->have_posts()){
+			$tipster_picks = $query_result->get_posts();
+			$total = $query_result->post_count;
+		}
+
+		if(!$pendientes && $limit == -1){
+			update_post_meta($tipster, '_tipster_total_picks_finalizados', $total);
+		}
+
+		if($pendientes && $limit == -1){
+			update_post_meta($tipster, '_tipster_total_picks_pendientes', $total);
+		}
+
+		return $tipster_picks;
+	}
 }

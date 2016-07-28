@@ -78,7 +78,13 @@ class Tipster_TAP_Admin {
 		$plugin_basename = plugin_basename( plugin_dir_path( realpath( dirname( __FILE__ ) ) ) . $this->plugin_slug . '.php' );
 		add_filter( 'plugin_action_links_' . $plugin_basename, array( $this, 'add_action_links' ) );
 
-        add_action( 'wp_insert_post', array( $this, 'save_post' ), 20, 3 );
+        add_action( 'wp_insert_post', array( $this, 'save_post' ), 9999, 3 );
+
+		$session_id = session_id();
+		if(empty($session_id) && !headers_sent()) @session_start();
+		if(!empty($_SESSION) && array_key_exists('TIPSTER_TAP_ERRORS', $_SESSION)){
+			add_action('admin_notices', array( $this, 'display_errors' ));
+		}
 	}
 
 	/**
@@ -249,7 +255,10 @@ class Tipster_TAP_Admin {
      */
     public function save_post($post_id, $post = false, $update = false){
         global $wpdb;
-        $tipo_publicacion = get_post_meta($post_id, '_post_tipo_publicacion', true);
+	    ini_set('max_execution_time', 0);
+	    ini_set('max_input_time', -1);
+
+	    $tipo_publicacion = get_post_meta($post_id, '_post_tipo_publicacion', true);
 
         if(false === wp_is_post_revision($post) && strcmp($post->post_type, 'post') === 0 && strcmp($post->post_status, 'publish') === 0 && strcmp($tipo_publicacion, 'post') === 0)
         {
@@ -269,6 +278,7 @@ class Tipster_TAP_Admin {
             return;
         }
 
+        $picks_limit = (int)get_theme_mod('tipster_tap_limit_total_picks');
         $resultado = get_post_meta($post_id, '_pick_resultado', true);
         if(false === wp_is_post_revision($post) && strcmp($post->post_type, 'post') === 0 && strcmp($tipo_publicacion, 'pick') === 0
            && (strcmp($resultado, 'acierto') === 0 || strcmp($resultado, 'fallo') === 0 || strcmp($resultado, 'nulo') === 0 )){
@@ -330,56 +340,16 @@ class Tipster_TAP_Admin {
                     $uiPerdidas = (float)$uiPerdidas;
             }
 
-            // Obtener número de apuestas acertadas, falladas y nulas pertenecientes al tipster asociado al post
-	        $query_tipster_post = array(
-		        'post_type' => 'post',
-		        'post_status' => 'publish',
-		        'post_per_page' => -1,
-		        'nopaging' => true,
-		        'order' => 'DESC',
-		        'meta_query' => array(
-			        'relation' => 'AND',
-			        array(
-				        'key' => '_post_tipo_publicacion',
-				        'value' => 'pick',
-				        'compare' => '=',
-			        ),
-			        array(
-				        'key' => '_pick_tipster',
-				        'value' => $tipster_id,
-				        'compare' => '=',
-			        ),
-			        array(
-				        'relation' => 'OR',
-				        array(
-					        'key' => '_pick_resultado',
-					        'value' => 'acierto',
-					        'compare' => '=',
-				        ),
-				        array(
-					        'key' => '_pick_resultado',
-					        'value' => 'fallo',
-					        'compare' => '=',
-				        ),
-				        array(
-					        'key' => '_pick_resultado',
-					        'value' => 'nulo',
-					        'compare' => '=',
-				        ),
-			        ),
-		        )
-	        );
-	        $query_result = new \WP_Query($query_tipster_post);
-	        $query_tipster_post_result = $query_result->get_posts();
+            $tipster_post_result = apply_filters('tipster_tap_get_tipster_picks', $tipster_id, $picks_limit);
 
 	        $aAcertadas = 0; // apuestas acertadas
             $aFalladas = 0;  // apuestas falladas
             $aNulas = 0;     // apuestas nulas
             $unidadesGanadas =  0; // Unidades ganadas = Ganado - Apostado. Datos actual.
-            $unidadesFalladas = 0; // Las unidades falladas y las unidade sperdidas son lo mismo. Solo en el blog actual.
+            $unidadesFalladas = 0; // Las unidades falladas y las unidades perdidas son lo mismo. Solo en el blog actual.
             $unidadesTotales = $uiJugadas;
 
-            foreach ($query_tipster_post_result as $tipster_post) {
+            foreach ($tipster_post_result as $tipster_post) {
                 $resultado = get_post_meta($tipster_post->ID, '_pick_resultado', true);
 
                 $stake = (float)str_replace(',', '.', get_post_meta($tipster_post->ID, '_pick_stake', true));
@@ -411,47 +381,175 @@ class Tipster_TAP_Admin {
             $yield = $unidadesTotales <> 0 ? ( $ganancias/$unidadesTotales ) * 100 : $yield;
 
             //modificar la base de datos con las nuevas estadisticas
-            $insert_array =  array( 'corrects' => ($aAcertadas+$aiAcertadas), 'wrongs' => ($aFalladas+$aiFalladas), 'voids' =>($aNulas+$aiNulas), 'total_units' => $unidadesTotales, 'win_units' => ($unidadesGanadas+$uiGanadas), 'lost_units' => ($unidadesFalladas+$uiPerdidas), 'yield' => $yield, 'user_id' => $tipster_id);
+	        $corrects = $aAcertadas + $aiAcertadas;
+	        $wrongs = $aFalladas + $aiFalladas;
+	        $voids = $aNulas + $aiNulas;
+	        $win_units = $unidadesGanadas + $uiGanadas;
+	        $lost_units = $unidadesFalladas + $uiPerdidas;
+	        $insert_array =  array( 'corrects' => $corrects, 'wrongs' => $wrongs, 'voids' => $voids, 'total_units' => $unidadesTotales, 'win_units' => $win_units, 'lost_units' => $lost_units, 'yield' => $yield, 'user_id' => $tipster_id);
             $wpdb->insert('statistics', $insert_array);
 
-	        $total_picks = $this->tipster_total_picks($tipster_id, 5000);
-	        $total_picks = number_format($total_picks,0,'.','');
-	        update_post_meta($tipster_id, '_tipster_tips', $total_picks);
+	        $total_picks = get_post_meta($tipster_id, '_tipster_total_picks_finalizados', true);
 	        $rating = (floatval($total_picks) * floatval($yield)) / 100;
-	        $rating = number_format($rating,2,'.','');
-	        update_post_meta($tipster_id, '_tipster_rating', $rating);
-	        $yield = number_format($yield,2,'.',',');
-	        update_post_meta($tipster_id, '_tipster_yield', $yield);
-	        $ganancias = number_format($ganancias,2,'.','');
-	        update_post_meta($tipster_id, '_tipster_beneficio', $ganancias);
+	        $last_stats = array(
+		        'yield'       => $yield,
+		        'beneficio'   => $ganancias,
+		        'rating'      => $rating,
+		        'corrects'    => $corrects,
+		        'wrongs'      => $wrongs,
+		        'voids'       => $voids,
+		        'total_units' => $unidadesTotales,
+		        'win_units'   => $win_units,
+		        'lost_units'  => $lost_units
+	        );
+	        update_post_meta($tipster_id, '_tipster_last_statistics', $last_stats);
+
+	        $this->tipster_yield_history($tipster_id);
+	        $this->tipster_graphic_statistics($tipster_id);
         }
+
+	    ini_restore('max_input_time');
+	    ini_restore('max_execution_time');
     }
 
-	function tipster_total_picks($tipster_id, $limit = -1){
-		$count_picks = 0;
+	public function count_total_tipster_picks($tipster, $limit = -1)
+	{
+		$total_picks = 0;
 		$query = array(
-			'post_type' => 'post',
+			'post_type'      => 'post',
+			'post_status'    => 'publish',
 			'posts_per_page' => $limit,
-			'meta_query' => array(
+			'order'          => 'DESC',
+			'meta_query'     => array(
 				'relation' => 'AND',
 				array(
-					'key' => '_post_tipo_publicacion',
-					'value' => 'pick',
+					'key'     => '_post_tipo_publicacion',
+					'value'   => 'pick',
 					'compare' => '=',
 				),
 				array(
-					'key' => '_pick_tipster',
-					'value' => $tipster_id,
+					'key'     => '_pick_tipster',
+					'value'   => $tipster,
 					'compare' => '=',
 				)
-			)
+			),
+			'cache_results'          => false,
+			'update_post_meta_cache' => false,
+			'update_post_term_cache' => false,
 		);
+
 		$query_result = new \WP_Query($query);
 		if($query_result->have_posts()){
-			$count_picks = $query_result->post_count;
+			$total_picks = $query_result->post_count;
 		}
-		wp_reset_query();
 
-		return $count_picks;
+		update_post_meta($tipster, '_tipster_total_picks', $total_picks);
+		return $total_picks;
+	}
+
+	public function tipster_last_statistics($tipster){
+		global $wpdb;
+
+		$query_statistics = "SELECT * FROM statistics where user_id = ".$tipster." ORDER BY  last_stat DESC LIMIT 1";
+		$statistics = $wpdb->get_row($query_statistics, OBJECT);
+
+		update_post_meta($tipster, '_tipster_last_statistics', $statistics);
+		return $statistics;
+	}
+
+	function tipster_graphic_statistics($tipster){
+		global $wpdb;
+
+		$months = get_theme_mod( 'tipster_tap_limit_statistics', 6 );
+		$period = new \DateInterval('P'.$months.'M1D');
+		$date_end = new \DateTime();
+		$dateStr = $date_end->format('Y-m-d');
+		$date_start = new \DateTime($dateStr);
+		$date_start->sub($period);
+
+		$statistics_query  = sprintf("SELECT * FROM statistics WHERE user_id = %s AND last_stat BETWEEN '%s' AND '%s' ORDER BY last_stat DESC;", $tipster, $date_start->format('Y-m-d H:i:s'), $date_end->format('Y-m-d H:i:s'));
+		$statistics_result = $wpdb->get_results( $statistics_query, ARRAY_A );
+		$statistics_result = array_reverse( $statistics_result );
+//	$total_yields = count($statistics_result);
+		$aciertos  = array();
+		$fallos    = array();
+		$nulos     = array();
+		$ganancias = array();
+		$yields    = array();
+		foreach ( $statistics_result as $statistic ) {
+			$date_time        = new \DateTime( $statistic[ 'last_stat' ] );
+			$fecha            = $date_time->format( "Y-m-d" );
+			$acierto          = intval( $statistic[ 'corrects' ] );
+			$fallo            = intval( $statistic[ 'wrongs' ] );
+			$nulo             = intval( $statistic[ 'voids' ] );
+			$unidades_ganadas = floatval( $statistic[ 'win_units' ] );
+			$unidades_perdidas = floatval( $statistic[ 'lost_units' ] );
+			$ganancia = $unidades_ganadas + $unidades_perdidas;
+			$yield            = floatval( $statistic[ 'yield' ] );
+			$aciertos[] = array( $fecha, (int) $acierto );
+			$fallos[] = array( $fecha, (int) $fallo );
+			$nulos[] = array( $fecha, (int) $nulo );
+			$ganancias[] = array( $fecha, number_format( $ganancia, 2, '.', '' ) );
+			$yields[] = array( $fecha, number_format( $yield, 2, '.', '' ) );
+		}
+		$serie_aciertos  = array( "data" => $aciertos, "label" => __( 'Aciertos', 'epic' ), "lines" => array( "lineWidth" => 1 ), "shadowSize" => 0, "color" => 0 );
+		$serie_fallos    = array( "data" => $fallos, "label" => __( 'Fallos', 'epic' ), "lines" => array( "lineWidth" => 1 ), "shadowSize" => 0, "color" => 1 );
+		$serie_nulos     = array( "data" => $nulos, "label" => __( 'Voids', 'epic' ), "lines" => array( "lineWidth" => 1 ), "shadowSize" => 0, "color" => 2 );
+		$serie_ganancias = array( "data" => $ganancias, "label" => __( 'U. ganadas', 'epic' ), "lines" => array( "lineWidth" => 1 ), "shadowSize" => 0, "color" => 3 );
+		$serie_yields    = array( "data" => $yields, "label" => __( 'Yield', 'epic' ), "lines" => array( "lineWidth" => 1 ), "shadowSize" => 0, "color" => 4 );
+		$response        = array( "aciertos" => $serie_aciertos, "fallos" => $serie_fallos, "nulos" => $serie_nulos, "ganancias" => $serie_ganancias, "yields" => $serie_yields );
+
+		update_post_meta($tipster, '_tipster_statistics_graphic', $response);
+	}
+
+	public function tipster_yield_history($tipster){
+		global $wpdb;
+
+		$months = (int)get_theme_mod( 'tipster_tap_limit_statistics');
+		$now = new \DateTime();
+		$dateStr = $now->format('Y-m');
+		$date_end = new \DateTime($dateStr);
+		$date_end->add(new \DateInterval('P1M'));
+		$dateStr = $date_end->format('Y-m');
+		$date_start = new \DateTime($dateStr);
+		$date_start->sub(new \DateInterval('P'.$months.'M'));
+
+		$statistics_query = sprintf("SELECT last_stat, yield AS yield FROM statistics WHERE user_id = %s AND last_stat BETWEEN '%s' AND '%s' GROUP BY yield ORDER BY last_stat DESC;", $tipster, $date_start->format('Y-m-d H:i:s'), $date_end->format('Y-m-d H:i:s'));
+		$statistics_result = $wpdb->get_results( $statistics_query, ARRAY_A );
+		$yield_by_tipster = array();
+		foreach ( $statistics_result as $statistic ) {
+			$last_stat = $statistic['last_stat'];
+			$yield = $statistic['yield'];
+			$fecha = new \DateTime($last_stat);
+			$fecha_formated = $fecha->format('Ym');
+
+			if(!array_key_exists($fecha_formated, $yield_by_tipster)){
+				$yield_by_tipster[$fecha_formated] = array(
+					'fecha' => $fecha,
+					'yield' => $yield
+				);
+				continue;
+			}
+
+			if(array_key_exists($fecha_formated, $yield_by_tipster) && $fecha > $yield_by_tipster[$fecha_formated]['fecha']){
+				$yield_by_tipster[$fecha_formated]['fecha'] = $fecha;
+				$yield_by_tipster[$fecha_formated]['yield'] = $yield;
+			}
+		}
+
+		update_post_meta($tipster, '_tipster_yield_history', $yield_by_tipster);
+	}
+
+	public function display_errors(){
+		$errors = $_SESSION['TIPSTER_TAP_ERRORS'];
+
+		$error_notice = '<div class="notice notice-error"><ul>';
+		foreach ( $errors as $error ) {
+			$error_notice .= sprintf('<li>%s</li>', $error);
+		}
+		$error_notice .= '</ul></div>';
+
+		unset($_SESSION['TIPSTER_TAP_ERRORS']);
+		echo $error_notice;
 	}
 }
