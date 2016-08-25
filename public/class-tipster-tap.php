@@ -27,11 +27,11 @@ class Tipster_TAP {
 	/**
 	 * Plugin version, used for cache-busting of style and script file references.
 	 *
-	 * @since   2.4.3
+	 * @since   2.5.1
 	 *
 	 * @var     string
 	 */
-	const VERSION = '2.5';
+	const VERSION = '2.5.1';
 
 	/**
 	 * Unique identifier for your plugin.
@@ -601,6 +601,7 @@ class Tipster_TAP {
 			'cache_results'          => false,
 			'update_post_meta_cache' => false,
 			'update_post_term_cache' => false,
+			'ignore_sticky_posts'    => true
 		);
 
 		$query_result = new \WP_Query($query);

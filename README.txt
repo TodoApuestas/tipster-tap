@@ -3,16 +3,16 @@ Contributors: mrbrazzi, todoapuestas
 Donate link: http://todoapuestas.org/
 Tags: tipster, picks
 Requires at least: 3.5.1
-Tested up to: 4.5.3
-Stable tag: 2.5
+Tested up to: 4.6
+Stable tag: 2.5.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Manage picks, tipsters.
+Manage tipsters and picks.
 
 == Description ==
 
-This plugin is to manage pick, tipsters.
+This plugin is to manage tipsters and picks.
 
 == Installation ==
 
@@ -52,6 +52,10 @@ Nothing for now
 
 
 == Changelog ==
+
+= 2.5.1 =
+* Added `ignore_sticky_posts` in filter `tipster_tap_get_tipster_picks`
+* Tested up to Wordpress 4.5.3
 
 = 2.5 =
 * Added multiples improvements
