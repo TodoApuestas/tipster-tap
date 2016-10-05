@@ -3,8 +3,8 @@ Contributors: mrbrazzi, todoapuestas
 Donate link: http://todoapuestas.org/
 Tags: tipster, picks
 Requires at least: 3.5.1
-Tested up to: 4.6
-Stable tag: 2.5.1
+Tested up to: 4.6.1
+Stable tag: 2.6
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -52,6 +52,12 @@ Nothing for now
 
 
 == Changelog ==
+
+= 2.6 =
+* Improved custom meta box with CMB2 plugin
+* Improved pick result edit using quick edit metabox
+* Tested up to Wordpress 4.6.1
+* Deleted unnecessary files
 
 = 2.5.1 =
 * Added `ignore_sticky_posts` in filter `tipster_tap_get_tipster_picks`

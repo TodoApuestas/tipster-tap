@@ -7,55 +7,55 @@
      * Metabox of Tipster
      */
     $('select#_tipster_incluir_datos_iniciales').each(function() {
-      var post_custom_option = $(this).children('option:selected').val();
-      if (post_custom_option == '0') {
-        $('tr.cmb_id__tipster_aciertos_iniciales').hide();
-        $('tr.cmb_id__tipster_fallos_iniciales').hide();
-        $('tr.cmb_id__tipster_nulos_iniciales').hide();
-        $('tr.cmb_id__tipster_unidades_jugadas_iniciales').hide();
-        $('tr.cmb_id__tipster_unidades_ganadas_iniciales').hide();
-        $('tr.cmb_id__tipster_unidades_perdidas_iniciales').hide();
-      } else if (post_custom_option == '1') {
-        $('tr.cmb_id__tipster_aciertos_iniciales').show();
-        $('tr.cmb_id__tipster_fallos_iniciales').show();
-        $('tr.cmb_id__tipster_nulos_iniciales').show();
-        $('tr.cmb_id__tipster_unidades_jugadas_iniciales').show();
-        $('tr.cmb_id__tipster_unidades_ganadas_iniciales').show();
-        $('tr.cmb_id__tipster_unidades_perdidas_iniciales').show();
-      } else {
-        $('tr.cmb_id__tipster_aciertos_iniciales').hide();
-        $('tr.cmb_id__tipster_fallos_iniciales').hide();
-        $('tr.cmb_id__tipster_nulos_iniciales').hide();
-        $('tr.cmb_id__tipster_unidades_jugadas_iniciales').hide();
-        $('tr.cmb_id__tipster_unidades_ganadas_iniciales').hide();
-        $('tr.cmb_id__tipster_unidades_perdidas_iniciales').hide();
-      }
+        var post_custom_option = $(this).children('option:selected').val();
+        if (post_custom_option == '0') {
+            $('div.cmb2-id--tipster-aciertos-iniciales').hide();
+            $('div.cmb2-id--tipster-fallos-iniciales').hide();
+            $('div.cmb2-id--tipster-nulos-iniciales').hide();
+            $('div.cmb2-id--tipster-unidades-jugadas-iniciales').hide();
+            $('div.cmb2-id--tipster-unidades-ganadas-iniciales').hide();
+            $('div.cmb2-id--tipster-unidades-perdidas-iniciales').hide();
+        } else if (post_custom_option == '1') {
+            $('div.cmb2-id--tipster-aciertos-iniciales').show();
+            $('div.cmb2-id--tipster-fallos-iniciales').show();
+            $('div.cmb2-id--tipster-nulos-iniciales').show();
+            $('div.cmb2-id--tipster-unidades-jugadas-iniciales').show();
+            $('div.cmb2-id--tipster-unidades-ganadas-iniciales').show();
+            $('div.cmb2-id--tipster-unidades-perdidas-iniciales').show();
+        } else {
+            $('div.cmb2-id--tipster-aciertos-iniciales').hide();
+            $('div.cmb2-id--tipster-fallos-iniciales').hide();
+            $('div.cmb2-id--tipster-nulos-iniciales').hide();
+            $('div.cmb2-id--tipster-unidades-jugadas-iniciales').hide();
+            $('div.cmb2-id--tipster-unidades-ganadas-iniciales').hide();
+            $('div.cmb2-id--tipster-unidades-perdidas-iniciales').hide();
+        }
     });
 
     $('select#_tipster_incluir_datos_iniciales').change(function() {
-      var post_custom_option = $(this).children('option:selected').val();
-      if (post_custom_option == '0') {
-        $('tr.cmb_id__tipster_aciertos_iniciales').hide();
-        $('tr.cmb_id__tipster_fallos_iniciales').hide();
-        $('tr.cmb_id__tipster_nulos_iniciales').hide();
-        $('tr.cmb_id__tipster_unidades_jugadas_iniciales').hide();
-        $('tr.cmb_id__tipster_unidades_ganadas_iniciales').hide();
-        $('tr.cmb_id__tipster_unidades_perdidas_iniciales').hide();
-      } else if (post_custom_option == '1') {
-        $('tr.cmb_id__tipster_aciertos_iniciales').show();
-        $('tr.cmb_id__tipster_fallos_iniciales').show();
-        $('tr.cmb_id__tipster_nulos_iniciales').show();
-        $('tr.cmb_id__tipster_unidades_jugadas_iniciales').show();
-        $('tr.cmb_id__tipster_unidades_ganadas_iniciales').show();
-        $('tr.cmb_id__tipster_unidades_perdidas_iniciales').show();
-      } else {
-        $('tr.cmb_id__tipster_aciertos_iniciales').hide();
-        $('tr.cmb_id__tipster_fallos_iniciales').hide();
-        $('tr.cmb_id__tipster_nulos_iniciales').hide();
-        $('tr.cmb_id__tipster_unidades_jugadas_iniciales').hide();
-        $('tr.cmb_id__tipster_unidades_ganadas_iniciales').hide();
-        $('tr.cmb_id__tipster_unidades_perdidas_iniciales').hide();
-      }
+        var post_custom_option = $(this).children('option:selected').val();
+        if (post_custom_option == '0') {
+            $('div.cmb2-id--tipster-aciertos-iniciales').hide();
+            $('div.cmb2-id--tipster-fallos-iniciales').hide();
+            $('div.cmb2-id--tipster-nulos-iniciales').hide();
+            $('div.cmb2-id--tipster-unidades-jugadas-iniciales').hide();
+            $('div.cmb2-id--tipster-unidades-ganadas-iniciales').hide();
+            $('div.cmb2-id--tipster-unidades-perdidas-iniciales').hide();
+        } else if (post_custom_option == '1') {
+            $('div.cmb2-id--tipster-aciertos-iniciales').show();
+            $('div.cmb2-id--tipster-fallos-iniciales').show();
+            $('div.cmb2-id--tipster-nulos-iniciales').show();
+            $('div.cmb2-id--tipster-unidades-jugadas-iniciales').show();
+            $('div.cmb2-id--tipster-unidades-ganadas-iniciales').show();
+            $('div.cmb2-id--tipster-unidades-perdidas-iniciales').show();
+        } else {
+            $('div.cmb2-id--tipster-aciertos-iniciales').hide();
+            $('div.cmb2-id--tipster-fallos-iniciales').hide();
+            $('div.cmb2-id--tipster-nulos-iniciales').hide();
+            $('div.cmb2-id--tipster-unidades-jugadas-iniciales').hide();
+            $('div.cmb2-id--tipster-unidades-ganadas-iniciales').hide();
+            $('div.cmb2-id--tipster-unidades-perdidas-iniciales').hide();
+        }
     });
     /**
      * End Tipster

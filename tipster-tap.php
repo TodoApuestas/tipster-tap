@@ -15,7 +15,7 @@
  * Plugin Name:       Tipster TAP
  * Plugin URI:       http://www.todoapuestas.org
  * Description:       Plugin para gestionar tipsters y picks
- * Version:           2.5.1
+ * Version:           2.6
  * Author:       Alain Sanchez
  * Author URI:       http://www.linkedin.com/in/mrbrazzi/
  * Text Domain:       tipster-tap
@@ -68,7 +68,8 @@ add_action( 'plugins_loaded', array( '\TipsterTAP\Frontend\Tipster_TAP', 'get_in
  *
  * The code below is intended to to give the lightest footprint possible.
  */
-if ( is_admin() && ( ! defined( 'DOING_AJAX' ) || ! DOING_AJAX ) ) {
+//if ( is_admin() && ( ! defined( 'DOING_AJAX' ) || ! DOING_AJAX ) ) {
+if ( is_admin() ) {
 
     require_once( plugin_dir_path( __FILE__ ) . 'admin/class-tipster-tap-admin.php' );
     add_action( 'plugins_loaded', array( '\TipsterTAP\Backend\Tipster_TAP_Admin', 'get_instance' ) );

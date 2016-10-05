@@ -21,9 +21,29 @@
             yearSuffix: "" // Additional text to append to the year in the month headers
         };
 
-        $.datepicker.setDefaults($.datepicker.regional['es']);
+        $.datepicker.setDefaults($.datepicker.regional["es"]);
         $.datepicker.setDefaults({minDate:"0D"});
 
+        $.timepicker.regional["es"] = {
+            currentText: "Ahora",
+            closeText: "Cerrar",
+            amNames: ["AM", "A"],
+            pmNames: ["PM", "P"],
+            timeFormat: "HH:mm",
+            timeSuffix: "",
+            timeOnlyTitle: "Elegir Tiempo",
+            timeText: "Tiempo",
+            hourText: "Hora",
+            minuteText: "Minuto",
+            secondText: "Segundo",
+            millisecText: "Milisegundo",
+            microsecText: "Microsegundo",
+            timezoneText: "Zona horaria",
+            isRTL: !1
+        };
+
+        $.timepicker.setDefaults($.timepicker.regional["es"]);
+        $.timepicker.setDefaults({stepMinute:1});
 	});
 
 }(jQuery));

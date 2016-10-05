@@ -32,9 +32,8 @@ class Meta_Boxes_Post_Type {
      */
     private function __construct() {
         $this->plugin_slug = Tipster_TAP::get_instance()->get_plugin_slug();
-        add_filter( 'cmb_meta_boxes', array( $this, 'post_type_pick_metabox' ) );
-        add_filter( 'cmb_meta_boxes', array( $this, 'post_type_tipster_metabox' ), 100 );
-        add_action( 'init', array( $this, 'cmb_initialize_cmb_meta_boxes' ), 9999 );
+        add_action( 'cmb2_admin_init', array( $this, 'post_type_pick_metabox' ) );
+        add_action( 'cmb2_admin_init', array( $this, 'post_type_tipster_metabox' ) );
         add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
     }
 
@@ -67,7 +66,7 @@ class Meta_Boxes_Post_Type {
      * @param  array $meta_boxes
      * @return array
      */
-    function post_type_pick_metabox( array $meta_boxes ) {
+    public function post_type_pick_metabox() {
         global $post;
         // Start with an underscore to hide fields from custom fields list
         $prefix = '_pick_';
@@ -112,237 +111,442 @@ class Meta_Boxes_Post_Type {
             }
             wp_reset_query();
         }
-
-        $meta_boxes['post_type'] = array(
-            'id'         => 'post_type',
-            'title'      => __( 'Tipo de publicacion', 'epic' ),
-            'pages'      => array( 'post' ), // Tells CMB to use user_meta vs post_meta
-            'show_names' => true,
-            'cmb_styles' => true, // Show cmb bundled styles.. not needed on user profile page
-            'fields'     => array(
-                array(
-                    //'name'    => __('Tipo de apuesta', 'epic'),
-                    'desc'    => __('Seleccionar el tipo de publicacion.<br>Si no es un pick debes dejar el valor por defecto: <strong>POST</strong>', 'epic'),
-                    'id'      => '_post_tipo_publicacion',
-                    'type'    => 'select',
-                    'options' => array(
-                        'post' => __('Post', 'epic'),
-                        'pick' => __('Pick', 'epic')
-                    ),
-                )
-            )
-        );
-
-        $meta_boxes['pick_informacion_general'] = array(
-            'id'         => 'pick_informacion_general',
-            'title'      => __( 'Picks', 'epic' ),
-            'pages'      => array( 'post' ), // Tells CMB to use user_meta vs post_meta
-            'show_names' => true,
-            'cmb_styles' => true, // Show cmb bundled styles.. not needed on user profile page
-            'fields'     => array(
-                array(
-                    'name' => __('Pronostico de pago', 'epic'),
-                    'desc' => __( 'Seleccionar si es un pronostico de pago', 'epic' ),
-                    'id'   => $prefix . 'pronostico_pago',
-                    'type' => 'checkbox'
-                ),
-                array(
-                    'name' => __('Live', 'epic'),
-                    'desc' => __( 'Seleccionar si es live', 'epic' ),
-                    'id'   => $prefix . 'live',
-                    'type' => 'checkbox'
-                ),
-                array(
-                    'name' => __('Evento', 'epic'),
-                    'desc' => __( 'Escribir el nombre del evento deportivo, social o lo que sea que permita una apuesta', 'epic' ),
-                    'id'   => $prefix . 'evento',
-                    'type' => 'text'
-                ),
-                array(
-                    'name' => __('Fecha del Evento', 'epic'),
-                    'desc' => __('Seleccionar/escribir la fecha en que ocurre el evento deportivo.<br>Indicar utilizando el formato dd/mm/yyyy', 'epic'),
-                    'id'   => $prefix . 'fecha_evento',
-                    'type' => 'text_date'
-                ),
-                array(
-                    'name' => __('Hora del Evento', 'epic'),
-                    'desc' => __('Seleccionar/escribir la hora en que ocurre el evento deportivo.<br>Indicar utilizando el formato hh:mm', 'epic'),
-                    'id'   => $prefix . 'hora_evento',
-                    'type' => 'text_time'
-                ),
-                array(
-                    'name' => __('Pronostico', 'epic'),
-                    'desc' => __( 'Escribir que apuesta/pronostico vas a realizar', 'epic' ),
-                    'id'   => $prefix . 'pronostico',
-                    'type' => 'text'
-                ),
-                array(
-                    'name' => __('Cuota', 'epic'),
-                    'desc' => __( 'Escribir la cuota de la apuesta', 'epic' ),
-                    'id'   => $prefix . 'cuota',
-                    'type' => 'text'
-                ),
-                array(
-                    'name'    => __('Casa de apuestas', 'epic'),
-                    'desc'    => __('Seleccionar la casa de apuestas donde haz realizado la apuesta', 'epic'),
-                    'id'      => $prefix . 'casa_apuesta',
-                    'type'    => 'select',
-                    'options' => $bookies
-                ),
-                array(
-                    'name' => __('Stake', 'epic'),
-                    'desc' => __( 'Escribir el nivel de confianza en la apuesta', 'epic' ),
-                    'id'   => $prefix . 'stake',
-                    'type' => 'text'
-                ),
-                array(
-                    'name'    => __('Tipo de apuesta', 'epic'),
-                    'desc'    => __('Seleccionar el tipo de apuesta hecha, ya sea un over, under, handicap...', 'epic'),
-                    'id'      => $prefix . 'tipo_apuesta',
-                    'type'    => 'select',
-                    'options' => array(
-                        'ganador'   => __( 'Ganador', 'epic' ),
-                        'perdedor'  => __( 'Perdedor', 'epic' ),
-                        'under'     => __( 'Under', 'epic' ),
-                        'over'      => __( 'Over', 'epic' ),
-                        'handicap'  => __( 'Handicap', 'epic' ),
-                        'resultado' => __( 'Resultado concreto', 'epic' ),
-                        'combinada' => __( 'Combinada', 'epic' ),
-                        'funbet'    => __( 'Funbet', 'epic' ),
-                        'reto'      => __( 'Reto', 'epic' ),
-                        'otro'      => __( 'Otro', 'epic' ),
-                    ),
-                ),
-                array(
-                    'name' => __('Tipster', 'epic'),
-                    'desc' => __( 'Seleccionar el tipster que promueve la apuesta', 'epic' ),
-                    'id'   => $prefix . 'tipster',
-                    'type' => 'select',
-                    'options' => $tipsters
-                ),
-                array(
-                    'name' => __('Competicion', 'epic'),
-                    'desc' => __( 'Escribir el nombre de la competencion asociada a la apuesta', 'epic' ),
-                    'id'   => $prefix . 'competicion',
-                    'type' => 'select',
-                    'options' => $competiciones
-                ),
-                array(
-                    'name' => __('Deporte', 'epic'),
-                    'desc' => __( 'Seleccionar el deporte asociado a la apuesta', 'epic' ),
-                    'id'   => $prefix . 'deporte',
-                    'type' => 'select',
-                    'options' => $deportes
-                ),
-                array(
-                    'name'    => __('Resultado', 'epic'),
-                    'desc'    => __('Resultado de la apuesta: pendiente, acierto, fallo o nulo.<br>Si el evento aún no se ha resuelto debes dejar el resultado <strong>PENDIENTE</strong>.<br>Cuando el evento se resuelva actualiza el resultado según sea <strong>ACIERTO</strong>, <strong>FALLO</strong> o <strong>NULO</strong>', 'epic'),
-                    'id'      => $prefix . 'resultado',
-                    'type'    => 'select',
-                    'options' => array(
-                        'pendiente' => __('Pendiente', 'epic'),
-                        'acierto'   => __('Acierto', 'epic'),
-                        'fallo'     => __('Fallo', 'epic'),
-                        'nulo'      => __('Nulo', 'epic'),
-                    ),
-                )
-            )
-        );
-
-        return $meta_boxes;
+	
+	    $cmb_post_type = new_cmb2_box(
+	    	array(
+			    'id'            => 'post_type_metabox',
+			    'title'         => __( 'Informacion adicional', $this->plugin_slug ),
+			    'object_types'  => array( 'post', )
+	        )
+	    );
+        
+	    $cmb_post_type->add_field(
+		    array(
+			    'name'    => __('Tipo de publicacion', $this->plugin_slug),
+			    'desc'    => __('Seleccionar el tipo de publicacion.<br>Si no es un pick debes dejar el valor por defecto: <strong>POST</strong>', $this->plugin_slug),
+			    'id'      => '_post_tipo_publicacion',
+			    'type'    => 'select',
+			    'options' => array(
+				    'post' => __('Post', $this->plugin_slug),
+				    'pick' => __('Pick', $this->plugin_slug)
+			    ),
+		    )
+	    );
+	    
+//        $meta_boxes['post_type'] = array(
+//            'id'         => 'post_type',
+//            'title'      => __( 'Tipo de publicacion', $this->plugin_slug ),
+//            'pages'      => array( 'post' ), // Tells CMB to use user_meta vs post_meta
+//            'show_names' => true,
+//            'cmb_styles' => true, // Show cmb bundled styles.. not needed on user profile page
+//            'fields'     => array(
+//                array(
+//                    //'name'    => __('Tipo de apuesta', $this->plugin_slug),
+//                    'desc'    => __('Seleccionar el tipo de publicacion.<br>Si no es un pick debes dejar el valor por defecto: <strong>POST</strong>', $this->plugin_slug),
+//                    'id'      => '_post_tipo_publicacion',
+//                    'type'    => 'select',
+//                    'options' => array(
+//                        'post' => __('Post', $this->plugin_slug),
+//                        'pick' => __('Pick', $this->plugin_slug)
+//                    ),
+//                )
+//            )
+//        );
+	
+	    $cmb_pick_informacion_general = new_cmb2_box(
+		    array(
+			    'id'            => 'pick_informacion_general',
+			    'title'         => __( 'Tipo de publicacion', $this->plugin_slug ),
+			    'object_types'  => array( 'post', )
+		    )
+	    );
+	
+	    $cmb_pick_informacion_general->add_field(
+		    array(
+			    'name' => __('Pronostico de pago', $this->plugin_slug),
+			    'desc' => __( 'Seleccionar si es un pronostico de pago', $this->plugin_slug ),
+			    'id'   => $prefix . 'pronostico_pago',
+			    'type' => 'checkbox'
+		    )
+	    );
+	    $cmb_pick_informacion_general->add_field(
+		    array(
+			    'name' => __('Live', $this->plugin_slug),
+			    'desc' => __( 'Seleccionar si es live', $this->plugin_slug ),
+			    'id'   => $prefix . 'live',
+			    'type' => 'checkbox'
+		    )
+	    );
+	    $cmb_pick_informacion_general->add_field(
+		    array(
+			    'name' => __('Evento', $this->plugin_slug),
+			    'desc' => __( 'Escribir el nombre del evento deportivo, social o lo que sea que permita una apuesta', $this->plugin_slug ),
+			    'id'   => $prefix . 'evento',
+			    'type' => 'text'
+		    )
+	    );
+	    $cmb_pick_informacion_general->add_field(
+		    array(
+			    'name' => __('Fecha del Evento', $this->plugin_slug),
+			    'desc' => __('Seleccionar/escribir la fecha en que ocurre el evento deportivo.<br>Indicar utilizando el formato dd/mm/yyyy', $this->plugin_slug),
+			    'id'   => $prefix . 'fecha_evento',
+			    'type' => 'text_date',
+			    'date_format' => 'd/m/Y'
+		    )
+	    );
+	    $cmb_pick_informacion_general->add_field(
+		    array(
+			    'name'        => __( 'Hora del Evento', $this->plugin_slug ),
+			    'desc'        => __( 'Seleccionar/escribir la hora en que ocurre el evento deportivo.<br>Indicar utilizando el formato hh:mm', $this->plugin_slug ),
+			    'id'          => $prefix . 'hora_evento',
+			    'type'        => 'text_time',
+			    'time_format' => 'H:i'
+		    )
+	    );
+	    $cmb_pick_informacion_general->add_field(
+		    array(
+			    'name' => __('Pronostico', $this->plugin_slug),
+			    'desc' => __( 'Escribir que apuesta/pronostico vas a realizar', $this->plugin_slug ),
+			    'id'   => $prefix . 'pronostico',
+			    'type' => 'text'
+		    )
+	    );
+	    $cmb_pick_informacion_general->add_field(
+		    array(
+			    'name' => __('Cuota', $this->plugin_slug),
+			    'desc' => __( 'Escribir la cuota de la apuesta', $this->plugin_slug ),
+			    'id'   => $prefix . 'cuota',
+			    'type' => 'text'
+		    )
+	    );
+	    $cmb_pick_informacion_general->add_field(
+		    array(
+			    'name'    => __('Casa de apuestas', $this->plugin_slug),
+			    'desc'    => __('Seleccionar la casa de apuestas donde haz realizado la apuesta', $this->plugin_slug),
+			    'id'      => $prefix . 'casa_apuesta',
+			    'type'    => 'select',
+			    'options' => $bookies
+		    )
+	    );
+	    $cmb_pick_informacion_general->add_field(
+		    array(
+			    'name' => __('Stake', $this->plugin_slug),
+			    'desc' => __( 'Escribir el nivel de confianza en la apuesta', $this->plugin_slug ),
+			    'id'   => $prefix . 'stake',
+			    'type' => 'text'
+		    )
+	    );
+	    $cmb_pick_informacion_general->add_field(
+		    array(
+			    'name'    => __('Tipo de apuesta', $this->plugin_slug),
+			    'desc'    => __('Seleccionar el tipo de apuesta hecha, ya sea un over, under, handicap...', $this->plugin_slug),
+			    'id'      => $prefix . 'tipo_apuesta',
+			    'type'    => 'select',
+			    'options' => array(
+				    'ganador'   => __( 'Ganador', $this->plugin_slug ),
+				    'perdedor'  => __( 'Perdedor', $this->plugin_slug ),
+				    'under'     => __( 'Under', $this->plugin_slug ),
+				    'over'      => __( 'Over', $this->plugin_slug ),
+				    'handicap'  => __( 'Handicap', $this->plugin_slug ),
+				    'resultado' => __( 'Resultado concreto', $this->plugin_slug ),
+				    'combinada' => __( 'Combinada', $this->plugin_slug ),
+				    'funbet'    => __( 'Funbet', $this->plugin_slug ),
+				    'reto'      => __( 'Reto', $this->plugin_slug ),
+				    'otro'      => __( 'Otro', $this->plugin_slug ),
+			    ),
+		    )
+	    );
+	    $cmb_pick_informacion_general->add_field(
+		    array(
+			    'name' => __('Tipster', $this->plugin_slug),
+			    'desc' => __( 'Seleccionar el tipster que promueve la apuesta', $this->plugin_slug ),
+			    'id'   => $prefix . 'tipster',
+			    'type' => 'select',
+			    'options' => $tipsters
+		    )
+	    );
+	    $cmb_pick_informacion_general->add_field(
+		    array(
+			    'name' => __('Competicion', $this->plugin_slug),
+			    'desc' => __( 'Escribir el nombre de la competencion asociada a la apuesta', $this->plugin_slug ),
+			    'id'   => $prefix . 'competicion',
+			    'type' => 'select',
+			    'options' => $competiciones
+		    )
+	    );
+	    $cmb_pick_informacion_general->add_field(
+		    array(
+			    'name' => __('Deporte', $this->plugin_slug),
+			    'desc' => __( 'Seleccionar el deporte asociado a la apuesta', $this->plugin_slug ),
+			    'id'   => $prefix . 'deporte',
+			    'type' => 'select',
+			    'options' => $deportes
+		    )
+	    );
+	    $cmb_pick_informacion_general->add_field(
+		    array(
+			    'name'    => __('Resultado', $this->plugin_slug),
+			    'desc'    => __('Resultado de la apuesta: pendiente, acierto, fallo o nulo.<br>Si el evento aún no se ha resuelto debes dejar el resultado <strong>PENDIENTE</strong>.<br>Cuando el evento se resuelva actualiza el resultado según sea <strong>ACIERTO</strong>, <strong>FALLO</strong> o <strong>NULO</strong>', $this->plugin_slug),
+			    'id'      => $prefix . 'resultado',
+			    'column'           => true,
+			    'display_cb'       => array( $this, 'display_pick_result_column'),
+			    'type'    => 'select',
+			    'options' => array(
+				    'pendiente' => __('Pendiente', $this->plugin_slug),
+				    'acierto'   => __('Acierto', $this->plugin_slug),
+				    'fallo'     => __('Fallo', $this->plugin_slug),
+				    'nulo'      => __('Nulo', $this->plugin_slug),
+			    ),
+		    )
+	    );
+	    
+//        $meta_boxes['pick_informacion_general'] = array(
+//            'id'         => 'pick_informacion_general',
+//            'title'      => __( 'Picks', $this->plugin_slug ),
+//            'pages'      => array( 'post' ), // Tells CMB to use user_meta vs post_meta
+//            'show_names' => true,
+//            'cmb_styles' => true, // Show cmb bundled styles.. not needed on user profile page
+//            'fields'     => array(
+//                array(
+//                    'name' => __('Pronostico de pago', $this->plugin_slug),
+//                    'desc' => __( 'Seleccionar si es un pronostico de pago', $this->plugin_slug ),
+//                    'id'   => $prefix . 'pronostico_pago',
+//                    'type' => 'checkbox'
+//                ),
+//                array(
+//                    'name' => __('Live', $this->plugin_slug),
+//                    'desc' => __( 'Seleccionar si es live', $this->plugin_slug ),
+//                    'id'   => $prefix . 'live',
+//                    'type' => 'checkbox'
+//                ),
+//                array(
+//                    'name' => __('Evento', $this->plugin_slug),
+//                    'desc' => __( 'Escribir el nombre del evento deportivo, social o lo que sea que permita una apuesta', $this->plugin_slug ),
+//                    'id'   => $prefix . 'evento',
+//                    'type' => 'text'
+//                ),
+//                array(
+//                    'name' => __('Fecha del Evento', $this->plugin_slug),
+//                    'desc' => __('Seleccionar/escribir la fecha en que ocurre el evento deportivo.<br>Indicar utilizando el formato dd/mm/yyyy', $this->plugin_slug),
+//                    'id'   => $prefix . 'fecha_evento',
+//                    'type' => 'text_date'
+//                ),
+//                array(
+//                    'name' => __('Hora del Evento', $this->plugin_slug),
+//                    'desc' => __('Seleccionar/escribir la hora en que ocurre el evento deportivo.<br>Indicar utilizando el formato hh:mm', $this->plugin_slug),
+//                    'id'   => $prefix . 'hora_evento',
+//                    'type' => 'text_time'
+//                ),
+//                array(
+//                    'name' => __('Pronostico', $this->plugin_slug),
+//                    'desc' => __( 'Escribir que apuesta/pronostico vas a realizar', $this->plugin_slug ),
+//                    'id'   => $prefix . 'pronostico',
+//                    'type' => 'text'
+//                ),
+//                array(
+//                    'name' => __('Cuota', $this->plugin_slug),
+//                    'desc' => __( 'Escribir la cuota de la apuesta', $this->plugin_slug ),
+//                    'id'   => $prefix . 'cuota',
+//                    'type' => 'text'
+//                ),
+//                array(
+//                    'name'    => __('Casa de apuestas', $this->plugin_slug),
+//                    'desc'    => __('Seleccionar la casa de apuestas donde haz realizado la apuesta', $this->plugin_slug),
+//                    'id'      => $prefix . 'casa_apuesta',
+//                    'type'    => 'select',
+//                    'options' => $bookies
+//                ),
+//                array(
+//                    'name' => __('Stake', $this->plugin_slug),
+//                    'desc' => __( 'Escribir el nivel de confianza en la apuesta', $this->plugin_slug ),
+//                    'id'   => $prefix . 'stake',
+//                    'type' => 'text'
+//                ),
+//                array(
+//                    'name'    => __('Tipo de apuesta', $this->plugin_slug),
+//                    'desc'    => __('Seleccionar el tipo de apuesta hecha, ya sea un over, under, handicap...', $this->plugin_slug),
+//                    'id'      => $prefix . 'tipo_apuesta',
+//                    'type'    => 'select',
+//                    'options' => array(
+//                        'ganador'   => __( 'Ganador', $this->plugin_slug ),
+//                        'perdedor'  => __( 'Perdedor', $this->plugin_slug ),
+//                        'under'     => __( 'Under', $this->plugin_slug ),
+//                        'over'      => __( 'Over', $this->plugin_slug ),
+//                        'handicap'  => __( 'Handicap', $this->plugin_slug ),
+//                        'resultado' => __( 'Resultado concreto', $this->plugin_slug ),
+//                        'combinada' => __( 'Combinada', $this->plugin_slug ),
+//                        'funbet'    => __( 'Funbet', $this->plugin_slug ),
+//                        'reto'      => __( 'Reto', $this->plugin_slug ),
+//                        'otro'      => __( 'Otro', $this->plugin_slug ),
+//                    ),
+//                ),
+//                array(
+//                    'name' => __('Tipster', $this->plugin_slug),
+//                    'desc' => __( 'Seleccionar el tipster que promueve la apuesta', $this->plugin_slug ),
+//                    'id'   => $prefix . 'tipster',
+//                    'type' => 'select',
+//                    'options' => $tipsters
+//                ),
+//                array(
+//                    'name' => __('Competicion', $this->plugin_slug),
+//                    'desc' => __( 'Escribir el nombre de la competencion asociada a la apuesta', $this->plugin_slug ),
+//                    'id'   => $prefix . 'competicion',
+//                    'type' => 'select',
+//                    'options' => $competiciones
+//                ),
+//                array(
+//                    'name' => __('Deporte', $this->plugin_slug),
+//                    'desc' => __( 'Seleccionar el deporte asociado a la apuesta', $this->plugin_slug ),
+//                    'id'   => $prefix . 'deporte',
+//                    'type' => 'select',
+//                    'options' => $deportes
+//                ),
+//                array(
+//                    'name'    => __('Resultado', $this->plugin_slug),
+//                    'desc'    => __('Resultado de la apuesta: pendiente, acierto, fallo o nulo.<br>Si el evento aún no se ha resuelto debes dejar el resultado <strong>PENDIENTE</strong>.<br>Cuando el evento se resuelva actualiza el resultado según sea <strong>ACIERTO</strong>, <strong>FALLO</strong> o <strong>NULO</strong>', $this->plugin_slug),
+//                    'id'      => $prefix . 'resultado',
+//                    'type'    => 'select',
+//                    'options' => array(
+//                        'pendiente' => __('Pendiente', $this->plugin_slug),
+//                        'acierto'   => __('Acierto', $this->plugin_slug),
+//                        'fallo'     => __('Fallo', $this->plugin_slug),
+//                        'nulo'      => __('Nulo', $this->plugin_slug),
+//                    ),
+//                )
+//            )
+//        );
+//
+//        return $meta_boxes;
     }
-
+    
+    public function display_pick_result_column($field_args, $field){
+	    global $post;
+	    
+	    $post_tipo_publicacion = get_post_meta($post->ID, '_post_tipo_publicacion', true);
+	
+	    $text = null;
+	    $color = null;
+	    
+	    if(strcmp($post_tipo_publicacion, 'pick') == 0) {
+		    $selected_value = $field->escaped_value();
+		    switch ( $selected_value ) {
+			    case 'acierto':
+				    $text = __( 'Acierto', $this->plugin_slug );
+					$color = '#6AA84F';
+					break;
+			    case 'fallo':
+				    $text = __( 'Fallo', $this->plugin_slug );
+				    $color = '#EF082C';
+				    break;
+			    case 'nulo':
+				    $text = __( 'Nulo', $this->plugin_slug );
+				    $color = '#519BF8';
+				    break;
+			    default: // pendiente
+				    $text = __( 'Pendiente', $this->plugin_slug );
+				    $color = '#727271';
+				    break;
+		    }
+	    }else{
+		    $text = '—';
+		    $color = 'inherit';
+	    }
+	    printf('<span style="font-weight: 700; color: %s;">%s</span>', $color, $text);
+    }
+    
     /**
      * Define the metabox and field configurations for post-type tipster.
      *
      * @param  array $meta_boxes
      * @return array
      */
-    function post_type_tipster_metabox( array $meta_boxes ) {
-        global $post;
-
+    public function post_type_tipster_metabox() {
         // Start with an underscore to hide fields from custom fields list
         $prefix = '_tipster_';
-
-        $meta_boxes['tipster_datos_iniciales'] = array(
-            'id'         => 'tipster_datos_iniciales',
-            'title'      => __( 'Datos iniciales', 'epic' ),
-            'pages'      => array( 'tipster' ), // Tells CMB to use user_meta vs post_meta
-            'show_names' => true,
-            'cmb_styles' => true, // Show cmb bundled styles.. not needed on user profile page
-            'fields'     => array(
-                array(
-//                    'name'    => __('Incluir datos iniciales', 'epic'),
-                    'desc'    => __('Seleccionar si se utilizaran o no valores iniciales para realizar los calculos.', 'epic'),
-                    'id'      => $prefix.'incluir_datos_iniciales',
-                    'type'    => 'select',
-                    'options' => array(
-                        '0' => __('NO', 'epic'),
-                        '1' => __('SI', 'epic')
-                    ),
-                ),
-                array(
-                    'name' => __('Aciertos', 'epic'),
-                    'desc' => __( 'Escribir la cantidad inicial de aciertos', 'epic' ),
-                    'id'   => $prefix . 'aciertos_iniciales',
-                    'type' => 'text_small',
-                    'default' => 0
-                ),
-                array(
-                    'name' => __('Fallos', 'epic'),
-                    'desc' => __( 'Escribir la cantidad inicial de fallos', 'epic' ),
-                    'id'   => $prefix . 'fallos_iniciales',
-                    'type' => 'text_small',
-                    'default' => 0
-                ),
-                array(
-                    'name' => __('Nulos', 'epic'),
-                    'desc' => __( 'Escribir la cantidad inicial de datos nulos', 'epic' ),
-                    'id'   => $prefix . 'nulos_iniciales',
-                    'type' => 'text_small',
-                    'default' => 0
-                ),
-                array(
-                    'name' => __('Unidades jugadas', 'epic'),
-                    'desc' => __( 'Escribir la cantidad inicial de unidades jugadas', 'epic' ),
-                    'id'   => $prefix . 'unidades_jugadas_iniciales',
-                    'type' => 'text_small',
-                    'default' => 0
-                ),
-                array(
-                    'name' => __('Unidades ganadas', 'epic'),
-                    'desc' => __( 'Escribir la cantidad inicial de unidades ganadas', 'epic' ),
-                    'id'   => $prefix . 'unidades_ganadas_iniciales',
-                    'type' => 'text_small',
-                    'default' => 0
-                ),
-                array(
-                    'name' => __('Unidades perdidas', 'epic'),
-                    'desc' => __( 'Escribir la cantidad inicial de unidades perdidas', 'epic' ),
-                    'id'   => $prefix . 'unidades_perdidas_iniciales',
-                    'type' => 'text_small',
-                    'default' => 0
-                ),
-                array(
-                    'name' => __('Google+', 'epic'),
-                    'desc' => __( 'Escribir la url del profile en Google Plus', 'epic' ),
-                    'id'   => $prefix . 'google_plus',
-                    'type' => 'text_url'
-                ),
-            )
-        );
-
-        return $meta_boxes;
-    }
-
-    /**
-     * Initialize the metabox class.
-     */
-    function cmb_initialize_cmb_meta_boxes() {
-
-        if ( ! class_exists( 'cmb_Meta_Box' ) )
-            require_once dirname(__FILE__). '/cmb/init.php';
-
+	
+	    $cmb_tipster_extra_info = new_cmb2_box(
+		    array(
+			    'id'            => 'tipster_extra_info',
+			    'title'         => __( 'Informacion adicional', $this->plugin_slug ),
+			    'object_types'  => array( 'tipster', )
+		    )
+	    );
+	
+	    $cmb_tipster_extra_info->add_field(
+		    array(
+                'name'    => __('Datos iniciales', $this->plugin_slug),
+			    'desc'    => __('Seleccionar si se utilizaran o no valores iniciales para realizar los calculos.', $this->plugin_slug),
+			    'id'      => $prefix.'incluir_datos_iniciales',
+			    'type'    => 'select',
+			    'options' => array(
+				    '0' => __('NO', $this->plugin_slug),
+				    '1' => __('SI', $this->plugin_slug)
+			    ),
+		    )
+	    );
+	    $cmb_tipster_extra_info->add_field(
+		    array(
+			    'name' => __('Aciertos', $this->plugin_slug),
+			    'desc' => __( 'Escribir la cantidad inicial de aciertos', $this->plugin_slug ),
+			    'id'   => $prefix . 'aciertos_iniciales',
+			    'type' => 'text_small',
+			    'default' => 0
+		    )
+	    );
+	    $cmb_tipster_extra_info->add_field(
+		    array(
+			    'name' => __('Fallos', $this->plugin_slug),
+			    'desc' => __( 'Escribir la cantidad inicial de fallos', $this->plugin_slug ),
+			    'id'   => $prefix . 'fallos_iniciales',
+			    'type' => 'text_small',
+			    'default' => 0
+		    )
+	    );
+	    $cmb_tipster_extra_info->add_field(
+		    array(
+			    'name' => __('Nulos', $this->plugin_slug),
+			    'desc' => __( 'Escribir la cantidad inicial de datos nulos', $this->plugin_slug ),
+			    'id'   => $prefix . 'nulos_iniciales',
+			    'type' => 'text_small',
+			    'default' => 0
+		    )
+	    );
+	    $cmb_tipster_extra_info->add_field(
+		    array(
+			    'name' => __('Unidades jugadas', $this->plugin_slug),
+			    'desc' => __( 'Escribir la cantidad inicial de unidades jugadas', $this->plugin_slug ),
+			    'id'   => $prefix . 'unidades_jugadas_iniciales',
+			    'type' => 'text_small',
+			    'default' => 0
+		    )
+	    );
+	    $cmb_tipster_extra_info->add_field(
+		    array(
+			    'name' => __('Unidades ganadas', $this->plugin_slug),
+			    'desc' => __( 'Escribir la cantidad inicial de unidades ganadas', $this->plugin_slug ),
+			    'id'   => $prefix . 'unidades_ganadas_iniciales',
+			    'type' => 'text_small',
+			    'default' => 0
+		    )
+	    );
+	    $cmb_tipster_extra_info->add_field(
+		    array(
+			    'name' => __('Unidades perdidas', $this->plugin_slug),
+			    'desc' => __( 'Escribir la cantidad inicial de unidades perdidas', $this->plugin_slug ),
+			    'id'   => $prefix . 'unidades_perdidas_iniciales',
+			    'type' => 'text_small',
+			    'default' => 0
+		    )
+	    );
+	    $cmb_tipster_extra_info->add_field(
+		    array(
+			    'name'      => __( 'Google+', $this->plugin_slug ),
+			    'desc'      => __( 'Escribir la url del profile en Google Plus', $this->plugin_slug ),
+			    'id'        => $prefix . 'google_plus',
+			    'type'      => 'text_url',
+			    'protocols' => array( 'http', 'https' ),
+		    )
+	    );
     }
 
     function enqueue_scripts(){

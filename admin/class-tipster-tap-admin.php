@@ -78,8 +78,16 @@ class Tipster_TAP_Admin {
 		$plugin_basename = plugin_basename( plugin_dir_path( realpath( dirname( __FILE__ ) ) ) . $this->plugin_slug . '.php' );
 		add_filter( 'plugin_action_links_' . $plugin_basename, array( $this, 'add_action_links' ) );
 
-        add_action( 'wp_insert_post', array( $this, 'save_post' ), 9999, 3 );
-
+        add_filter( 'manage_edit-post_sortable_columns', array( $this, 'manage_posts_pick_manage_sortable_columns' ) );
+        add_action( 'manage_posts_custom_column', array( $this, 'manage_wp_posts_pick_manage_posts_custom_column' ), 10, 2 );
+        add_action( 'pre_get_posts', array( $this, 'manage_wp_posts_pick_pre_get_posts' ), 1 );
+        add_action( 'bulk_edit_custom_box', array( $this, 'quick_edit_custom_box_pick_result' ), 10, 2 );
+        add_action( 'quick_edit_custom_box', array( $this, 'quick_edit_custom_box_pick_result' ), 10, 2 );
+        add_action( 'admin_print_scripts-edit.php', array( $this, 'manage_wp_posts_pick_enqueue_admin_scripts' ) );
+        add_action( 'wp_ajax_manage_wp_posts_pick_using_bulk_quick_save_bulk_edit', array( $this, 'manage_wp_posts_pick_using_bulk_quick_save_bulk_edit' ) );
+        add_action( 'save_post', array( $this, 'save_pick_result_meta' ), 9999, 3 );
+		add_action( 'wp_insert_post', array( $this, 'save_pick_statistics' ), 9999, 3 );
+		
 		$session_id = session_id();
 		if(empty($session_id) && !headers_sent()) @session_start();
 		if(!empty($_SESSION) && array_key_exists('TIPSTER_TAP_ERRORS', $_SESSION)){
@@ -148,7 +156,7 @@ class Tipster_TAP_Admin {
 
 		$screen = get_current_screen();
 		if ( $this->plugin_screen_hook_suffix['root'] == $screen->id ) {
-			wp_enqueue_script( $this->plugin_slug . '-admin-script', plugins_url( 'assets/js/admin.js', __FILE__ ), array( 'jquery' ), Tipster_TAP::VERSION );
+			wp_enqueue_script( $this->plugin_slug . '-admin-script', plugins_url( 'assets/js/admin.js', __FILE__ ), array( 'jquery' ), Tipster_TAP::VERSION, true );
 		}
 
 	}
@@ -248,38 +256,179 @@ class Tipster_TAP_Admin {
 
 	}
 
+    public function manage_posts_pick_manage_sortable_columns( $sortable_columns ){
+        $sortable_columns[ '_pick_resultado' ] = '_pick_resultado';
+        return $sortable_columns;
+    }
+    
+    public function manage_wp_posts_pick_manage_posts_custom_column( $column_name, $post_id ){
+        $tipo_publicacion = get_post_meta( $post_id, '_post_tipo_publicacion', true );
+
+        if ( strcmp( $tipo_publicacion, 'pick' ) == 0 ) {
+            echo '<div id="pick_resultado-' . $post_id . '" style="display:none;">' . get_post_meta( $post_id, $column_name, true ) . '</div>';
+        }
+    }
+
+    public function manage_wp_posts_pick_pre_get_posts( $query ){
+        if ( $query->is_main_query() && ( $orderby = $query->get( 'orderby' ) ) ) {
+            switch( $orderby ) {
+                case '_pick_resultado':
+                    $query->set( 'meta_key', '_pick_resultado' );
+                    $query->set( 'orderby', 'meta_value' );
+                    break;
+            }
+        }
+    }
+    
+    /**
+     * Add _pick_resultado meta field in quick edit box
+     *
+     * @param $column_name
+     * @param $post_type
+     *
+     * @since    2.6
+     */
+	public function quick_edit_custom_box_pick_result($column_name, $post_type){
+		if(strcmp($post_type, 'post') == 0 && strcmp($column_name, '_pick_resultado') == 0 ) {
+			static $printNonce = true;
+			if ( $printNonce ) {
+				$printNonce = false;
+				wp_nonce_field( plugin_basename( __FILE__ ), $this->plugin_slug.'_edit'.$column_name.'_nonce' );
+			} ?>
+			<fieldset class="inline-edit-col-right">
+				<div class="inline-edit-col column-<?php echo $column_name; ?>">
+					<label class="inline-edit-pick-result alignleft">
+						<span class="title"><?php _e('Resultado', $this->plugin_slug);?></span>
+                        <span class="input-text-wrap">
+                            <select name="<?php echo $column_name;?>">
+                                <option value="pendiente">
+                                    <?php _e('Pendiente', $this->plugin_slug);?>
+                                </option>
+                                <option value="acierto">
+                                    <?php _e('Acierto', $this->plugin_slug);?>
+                                </option>
+                                <option value="fallo">
+                                    <?php _e('Fallo', $this->plugin_slug);?>
+                                </option>
+                                <option value="nulo">
+                                    <?php _e('Nulo', $this->plugin_slug);?>
+                                </option>
+                            </select>
+                        </span>
+					</label>
+				</div>
+			</fieldset>
+			<?php
+		}
+	}
+
+	public function manage_wp_posts_pick_enqueue_admin_scripts(){
+        wp_enqueue_script( 'manage-wp-posts-using-bulk-quick-edit', trailingslashit( plugin_dir_url( __FILE__ ) ) . 'assets/js/bulk_quick_edit.js', array( 'jquery', 'inline-edit-post' ), Tipster_TAP::VERSION, true );
+    }
+    
+    public function manage_wp_posts_pick_using_bulk_quick_save_bulk_edit(){
+        // we need the post IDs
+        $post_ids = ( isset( $_POST[ 'post_ids' ] ) && !empty( $_POST[ 'post_ids' ] ) ) ? $_POST[ 'post_ids' ] : NULL;
+
+        // if we have post IDs
+        if ( ! empty( $post_ids ) && is_array( $post_ids ) ) {
+
+            if ( isset( $_POST[ '_pick_resultado' ] ) && !empty( $_POST[ '_pick_resultado' ] ) ) {
+
+                foreach ( $post_ids as $post_id ) {
+                    $tipo_publicacion = get_post_meta( $post_id, '_post_tipo_publicacion', true );
+                    
+                    if ( strcmp( $tipo_publicacion, 'pick' ) != 0 ) {
+                        continue;
+                    }
+
+                    update_post_meta( $post_id, '_pick_resultado', $_POST[ '_pick_resultado' ] );
+                }
+                
+            }
+            
+        }
+        
+    }
+	
+    /**
+     * Save _pick_resultado meta from quick edit box
+     *
+     * @param $post_ID
+     * @param $post
+     * @param $update
+     *
+     * @since    2.6
+     */
+	public function save_pick_result_meta($post_ID, $post, $update){
+        // pointless if $_POST is empty (this happens on bulk edit)
+        if ( empty( $_POST ) )
+            return $post_ID;
+
+        // verify quick edit nonce
+        if ( isset( $_POST[ '_inline_edit' ] ) && ! wp_verify_nonce( $_POST[ '_inline_edit' ], 'inlineeditnonce' ) )
+            return $post_ID;
+
+        // don't save for autosave
+        if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE )
+            return $post_ID;
+
+        // dont save for revisions
+        if ( isset( $post->post_type ) && $post->post_type == 'revision' )
+            return $post_ID;
+
+        if ( !current_user_can( 'edit_post', $post_ID ) ) {
+            return $post_ID;
+        }
+        
+        $tipo_publicacion = get_post_meta($post_ID, '_post_tipo_publicacion', true);
+        if(strcmp($post->post_type, 'post') != 0 || strcmp($tipo_publicacion, 'pick') != 0 ) {
+			return $post_ID;
+		}
+		
+		$_POST += array("{$this->plugin_slug}_edit_pick_resultado_nonce" => '');
+		if ( !wp_verify_nonce( $_POST["{$this->plugin_slug}_edit_pick_resultado_nonce"], plugin_basename( __FILE__ ) ) ) {
+			return $post_ID;
+		}
+		
+		if ( isset( $_REQUEST['_pick_resultado'] ) ) {
+			update_post_meta( $post_ID, '_pick_resultado', $_REQUEST['_pick_resultado'] );
+		}
+	}
+	
     /**
      * Calculates the statistics values
      *
      * @since    1.1.3
+     * @updated  2.6
      */
-    public function save_post($post_id, $post = false, $update = false){
+    public function save_pick_statistics($post_ID, $post = false, $update = false){
         global $wpdb;
 	    ini_set('max_execution_time', 0);
 	    ini_set('max_input_time', -1);
 
-	    $tipo_publicacion = get_post_meta($post_id, '_post_tipo_publicacion', true);
+	    $tipo_publicacion = get_post_meta($post_ID, '_post_tipo_publicacion', true);
 
         if(false === wp_is_post_revision($post) && strcmp($post->post_type, 'post') === 0 && strcmp($post->post_status, 'publish') === 0 && strcmp($tipo_publicacion, 'post') === 0)
         {
-            delete_post_meta($post_id, '_pick_pronostico_pago');
-            delete_post_meta($post_id, '_pick_live');
-            delete_post_meta($post_id, '_pick_evento');
-            delete_post_meta($post_id, '_pick_fecha_evento');
-            delete_post_meta($post_id, '_pick_hora_evento');
-            delete_post_meta($post_id, '_pick_pronostico');
-            delete_post_meta($post_id, '_pick_cuota');
-            delete_post_meta($post_id, '_pick_casa_apuesta');
-            delete_post_meta($post_id, '_pick_tipo_apuesta');
-            delete_post_meta($post_id, '_pick_tipster');
-            delete_post_meta($post_id, '_pick_competicion');
-            delete_post_meta($post_id, '_pick_deporte');
-            delete_post_meta($post_id, '_pick_resultado');
+            delete_post_meta($post_ID, '_pick_pronostico_pago');
+            delete_post_meta($post_ID, '_pick_live');
+            delete_post_meta($post_ID, '_pick_evento');
+            delete_post_meta($post_ID, '_pick_fecha_evento');
+            delete_post_meta($post_ID, '_pick_hora_evento');
+            delete_post_meta($post_ID, '_pick_pronostico');
+            delete_post_meta($post_ID, '_pick_cuota');
+            delete_post_meta($post_ID, '_pick_casa_apuesta');
+            delete_post_meta($post_ID, '_pick_tipo_apuesta');
+            delete_post_meta($post_ID, '_pick_tipster');
+            delete_post_meta($post_ID, '_pick_competicion');
+            delete_post_meta($post_ID, '_pick_deporte');
+            delete_post_meta($post_ID, '_pick_resultado');
             return;
         }
 
         $picks_limit = (int)get_theme_mod('tipster_tap_limit_total_picks');
-        $resultado = get_post_meta($post_id, '_pick_resultado', true);
+        $resultado = get_post_meta($post_ID, '_pick_resultado', true);
         if(false === wp_is_post_revision($post) && strcmp($post->post_type, 'post') === 0 && strcmp($tipo_publicacion, 'pick') === 0
            && (strcmp($resultado, 'acierto') === 0 || strcmp($resultado, 'fallo') === 0 || strcmp($resultado, 'nulo') === 0 )){
             // ai apuestas iniciales - entendiendo apuestas como el numero de veces que ha apostado.
@@ -291,7 +440,7 @@ class Tipster_TAP_Admin {
             $uiGanadas = 0;
             $uiPerdidas = 0;
 
-            $tipster_id = get_post_meta($post_id, '_pick_tipster', true);
+            $tipster_id = get_post_meta($post_ID, '_pick_tipster', true);
 
             $datos_iniciales = (int)get_post_meta($tipster_id, '_tipster_incluir_datos_iniciales', true);
 
