@@ -2,7 +2,7 @@
 /**
  * Tipster Tap.
  *
- * @package   Tipster_TAP
+ * @package   TipsterTap
  * @author    Alain Sanchez <luka.ghost@gmail.com>
  * @license   GPL-2.0+
  * @link      http://www.linkedin.com/in/mrbrazzi/
@@ -10,6 +10,8 @@
  */
 
 namespace TipsterTAP\Frontend;
+
+use TipsterTAP\Exceptions\InvalidApiResponseException;
 
 /**
  * Plugin class. This class should ideally be used to work with the
@@ -19,10 +21,10 @@ namespace TipsterTAP\Frontend;
  * functionality, then refer to `class-tipster-tap-admin.php`
  *
  *
- * @package Tipster_TAP
+ * @package TipsterTap
  * @author  Your Name <email@example.com>
  */
-class Tipster_TAP {
+class TipsterTap {
 
 	/**
 	 * Plugin version, used for cache-busting of style and script file references.
@@ -31,7 +33,7 @@ class Tipster_TAP {
 	 *
 	 * @var     string
 	 */
-	const VERSION = '2.6';
+	const VERSION = '3.0';
 
 	/**
 	 * Unique identifier for your plugin.
@@ -54,7 +56,7 @@ class Tipster_TAP {
 	 *
 	 * @var      object
 	 */
-	protected static $instance = null;
+	protected static $instance;
 
     private $default_options;
 
@@ -85,10 +87,10 @@ class Tipster_TAP {
          * @updated   2.0.0
          */
         $this->default_options = array(
-            'url_sync_link_bookies' => 'http://www.todoapuestas.org/tdapuestas/web/api/blocks-bookies/%s/%s/listado-bonos-bookies.json/?access_token=%s&_=%s',
-            'url_sync_link_deportes' => 'http://www.todoapuestas.org/tdapuestas/web/api/deporte/listado-visible-blogs.json/?access_token=%s&_=%s',
-            'url_sync_link_competiciones' => 'http://www.todoapuestas.org/tdapuestas/web/api/competicion/listado.json/?access_token=%s&_=%s',
-	        'url_check_ip' => 'http://www.todoapuestas.org/tdapuestas/web/api/geoip/country-by-ip.json/%s/?access_token=%s&_=%s',
+            'url_sync_link_bookies' => 'http://todoapuestas.com/api/blocks-bookies/%s/%s/listado-bonos-bookies.json/?access_token=%s&_=%s',
+            'url_sync_link_deportes' => 'http://todoapuestas.com/api/deporte/listado-visible-blogs.json/?access_token=%s&_=%s',
+            'url_sync_link_competiciones' => 'http://todoapuestas.com/api/competicion/listado.json/?access_token=%s&_=%s',
+	        'url_check_ip' => 'http://todoapuestas.com/api/geoip/country-by-ip.json/%s/?access_token=%s&_=%s',
             'tracked_web_category' => 'apuestas',
             'tracker' => $_SERVER['HTTP_HOST']
         );
@@ -102,9 +104,15 @@ class Tipster_TAP {
          */
 		add_action( 'wp' , array( $this, 'active_remote_sync'));
 		add_action( 'tipster_tap_hourly_remote_sync', array( $this, 'remote_sync' ) );
-
+		
+		/**
+		 * deprecated 3.0
+		 */
 		add_filter( 'tipster_tap_get_tipster_picks', array( $this, 'get_tipster_picks' ), 10, 4 );
-
+		
+		add_filter( 'tipster_tap_get_picks', array( $this, 'get_picks' ), 10, 2 );
+		add_action( 'tipster_tap_get_total_picks', array( $this, 'get_total_picks' ) );
+		
 		add_filter( 'tipster_tap_default_avatar', array( $this, 'default_avatar' ), 10, 3 );
 	}
 
@@ -113,7 +121,7 @@ class Tipster_TAP {
 	 *
 	 * @since    1.0.0
 	 *
-	 * @return    Plugin slug variable.
+	 * @return    string  Plugin slug variable.
 	 */
 	public function get_plugin_slug() {
 		return $this->plugin_slug;
@@ -124,12 +132,12 @@ class Tipster_TAP {
 	 *
 	 * @since     1.0.0
 	 *
-	 * @return    object    A single instance of this class.
+	 * @return    TipsterTap    A single instance of this class.
 	 */
 	public static function get_instance() {
 
 		// If the single instance hasn't been set, set it now.
-		if ( null == self::$instance ) {
+		if ( null === self::$instance ) {
 			self::$instance = new self;
 		}
 
@@ -245,9 +253,7 @@ class Tipster_TAP {
 		global $wpdb;
 
 		// get an array of blog ids
-		$sql = "SELECT blog_id FROM $wpdb->blogs
-			WHERE archived = '0' AND spam = '0'
-			AND deleted = '0'";
+		$sql = "SELECT blog_id FROM $wpdb->blogs WHERE archived = '0' AND spam = '0' AND deleted = '0'";
 
 		return $wpdb->get_col( $sql );
 
@@ -264,8 +270,8 @@ class Tipster_TAP {
         add_option('tipster_tap_deportes', array());
         add_option('tipster_tap_competiciones', array());
 
-        //execute create statistics table
-        self::get_instance()->create_statistics_table();
+        //execute db update table
+        self::get_instance()->db_update();
         // execute initial synchronization
         self::get_instance()->remote_sync();
 	}
@@ -366,7 +372,7 @@ class Tipster_TAP {
 		$wp_customize->add_control( 'tipster_tap_limit_statistics', array(
 			'type'        => 'number',
 			'label'       => __( 'Estadisticas', $domain ),
-			'description' => __( 'Escribir la cantidad de meses a obtener registros para graficar en las estadisticas. Por defecto se asumen 6 meses.', $domain ),
+			'description' => __( 'Escribir la cantidad de meses a obtener registros para calcular y/o graficar las estadisticas. Por defecto se asumen 6 meses.', $domain ),
 			'section'     => 'tipster_tap',
 			'settings'    => 'tipster_tap_limit_statistics',
 		) );
@@ -400,70 +406,120 @@ class Tipster_TAP {
             wp_schedule_event(time(), 'hourly', 'tipster_tap_hourly_remote_sync');
         }
     }
-
-    /**
-     * Execute synchronizations from todoapuestas.org server
-     *
-     * @since   1.0
-     * @updated 2.1.1
-     * @return void
-     * @throws \Exception
-     */
+	
+	/**
+	 * Execute synchronizations from todoapuestas.com server
+	 *
+	 * @since   1.0
+	 * @updated 2.1.1
+	 * @return void
+	 */
     public function remote_sync() {
         $option = get_option('tipster_tap_remote_info', $this->default_options);
 
         $oauthAccessToken = $this->get_oauth_access_token();
 
-	    $timestamp = new \DateTime("now");
+	    $timestamp = new \DateTime('now');
 
         $apiUrl = esc_url(sprintf($option['url_sync_link_bookies'], $option['tracked_web_category'], $option['tracker'], $oauthAccessToken, $timestamp->getTimestamp()));
-        $list_bookies = $this->get_result_from_api($apiUrl);
+	    $list_bookies = $this->get_result_from_api( $apiUrl, true, 'Request Bookies' );
         if(!empty($list_bookies)){
             update_option('tipster_tap_bookies', $list_bookies);
         }
 
         $apiUrl = esc_url(sprintf($option['url_sync_link_deportes'], $oauthAccessToken, $timestamp->getTimestamp()));
-        $list_deportes = $this->get_result_from_api($apiUrl);
+        $list_deportes = $this->get_result_from_api($apiUrl, true, 'Request Sports');
         if(!empty($list_deportes['deporte'])){
             update_option('tipster_tap_deportes', $list_deportes['deporte']);
         }
 
         $apiUrl = esc_url(sprintf($option['url_sync_link_competiciones'], $oauthAccessToken, $timestamp->getTimestamp()));
-        $list_competiciones = $this->get_result_from_api($apiUrl);
+        $list_competiciones = $this->get_result_from_api($apiUrl, true, 'Request Competitions');
         if(!empty($list_competiciones['competicion'])){
             update_option('tipster_tap_competiciones', $list_competiciones['competicion']);
         }
     }
 
 	/**
-	 * @since     1.1.6
+	 * @since     3.0
 	 */
-    public function create_statistics_table()
+    public function db_update()
     {
-        global $wpdb;
-
-        $query_create_table_statistics = "CREATE TABLE IF NOT EXISTS statistics (".
-        "  id int(11) NOT NULL AUTO_INCREMENT,".
-        "  corrects int(11) NOT NULL,".
-        "  wrongs int(11) NOT NULL,".
-        "  voids int(11) NOT NULL,".
-        "  total_units float NOT NULL,".
-        "  win_units float NOT NULL,".
-        "  lost_units float NOT NULL,".
-        "  yield float NOT NULL,".
-        "  last_stat timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,".
-        "  last_stat_date date DEFAULT NULL,".
-        "  user_id int(11) NOT NULL,".
-        "  PRIMARY KEY (id),".
-        "  KEY user_id (user_id),".
-        "  KEY user_group_units (user_id,total_units),".
-        "  KEY total_units (total_units),".
-        "  KEY last_stat_date (last_stat_date),".
-        "  KEY last_stat_date_total_units (total_units,last_stat_date),".
-        "  KEY user_date_units (user_id,last_stat_date,total_units)".
-        ") ENGINE=MyISAM DEFAULT CHARSET=latin1;";
-
-        $wpdb->query($query_create_table_statistics);
+	    global $wpdb;
+	    
+	    $option = (float)get_option('tipster_tap_version');
+    	
+	    if( $option < 1.0 ) {
+		    $query_create_table_statistics = 'CREATE TABLE IF NOT EXISTS statistics (' .
+				'  id INT(11) NOT NULL AUTO_INCREMENT,' .
+				'  corrects INT(11) NOT NULL,' .
+				'  wrongs INT(11) NOT NULL,' .
+				'  voids INT(11) NOT NULL,' .
+				'  total_units FLOAT NOT NULL,' .
+				'  win_units FLOAT NOT NULL,' .
+				'  lost_units FLOAT NOT NULL,' .
+				'  yield FLOAT NOT NULL,' .
+				'  last_stat TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,' .
+				'  user_id INT(11) NOT NULL,' .
+				'  PRIMARY KEY (id),' .
+				'  KEY user_id (user_id),' .
+				'  KEY user_group_units (user_id,total_units),' .
+				'  KEY total_units (total_units),' .
+				'  KEY last_stat_date (last_stat),' .
+				'  KEY last_stat_date_total_units (total_units,last_stat),' .
+				'  KEY user_date_units (user_id,last_stat,total_units)' .
+				') ENGINE=MyISAM DEFAULT CHARSET=utf8mb4;'
+		    ;
+		    $wpdb->query( $query_create_table_statistics );
+	    }
+	    
+	    if( $option < 2.7 ) {
+		    $query_update = 'ALTER TABLE statistics DEFAULT CHARACTER SET=utf8mb4;';
+		    $wpdb->query( $query_update );
+		
+		    $query_update = 'CREATE INDEX user_id ON statistics (user_id);';
+		    $wpdb->query( $query_update );
+		
+		    $query_update = 'CREATE INDEX user_group_units ON statistics (user_id, total_units);';
+		    $wpdb->query( $query_update );
+		
+		    $query_update = 'CREATE INDEX total_units ON statistics (total_units);';
+		    $wpdb->query( $query_update );
+		
+		    $query_update = 'CREATE INDEX last_stat_date ON statistics (last_stat);';
+		    $wpdb->query( $query_update );
+		
+		    $query_update = 'CREATE INDEX last_stat_total_units ON statistics (total_units, last_stat);';
+		    $wpdb->query( $query_update );
+		
+		    $query_update = 'CREATE INDEX user_date_units ON statistics (user_id, last_stat, total_units);';
+		    $wpdb->query( $query_update );
+	    }
+	
+	    if( $option < 3.0 ) {
+		    $query_create_table_picks = 'CREATE TABLE IF NOT EXISTS '.$wpdb->base_prefix.'picks ('.
+				'  id INT(11) NOT NULL AUTO_INCREMENT,' .
+				'  tipster_id INT(11) NOT NULL,' .
+				'  pick_id INT(11) NOT NULL,' .
+				'  bookie_id VARCHAR(255) NOT NULL,' .
+				'  sport_id INT(11) NOT NULL,' .
+				'  competition_id INT(11) NOT NULL,' .
+				'  pick_datetime BIGINT DEFAULT NULL,' .
+				'  pick_cuote DOUBLE DEFAULT NULL,' .
+				'  pick_stake DOUBLE DEFAULT NULL,' .
+				'  pick_type VARCHAR(15) NOT NULL,' .
+				'  pick_result VARCHAR(15) NOT NULL,' .
+				'  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,' .
+				'  PRIMARY KEY (id),' .
+				'  KEY '.$wpdb->base_prefix.'picks_tipster_id (tipster_id),' .
+				'  KEY '.$wpdb->base_prefix.'picks_pick_id (pick_id),' .
+				'  KEY '.$wpdb->base_prefix.'picks_bookie_id (bookie_id),' .
+				'  KEY '.$wpdb->base_prefix.'picks_tipster_id_datetime (tipster_id, pick_datetime)' .
+				') ENGINE=MyISAM DEFAULT CHARSET=utf8mb4;';
+		    $wpdb->query($query_create_table_picks);
+	    }
+	    
+	    update_option('tipster_tap_version', self::VERSION);
     }
 
 	/**
@@ -473,10 +529,13 @@ class Tipster_TAP {
     private function get_oauth_access_token()
     {
         $session_id = session_id();
-        if(empty($session_id) && !headers_sent()) @session_start();
+        if(empty($session_id) && !headers_sent()){
+        	@session_start();
+        }
+        
         if(isset($_SESSION['TAP_OAUTH_CLIENT'])){
             $now = new \DateTime('now');
-            if($now->getTimestamp() <= intval($_SESSION['TAP_OAUTH_CLIENT']['expires_in'])){
+            if($now->getTimestamp() <= (integer)$_SESSION['TAP_OAUTH_CLIENT']['expires_in']){
                 $oauthAccessToken = $_SESSION['TAP_OAUTH_CLIENT']['access_token'];
                 return $oauthAccessToken;
             }
@@ -492,16 +551,9 @@ class Tipster_TAP {
         }
 
         $oauthUrl = sprintf($oauthUrl, $publicId, $secretKey);
-        $oauthResponse = wp_remote_get($oauthUrl);
-        if($oauthResponse instanceof \WP_Error || strcmp($oauthResponse['response']['code'], '200') !== 0){
-            $_SESSION['TIPSTER_TAP_ERRORS'][] = 'Invalid OAuth response';
-	        return null;
-        }
-
-        $oauthResponseBody = json_decode($oauthResponse['body']);
-        $oauthAccessToken = null;
-        if($oauthResponseBody instanceof \WP_Error || !is_object($oauthResponseBody)){
-            $_SESSION['TIPSTER_TAP_ERRORS'][] = 'Invalid OAuth access token';
+        $oauthResponseBody = $this->get_result_from_api($oauthUrl, false, 'Get Access Token');
+        if(!is_object($oauthResponseBody)){
+            $_SESSION['TIPSTER_TAP_ERRORS'][] = sprintf('Invalid OAuth response body');
 	        return null;
         }
         $oauthAccessToken = $oauthResponseBody->access_token;
@@ -510,22 +562,37 @@ class Tipster_TAP {
             $now = new \DateTime('now');
             $_SESSION['TAP_OAUTH_CLIENT'] = array(
                 'access_token' => $oauthAccessToken,
-                'expires_in' => $now->getTimestamp() + intval($oauthResponseBody->expires_in)
+                'expires_in' => $now->getTimestamp() + (integer)$oauthResponseBody->expires_in
             );
         }
 
         return $oauthAccessToken;
     }
-
-    private function get_result_from_api($url)
+	
+	/**
+	 * @param string $url
+	 * @param bool $assoc
+	 * @param string $intention
+	 *
+	 * @return array|mixed|object
+	 */
+    private function get_result_from_api($url, $assoc = true, $intention = 'Request Access Token')
     {
         $apiResponse = wp_remote_get($url);
-        if(strcmp($apiResponse['response']['code'], '200') != 0){
-            throw new \Exception('Invalid API response');
+	    $apiResponseCode = wp_remote_retrieve_response_code($apiResponse);
+	    $apiResponseBody = wp_remote_retrieve_body($apiResponse);
+        if(strcmp($apiResponseCode, '200') !== 0){
+        	if('' !== trim($apiResponseCode)){
+        		$apiResponseCode = sprintf(' Code: %s.', $apiResponseCode);
+	        }
+	        if('' !== trim($apiResponseBody)){
+		        $apiResponseBody = sprintf(' Body content: %s.', $apiResponseBody);
+	        }
+	        $_SESSION['TIPSTER_TAP_ERRORS'][] = sprintf( __( '[%s] Invalid API response.%s%s', 'epic' ), $intention, $apiResponseCode, $apiResponseBody );
+	        return null;
         }
-        $result = json_decode($apiResponse['body'], true);
 
-        return $result;
+        return json_decode($apiResponseBody, $assoc);
     }
 
 	/**
@@ -541,9 +608,20 @@ class Tipster_TAP {
 
 	    return $image;
     }
-
+	
+	/**
+	 * @param $tipster
+	 * @param int $limit
+	 * @param int $start
+	 * @param bool $pendientes
+	 *
+	 * @return array
+	 *
+	 * @deprecated 3.0
+	 */
 	public function get_tipster_picks($tipster, $limit = -1, $start = 1, $pendientes = false)
 	{
+		do_action('deprecated_function_run', 'get_tipster_picks', 'get_picks', '3.0');
 		$tipster_picks = array();
 		$total = 0;
 
@@ -610,14 +688,84 @@ class Tipster_TAP {
 			$total = $query_result->post_count;
 		}
 
-		if(!$pendientes && $limit == -1){
+		if(!$pendientes && $limit === -1){
 			update_post_meta($tipster, '_tipster_total_picks_finalizados', $total);
 		}
 
-		if($pendientes && $limit == -1){
+		if($pendientes && $limit === -1){
 			update_post_meta($tipster, '_tipster_total_picks_pendientes', $total);
 		}
 
 		return $tipster_picks;
+	}
+	
+	/**
+	 * @param integer $tipster Tipster id
+	 * @param array $args An array with values for $condition, $date_range, $limit, $start in that order
+	 *
+	 * @return array|object
+	 *
+	 * @since 3.0
+	 */
+	public function get_picks($tipster, $args){
+		global $wpdb;
+		list($condition, $date_range, $limit, $start, $order_type) = $args;
+    	
+    	$where = '';
+    	switch ($condition){
+    		case 'finished':
+    			$where = " AND ( pick_result = 'acierto' OR pick_result = 'fallo' OR pick_result = 'nulo' )";
+    			break;
+		    case 'standby':
+		    	$where = " AND pick_result = 'pendiente'";
+		    	break;
+		    default: // 'all'
+		    	break;
+	    }
+		
+		if(false !== $date_range){
+    		if(false !== $date_range['start'] && false === $date_range['end']) {
+			    $where .= sprintf( ' AND ( pick_datetime %s %s )', $date_range['op'], $date_range['start'] );
+		    }elseif (false === $date_range['start'] && false !== $date_range['end']){
+			    $where .= sprintf( ' AND ( pick_datetime %s %s )', $date_range['op'], $date_range['end'] );
+		    }else{
+			    $where .= sprintf( ' AND ( pick_datetime BETWEEN %s AND %s )', $date_range['start'], $date_range['end'] );
+		    }
+	    }
+	    
+	    $limits = '';
+	    if( false !== $limit ){
+    		$limits = sprintf(' LIMIT %d', $limit);
+	    }
+	    if( false !== $start ){
+	    	$limits = sprintf(' LIMIT %d,%d', $start, $limit);
+	    }
+	    
+	    $order = ' ORDER BY pick_datetime ASC';
+	    if(false !== $order_type){
+	    	$order = sprintf(' ORDER BY pick_datetime %s', $order_type);
+	    }
+		
+		$tipster_picks = $wpdb->get_results($wpdb->prepare('SELECT * FROM ' . $wpdb->base_prefix . "picks WHERE tipster_id = '%s'" . $where . $order . $limits . ';', $tipster), ARRAY_A);
+		
+		return $tipster_picks;
+	}
+	
+	/**
+	 * @param $tipster
+	 *
+	 * @since 3.0
+	 */
+	public function get_total_picks($tipster){
+		global $wpdb;
+		$total = array();
+		
+		$total['finalizados'] = $wpdb->get_var($wpdb->prepare( 'SELECT COUNT(*) FROM ' . $wpdb->base_prefix . "picks WHERE tipster_id = '%s' AND (pick_result = 'acierto' OR pick_result = 'fallo' OR pick_result = 'nulo') AND pick_datetime IS NOT NULL;", $tipster));
+		$total['pendientes'] = $wpdb->get_var($wpdb->prepare( 'SELECT COUNT(*) FROM ' . $wpdb->base_prefix . "picks WHERE tipster_id = '%s' AND pick_result = 'pendiente' AND pick_datetime IS NOT NULL;", $tipster));
+		$total_picks = (integer)$total['finalizados'] + (integer)$total['pendientes'];
+		
+		update_post_meta($tipster, '_tipster_total_picks_finalizados', $total['finalizados']);
+		update_post_meta($tipster, '_tipster_total_picks_pendientes', $total['pendientes']);
+		update_post_meta($tipster, '_tipster_total_picks', $total_picks);
 	}
 }

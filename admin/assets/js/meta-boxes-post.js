@@ -2,35 +2,30 @@
 	"use strict";
 
 	$(function () {
-
-    /**
-     * Metabox of Post
-     */
-    $('select#_post_tipo_publicacion').each(function() {
-      var post_custom_option = $(this).children('option:selected').val();
-      if (post_custom_option == 'post') {
-        $('#pick_informacion_general').hide();
-      } else if (post_custom_option == 'pick') {
-        $('#pick_informacion_general').show();
-      } else {
-        $('#pick_informacion_general').hide();
-      }
-    });
-
-    $('select#_post_tipo_publicacion').change(function() {
-      var post_custom_option = $(this).children('option:selected').val();
-      if (post_custom_option == 'post') {
-        $('#pick_informacion_general').hide();
-      } else if (post_custom_option == 'pick') {
-        $('#pick_informacion_general').show();
-      } else {
-        $('#pick_informacion_general').hide();
-      }
-    });
-    /**
-     * End Post
-     */
-
+        var eachChange = function($e){
+            var post_custom_option = $e.children('option:selected').val();
+            if (post_custom_option === 'post') {
+                jQuery('#pick_informacion_general').hide();
+            } else if (post_custom_option === 'pick') {
+                jQuery('#pick_informacion_general').show();
+            } else {
+                jQuery('#pick_informacion_general').hide();
+            }
+        };
+	    /**
+         * Metabox of Post
+         */
+        jQuery('select#_post_tipo_publicacion')
+            .each(function() {
+                eachChange(jQuery(this));
+            })
+            .change(function() {
+                eachChange(jQuery(this));
+            })
+        ;
+        /**
+         * End Metabox of Post
+         */
 	});
 
 }(jQuery));

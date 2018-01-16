@@ -9,7 +9,7 @@ namespace TipsterTAP\Common;
  * @subpackage Theme
  */
 
-class Tipster_Post_Type{
+class TipsterPostType{
     /**
      * Instance of this class.
      *
@@ -17,7 +17,7 @@ class Tipster_Post_Type{
      *
      * @var      object
      */
-    protected static $instance = null;
+    protected static $instance;
 
     /**
      * Initialize the plugin by loading admin scripts & styles and adding a
@@ -50,7 +50,7 @@ class Tipster_Post_Type{
         } */
 
         // If the single instance hasn't been set, set it now.
-        if ( null == self::$instance ) {
+        if ( null === self::$instance ) {
             self::$instance = new self;
         }
 
@@ -60,7 +60,7 @@ class Tipster_Post_Type{
     /**
      * Register a tipster post type
      */
-    function post_type_tipster() {
+    public function post_type_tipster() {
         $labels = array(
             'name'                => _x( 'Tipsters', 'post type general name', 'epic' ),
             'singular_name'       => _x( 'Tipster', 'post type singular name', 'epic' ),
@@ -102,7 +102,7 @@ class Tipster_Post_Type{
     /**
      * Register a tipster post type taxonomies
      */
-    function post_type_tipster_taxonomies() {
+    public function post_type_tipster_taxonomies() {
         $labels = array(
             'name'              => _x( 'Categorias de Tipsters', 'taxonomy general name', 'epic' ),
             'singular_name'     => _x( 'Categoria de Tipster', 'taxonomy singular name', 'epic' ),
@@ -131,14 +131,14 @@ class Tipster_Post_Type{
      * @param $screen
      * @return string
      */
-    function post_type_tipster_contextual_help( $contextual_help, $screen_id, $screen ) {
-        if ( 'edit-tipster' == $screen->id ) {
+    public function post_type_tipster_contextual_help( $contextual_help, $screen_id, $screen ) {
+        if ( 'edit-tipster' === $screen->id ) {
 
             $contextual_help = '<h2>Tipster</h2>
         <p>Se muestran los detalles de los elementos que se muestran en la pagina de detalles de los tipsters. Usted puede ver la lista de esos elementos en esta pagina y ordenarlos cronologicamente - el ultimo agregado es el primero.</p>
         <p>Usted puede ver/editar los detalles de cada tipster haciendo clic en su nombre, o puede aplicar acciones usando el menu de opciones y seleccionar multiples elementos.</p>';
 
-        } elseif ( 'tipster' == $screen->id ) {
+        } elseif ( 'tipster' === $screen->id ) {
 
             $contextual_help = '<h2>Editar tipster</h2>
         <p>Esta pagina le permite ver/modificar los detalles de un tipster. Por favor asegurece de llenar los campos de las cajas disponibles (nombre, imagen, enlace).</p>';
@@ -150,10 +150,10 @@ class Tipster_Post_Type{
     /**
      * Tipster update messages.
      *
-     * @param $messages Existing post update messages.
+     * @param $messages array Existing post update messages.
      * @return array Amended post update messages with new CPT update messages.
      */
-    function post_type_tipster_updated_messages( $messages ) {
+    public function post_type_tipster_updated_messages( $messages ) {
         $post             = get_post();
         $post_type        = get_post_type( $post );
 //        $post_type_object = get_post_type_object( $post_type );

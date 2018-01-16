@@ -1,11 +1,6 @@
 <?php
 /**
- * The WordPress Plugin Boilerplate.
- *
- * A foundation off of which to build well-documented WordPress plugins that
- * also follow WordPress Coding Standards and PHP best practices.
- *
- * @package   Tipster_TAP
+ * @package   TipsterTap
  * @author    Alain Sanchez <luka.ghost@gmail.com>
  * @license   GPL-2.0+
  * @link      http://www.linkedin.com/in/mrbrazzi/
@@ -13,9 +8,9 @@
  *
  * @wordpress-plugin
  * Plugin Name:       Tipster TAP
- * Plugin URI:       http://www.todoapuestas.org
+ * Plugin URI:       http://todoapuestas.com
  * Description:       Plugin para gestionar tipsters y picks
- * Version:           2.6
+ * Version:           3.0
  * Author:       Alain Sanchez
  * Author URI:       http://www.linkedin.com/in/mrbrazzi/
  * Text Domain:       tipster-tap
@@ -29,6 +24,11 @@
 
 namespace TipsterTAP;
 
+use TipsterTAP\Frontend\TipsterTap;
+use TipsterTAP\Backend\TipsterTapAdmin;
+use TipsterTAP\Backend\Common\MetaBoxesPostType;
+use TipsterTAP\Common\TipsterPostType;
+
 // If this file is called directly, abort.
 if ( ! defined( 'WPINC' ) ) {
 	die;
@@ -40,18 +40,19 @@ if ( ! defined( 'WPINC' ) ) {
 
 /*
  */
-require_once( plugin_dir_path( __FILE__ ) . 'public/class-tipster-tap.php' );
+require_once plugin_dir_path( __FILE__ ) . 'includes/InvalidApiResponseException.php';
+require_once plugin_dir_path( __FILE__ ) . 'public/class-tipster-tap.php';
 
 /*
  * Register hooks that are fired when the plugin is activated or deactivated.
  * When the plugin is deleted, the uninstall.php file is loaded.
  */
-register_activation_hook( __FILE__, array( '\TipsterTAP\Frontend\Tipster_TAP', 'activate' ) );
-register_deactivation_hook( __FILE__, array( '\TipsterTAP\Frontend\Tipster_TAP', 'deactivate' ) );
+register_activation_hook( __FILE__, array( TipsterTap::class, 'activate' ) );
+register_deactivation_hook( __FILE__, array( TipsterTap::class, 'deactivate' ) );
 
 /*
  */
-add_action( 'plugins_loaded', array( '\TipsterTAP\Frontend\Tipster_TAP', 'get_instance' ) );
+add_action( 'plugins_loaded', array( TipsterTap::class, 'get_instance' ) );
 
 /*----------------------------------------------------------------------------*
  * Dashboard and Administrative Functionality
@@ -71,16 +72,16 @@ add_action( 'plugins_loaded', array( '\TipsterTAP\Frontend\Tipster_TAP', 'get_in
 //if ( is_admin() && ( ! defined( 'DOING_AJAX' ) || ! DOING_AJAX ) ) {
 if ( is_admin() ) {
 
-    require_once( plugin_dir_path( __FILE__ ) . 'admin/class-tipster-tap-admin.php' );
-    add_action( 'plugins_loaded', array( '\TipsterTAP\Backend\Tipster_TAP_Admin', 'get_instance' ) );
+    require_once plugin_dir_path( __FILE__ ) . 'admin/class-tipster-tap-admin.php';
+    add_action( 'plugins_loaded', array( TipsterTapAdmin::class, 'get_instance' ) );
 
-    if( !class_exists('\TipsterTAP\Backend\Common\Meta_Boxes_Post_Type')){
+    if( !class_exists( MetaBoxesPostType::class )){
         require_once plugin_dir_path( __FILE__ ) . 'admin/includes/meta-boxes.php';
-        add_action( 'plugins_loaded', array( '\TipsterTAP\Backend\Common\Meta_Boxes_Post_Type', 'get_instance' ) );
+        add_action( 'plugins_loaded', array( MetaBoxesPostType::class, 'get_instance' ) );
     }
 }
 
-if( !class_exists('\TipsterTAP\Common\Tipster_Post_Type')){
+if( !class_exists( TipsterPostType::class )){
     require_once plugin_dir_path( __FILE__ ) . 'includes/post-type-tipster.php';
-    add_action( 'plugins_loaded', array( '\TipsterTAP\Common\Tipster_Post_Type', 'get_instance' ) );
+    add_action( 'plugins_loaded', array( TipsterPostType::class, 'get_instance' ) );
 }

@@ -2,7 +2,7 @@
 /**
  * Fired when the plugin is uninstalled.
  *
- * @package   Tipster_TAP
+ * @package   TipsterTap
  * @author    Alain Sanchez <luka.ghost@gmail.com>
  * @license   GPL-2.0+
  * @link      http://www.linkedin.com/in/mrbrazzi/

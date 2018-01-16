@@ -5,13 +5,13 @@
  * This includes the header, options, and other information that should provide
  * The User Interface to the end user.
  *
- * @package   Tipster_TAP
+ * @package   TipsterTap
  * @author    Alain Sanchez <luka.ghost@gmail.com>
  * @license   GPL-2.0+
  * @link      http://www.linkedin.com/in/mrbrazzi/
  * @copyright 2014 Alain Sanchez
  */
-use TipsterTAP\Frontend\Tipster_TAP;
+use TipsterTAP\Frontend\TipsterTap;
 
 global $wpdb, $post;
 
@@ -95,7 +95,7 @@ if(isset($_POST['update'])){
         }
     }
 
-    add_settings_error('upgrade-picks-information', 'form-upgrade-picks-information', __('Actualizacion realizada satisfactoriamente', Tipster_TAP::get_instance()->get_plugin_slug()), 'updated');
+    add_settings_error('upgrade-picks-information', 'form-upgrade-picks-information', __('Actualizacion realizada satisfactoriamente', TipsterTap::get_instance()->get_plugin_slug()), 'updated');
 } ?>
 
 <div class="wrap">
@@ -103,11 +103,11 @@ if(isset($_POST['update'])){
     <h2><?php echo esc_html( get_admin_page_title() ); ?></h2>
     <?php settings_errors('upgrade-picks-information', false, true); ?>
 
-    <p><?php _e('Hacer clic en el boton para actualizar la informacion de los metadatos de las publicaciones de tipo Picks', Tipster_TAP::get_instance()->get_plugin_slug()) ?></p>
+    <p><?php _e('Hacer clic en el boton para actualizar la informacion de los metadatos de las publicaciones de tipo Picks', TipsterTap::get_instance()->get_plugin_slug()) ?></p>
 
-    <form id="form-update-picks-information" method="post" action="<?php echo admin_url( 'admin.php?page='.Tipster_TAP::get_instance()->get_plugin_slug()."/update-picks-information&settings-updated=1" ) ?>">
+    <form id="form-update-picks-information" method="post" action="<?php echo admin_url( 'admin.php?page='.TipsterTap::get_instance()->get_plugin_slug()."/update-picks-information&settings-updated=1" ) ?>">
         <p>
-            <label for="bookie"><?php _e('Bookies', Tipster_TAP::get_instance()->get_plugin_slug()) ?></label>
+            <label for="bookie"><?php _e('Bookies', TipsterTap::get_instance()->get_plugin_slug()) ?></label>
             <select id="bookie" name="bookie"><?php
             if($bookies){
                 foreach($bookies as $k => $v){
@@ -118,7 +118,7 @@ if(isset($_POST['update'])){
             </select>
         </p>
         <p>
-            <label for="deporte"><?php _e('Deporte', Tipster_TAP::get_instance()->get_plugin_slug()) ?></label>
+            <label for="deporte"><?php _e('Deporte', TipsterTap::get_instance()->get_plugin_slug()) ?></label>
             <select id="deporte" name="deporte"><?php
             if($deportes){
                 foreach($deportes as $k => $v){
@@ -129,7 +129,7 @@ if(isset($_POST['update'])){
             </select>
         </p>
         <p>
-            <label for="competicion"><?php _e('Competicion', Tipster_TAP::get_instance()->get_plugin_slug()) ?></label>
+            <label for="competicion"><?php _e('Competicion', TipsterTap::get_instance()->get_plugin_slug()) ?></label>
             <select id="competicion" name="competicion"><?php
             if(!empty($competiciones)){
                 foreach($competiciones as $k => $v){
@@ -141,7 +141,7 @@ if(isset($_POST['update'])){
         </p>
         <input type="hidden" name="update" value="1">
         <p class="submit">
-            <input type="submit" id="upgrade" value="<?php _e('Actualizar informacion',  Tipster_TAP::get_instance()->get_plugin_slug())?> &raquo;"/>
+            <input type="submit" id="upgrade" value="<?php _e('Actualizar informacion',  TipsterTap::get_instance()->get_plugin_slug())?> &raquo;"/>
         </p>
     </form>
 

@@ -1,10 +1,10 @@
 === Tipster TAP ===
 Contributors: mrbrazzi, todoapuestas
-Donate link: http://todoapuestas.org/
+Donate link: http://todoapuestas.com/
 Tags: tipster, picks
 Requires at least: 3.5.1
-Tested up to: 4.6.1
-Stable tag: 2.6
+Tested up to: 4.9.1
+Stable tag: 3.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -52,6 +52,20 @@ Nothing for now
 
 
 == Changelog ==
+
+= 3.0 =
+* This is a major release, update as son as possible
+* Tested up to Wordpress 4.9.1
+* Added a table to save picks
+* Improved tipster statistics calculation
+* Improved tipster yield history calculation
+* Added validation to pick's post_meta
+* Added validation to tipster's post_meta
+* Added backend page to migrate pick's meta information to the new picks table
+* Added backend page to update and see tipster's statistics
+* Added @deprecated to old methods
+* Added multiple improvements
+* Deleted unnecessary code
 
 = 2.6 =
 * Improved custom meta box with CMB2 plugin
@@ -125,7 +139,7 @@ Nothing for now
 * Added function to create statistics table on plugin installation
 
 = 1.1.5 =
-* Added to delete all metadatas when post's metadata `_post_tipo_publicacion` equal `post` in `save_post` function of `admin/class-tipster-tap-admin.php` file
+* Added to delete all metadata when post's metadata `_post_tipo_publicacion` equal `post` in `save_post` function of `admin/class-tipster-tap-admin.php` file
 
 = 1.1.4 =
 * Fixed a bug detected in `__construct` function of `admin/class-tipster-tap-admin.php` file
@@ -139,7 +153,7 @@ Nothing for now
 
 = 1.1.1 =
 * Fixed a bug detected in `admin/views/admin.php` file
-* Deleted unnecesary files and code lines
+* Deleted unnecessary files and code lines
 
 = 1.1.0 =
 * Updated some Pick's metabox fields.
@@ -150,7 +164,7 @@ Nothing for now
 
 == Upgrade Notice ==
 
-Upgrade to lastest version 2.3.x as soon as posible. See Changelog section for details
+Upgrade to the last version 3.0 as soon as possible. See Changelog section for details
 
 
 == Arbitrary section ==

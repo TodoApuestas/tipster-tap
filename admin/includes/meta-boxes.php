@@ -2,17 +2,17 @@
 
 namespace TipsterTAP\Backend\Common;
 
-use TipsterTAP\Frontend\Tipster_TAP;
+use TipsterTAP\Frontend\TipsterTap;
 
 /**
  * Include and setup custom metaboxes and fields.
  *
- * @category Tipster_TAP
+ * @category TipsterTap
  * @package  Metaboxes
  * @license  http://www.opensource.org/licenses/gpl-license.php GPL v2.0 (or later)
  * @link     https://github.com/webdevstudios/Custom-Metaboxes-and-Fields-for-WordPress
  */
-class Meta_Boxes_Post_Type {
+class MetaBoxesPostType {
     /**
      * Instance of this class.
      *
@@ -31,7 +31,7 @@ class Meta_Boxes_Post_Type {
      * @since     1.0.0
      */
     private function __construct() {
-        $this->plugin_slug = Tipster_TAP::get_instance()->get_plugin_slug();
+        $this->plugin_slug = TipsterTap::get_instance()->get_plugin_slug();
         add_action( 'cmb2_admin_init', array( $this, 'post_type_pick_metabox' ) );
         add_action( 'cmb2_admin_init', array( $this, 'post_type_tipster_metabox' ) );
         add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
@@ -59,13 +59,12 @@ class Meta_Boxes_Post_Type {
 
         return self::$instance;
     }
-
-    /**
-     * Define the metabox and field configurations for post-type pick.
-     *
-     * @param  array $meta_boxes
-     * @return array
-     */
+	
+	/**
+	 * Define the metabox and field configurations for post-type pick.
+	 *
+	 * @return void
+	 */
     public function post_type_pick_metabox() {
         global $post;
         // Start with an underscore to hide fields from custom fields list
@@ -123,7 +122,7 @@ class Meta_Boxes_Post_Type {
 	    $cmb_post_type->add_field(
 		    array(
 			    'name'    => __('Tipo de publicacion', $this->plugin_slug),
-			    'desc'    => __('Seleccionar el tipo de publicacion.<br>Si no es un pick debes dejar el valor por defecto: <strong>POST</strong>', $this->plugin_slug),
+			    'desc'    => __('Seleccionar el tipo de publicacion.<br>Si no es un <strong>PICK</strong> debes dejar el valor por defecto: <strong>POST</strong>', $this->plugin_slug),
 			    'id'      => '_post_tipo_publicacion',
 			    'type'    => 'select',
 			    'options' => array(
@@ -133,26 +132,6 @@ class Meta_Boxes_Post_Type {
 		    )
 	    );
 	    
-//        $meta_boxes['post_type'] = array(
-//            'id'         => 'post_type',
-//            'title'      => __( 'Tipo de publicacion', $this->plugin_slug ),
-//            'pages'      => array( 'post' ), // Tells CMB to use user_meta vs post_meta
-//            'show_names' => true,
-//            'cmb_styles' => true, // Show cmb bundled styles.. not needed on user profile page
-//            'fields'     => array(
-//                array(
-//                    //'name'    => __('Tipo de apuesta', $this->plugin_slug),
-//                    'desc'    => __('Seleccionar el tipo de publicacion.<br>Si no es un pick debes dejar el valor por defecto: <strong>POST</strong>', $this->plugin_slug),
-//                    'id'      => '_post_tipo_publicacion',
-//                    'type'    => 'select',
-//                    'options' => array(
-//                        'post' => __('Post', $this->plugin_slug),
-//                        'pick' => __('Pick', $this->plugin_slug)
-//                    ),
-//                )
-//            )
-//        );
-	
 	    $cmb_pick_informacion_general = new_cmb2_box(
 		    array(
 			    'id'            => 'pick_informacion_general',
@@ -187,17 +166,17 @@ class Meta_Boxes_Post_Type {
 	    );
 	    $cmb_pick_informacion_general->add_field(
 		    array(
-			    'name' => __('Fecha del Evento', $this->plugin_slug),
-			    'desc' => __('Seleccionar/escribir la fecha en que ocurre el evento deportivo.<br>Indicar utilizando el formato dd/mm/yyyy', $this->plugin_slug),
-			    'id'   => $prefix . 'fecha_evento',
-			    'type' => 'text_date',
-			    'date_format' => 'd/m/Y'
+			    'name'        => __( 'Fecha del Evento', $this->plugin_slug ),
+			    'desc'        => __( '<br>Seleccionar la fecha en que ocurre el evento deportivo.<br>Indicar utilizando el formato yyyy-mm-dd', $this->plugin_slug ),
+			    'id'          => $prefix . 'fecha_evento',
+			    'type'        => 'text_date',
+			    'date_format' => 'Y-m-d' // d/m/Y
 		    )
 	    );
 	    $cmb_pick_informacion_general->add_field(
 		    array(
 			    'name'        => __( 'Hora del Evento', $this->plugin_slug ),
-			    'desc'        => __( 'Seleccionar/escribir la hora en que ocurre el evento deportivo.<br>Indicar utilizando el formato hh:mm', $this->plugin_slug ),
+			    'desc'        => __( '<br>Seleccionar la hora en que ocurre el evento deportivo.<br>Indicar utilizando el formato hh:mm', $this->plugin_slug ),
 			    'id'          => $prefix . 'hora_evento',
 			    'type'        => 'text_time',
 			    'time_format' => 'H:i'
@@ -214,8 +193,16 @@ class Meta_Boxes_Post_Type {
 	    $cmb_pick_informacion_general->add_field(
 		    array(
 			    'name' => __('Cuota', $this->plugin_slug),
-			    'desc' => __( 'Escribir la cuota de la apuesta', $this->plugin_slug ),
+			    'desc' => __( 'Escribir la cuota de la apuesta.<br>Como separador decimal debe utilizar el punto. Ejemplo incorrecto: 1,23 / correcto: 1.23', $this->plugin_slug ),
 			    'id'   => $prefix . 'cuota',
+			    'type' => 'text'
+		    )
+	    );
+	    $cmb_pick_informacion_general->add_field(
+		    array(
+			    'name' => __('Stake', $this->plugin_slug),
+			    'desc' => __( 'Escribir el nivel de confianza en la apuesta.<br>Como separador decimal debe utilizar el punto. Ejemplo incorrecto: 1,23 / correcto: 1.23', $this->plugin_slug ),
+			    'id'   => $prefix . 'stake',
 			    'type' => 'text'
 		    )
 	    );
@@ -230,19 +217,11 @@ class Meta_Boxes_Post_Type {
 	    );
 	    $cmb_pick_informacion_general->add_field(
 		    array(
-			    'name' => __('Stake', $this->plugin_slug),
-			    'desc' => __( 'Escribir el nivel de confianza en la apuesta', $this->plugin_slug ),
-			    'id'   => $prefix . 'stake',
-			    'type' => 'text'
-		    )
-	    );
-	    $cmb_pick_informacion_general->add_field(
-		    array(
 			    'name'    => __('Tipo de apuesta', $this->plugin_slug),
 			    'desc'    => __('Seleccionar el tipo de apuesta hecha, ya sea un over, under, handicap...', $this->plugin_slug),
 			    'id'      => $prefix . 'tipo_apuesta',
 			    'type'    => 'select',
-			    'options' => array(
+			    'options' =>  array( // TODO: evaluar y/o valorar la posibilidad de convertirlo a taxonomia
 				    'ganador'   => __( 'Ganador', $this->plugin_slug ),
 				    'perdedor'  => __( 'Perdedor', $this->plugin_slug ),
 				    'under'     => __( 'Under', $this->plugin_slug ),
@@ -268,7 +247,7 @@ class Meta_Boxes_Post_Type {
 	    $cmb_pick_informacion_general->add_field(
 		    array(
 			    'name' => __('Competicion', $this->plugin_slug),
-			    'desc' => __( 'Escribir el nombre de la competencion asociada a la apuesta', $this->plugin_slug ),
+			    'desc' => __( 'Seleccionar el nombre de la competencion asociada a la apuesta', $this->plugin_slug ),
 			    'id'   => $prefix . 'competicion',
 			    'type' => 'select',
 			    'options' => $competiciones
@@ -286,7 +265,7 @@ class Meta_Boxes_Post_Type {
 	    $cmb_pick_informacion_general->add_field(
 		    array(
 			    'name'    => __('Resultado', $this->plugin_slug),
-			    'desc'    => __('Resultado de la apuesta: pendiente, acierto, fallo o nulo.<br>Si el evento aún no se ha resuelto debes dejar el resultado <strong>PENDIENTE</strong>.<br>Cuando el evento se resuelva actualiza el resultado según sea <strong>ACIERTO</strong>, <strong>FALLO</strong> o <strong>NULO</strong>', $this->plugin_slug),
+			    'desc'    => __('Seleccionar el resultado de la apuesta: pendiente, acierto, fallo o nulo.<br>Si el evento aún no se ha resuelto debes dejar el resultado <strong>PENDIENTE</strong> como seleccionado.<br>Cuando el evento se resuelva actualiza el resultado según sea <strong>ACIERTO</strong>, <strong>FALLO</strong> o <strong>NULO</strong>', $this->plugin_slug),
 			    'id'      => $prefix . 'resultado',
 			    'column'           => true,
 			    'display_cb'       => array( $this, 'display_pick_result_column'),
@@ -299,124 +278,6 @@ class Meta_Boxes_Post_Type {
 			    ),
 		    )
 	    );
-	    
-//        $meta_boxes['pick_informacion_general'] = array(
-//            'id'         => 'pick_informacion_general',
-//            'title'      => __( 'Picks', $this->plugin_slug ),
-//            'pages'      => array( 'post' ), // Tells CMB to use user_meta vs post_meta
-//            'show_names' => true,
-//            'cmb_styles' => true, // Show cmb bundled styles.. not needed on user profile page
-//            'fields'     => array(
-//                array(
-//                    'name' => __('Pronostico de pago', $this->plugin_slug),
-//                    'desc' => __( 'Seleccionar si es un pronostico de pago', $this->plugin_slug ),
-//                    'id'   => $prefix . 'pronostico_pago',
-//                    'type' => 'checkbox'
-//                ),
-//                array(
-//                    'name' => __('Live', $this->plugin_slug),
-//                    'desc' => __( 'Seleccionar si es live', $this->plugin_slug ),
-//                    'id'   => $prefix . 'live',
-//                    'type' => 'checkbox'
-//                ),
-//                array(
-//                    'name' => __('Evento', $this->plugin_slug),
-//                    'desc' => __( 'Escribir el nombre del evento deportivo, social o lo que sea que permita una apuesta', $this->plugin_slug ),
-//                    'id'   => $prefix . 'evento',
-//                    'type' => 'text'
-//                ),
-//                array(
-//                    'name' => __('Fecha del Evento', $this->plugin_slug),
-//                    'desc' => __('Seleccionar/escribir la fecha en que ocurre el evento deportivo.<br>Indicar utilizando el formato dd/mm/yyyy', $this->plugin_slug),
-//                    'id'   => $prefix . 'fecha_evento',
-//                    'type' => 'text_date'
-//                ),
-//                array(
-//                    'name' => __('Hora del Evento', $this->plugin_slug),
-//                    'desc' => __('Seleccionar/escribir la hora en que ocurre el evento deportivo.<br>Indicar utilizando el formato hh:mm', $this->plugin_slug),
-//                    'id'   => $prefix . 'hora_evento',
-//                    'type' => 'text_time'
-//                ),
-//                array(
-//                    'name' => __('Pronostico', $this->plugin_slug),
-//                    'desc' => __( 'Escribir que apuesta/pronostico vas a realizar', $this->plugin_slug ),
-//                    'id'   => $prefix . 'pronostico',
-//                    'type' => 'text'
-//                ),
-//                array(
-//                    'name' => __('Cuota', $this->plugin_slug),
-//                    'desc' => __( 'Escribir la cuota de la apuesta', $this->plugin_slug ),
-//                    'id'   => $prefix . 'cuota',
-//                    'type' => 'text'
-//                ),
-//                array(
-//                    'name'    => __('Casa de apuestas', $this->plugin_slug),
-//                    'desc'    => __('Seleccionar la casa de apuestas donde haz realizado la apuesta', $this->plugin_slug),
-//                    'id'      => $prefix . 'casa_apuesta',
-//                    'type'    => 'select',
-//                    'options' => $bookies
-//                ),
-//                array(
-//                    'name' => __('Stake', $this->plugin_slug),
-//                    'desc' => __( 'Escribir el nivel de confianza en la apuesta', $this->plugin_slug ),
-//                    'id'   => $prefix . 'stake',
-//                    'type' => 'text'
-//                ),
-//                array(
-//                    'name'    => __('Tipo de apuesta', $this->plugin_slug),
-//                    'desc'    => __('Seleccionar el tipo de apuesta hecha, ya sea un over, under, handicap...', $this->plugin_slug),
-//                    'id'      => $prefix . 'tipo_apuesta',
-//                    'type'    => 'select',
-//                    'options' => array(
-//                        'ganador'   => __( 'Ganador', $this->plugin_slug ),
-//                        'perdedor'  => __( 'Perdedor', $this->plugin_slug ),
-//                        'under'     => __( 'Under', $this->plugin_slug ),
-//                        'over'      => __( 'Over', $this->plugin_slug ),
-//                        'handicap'  => __( 'Handicap', $this->plugin_slug ),
-//                        'resultado' => __( 'Resultado concreto', $this->plugin_slug ),
-//                        'combinada' => __( 'Combinada', $this->plugin_slug ),
-//                        'funbet'    => __( 'Funbet', $this->plugin_slug ),
-//                        'reto'      => __( 'Reto', $this->plugin_slug ),
-//                        'otro'      => __( 'Otro', $this->plugin_slug ),
-//                    ),
-//                ),
-//                array(
-//                    'name' => __('Tipster', $this->plugin_slug),
-//                    'desc' => __( 'Seleccionar el tipster que promueve la apuesta', $this->plugin_slug ),
-//                    'id'   => $prefix . 'tipster',
-//                    'type' => 'select',
-//                    'options' => $tipsters
-//                ),
-//                array(
-//                    'name' => __('Competicion', $this->plugin_slug),
-//                    'desc' => __( 'Escribir el nombre de la competencion asociada a la apuesta', $this->plugin_slug ),
-//                    'id'   => $prefix . 'competicion',
-//                    'type' => 'select',
-//                    'options' => $competiciones
-//                ),
-//                array(
-//                    'name' => __('Deporte', $this->plugin_slug),
-//                    'desc' => __( 'Seleccionar el deporte asociado a la apuesta', $this->plugin_slug ),
-//                    'id'   => $prefix . 'deporte',
-//                    'type' => 'select',
-//                    'options' => $deportes
-//                ),
-//                array(
-//                    'name'    => __('Resultado', $this->plugin_slug),
-//                    'desc'    => __('Resultado de la apuesta: pendiente, acierto, fallo o nulo.<br>Si el evento aún no se ha resuelto debes dejar el resultado <strong>PENDIENTE</strong>.<br>Cuando el evento se resuelva actualiza el resultado según sea <strong>ACIERTO</strong>, <strong>FALLO</strong> o <strong>NULO</strong>', $this->plugin_slug),
-//                    'id'      => $prefix . 'resultado',
-//                    'type'    => 'select',
-//                    'options' => array(
-//                        'pendiente' => __('Pendiente', $this->plugin_slug),
-//                        'acierto'   => __('Acierto', $this->plugin_slug),
-//                        'fallo'     => __('Fallo', $this->plugin_slug),
-//                        'nulo'      => __('Nulo', $this->plugin_slug),
-//                    ),
-//                )
-//            )
-//        );
-//
-//        return $meta_boxes;
     }
     
     public function display_pick_result_column($field_args, $field){
@@ -427,7 +288,7 @@ class Meta_Boxes_Post_Type {
 	    $text = null;
 	    $color = null;
 	    
-	    if(strcmp($post_tipo_publicacion, 'pick') == 0) {
+	    if(strcmp($post_tipo_publicacion, 'pick') === 0) {
 		    $selected_value = $field->escaped_value();
 		    switch ( $selected_value ) {
 			    case 'acierto':
@@ -453,13 +314,12 @@ class Meta_Boxes_Post_Type {
 	    }
 	    printf('<span style="font-weight: 700; color: %s;">%s</span>', $color, $text);
     }
-    
-    /**
-     * Define the metabox and field configurations for post-type tipster.
-     *
-     * @param  array $meta_boxes
-     * @return array
-     */
+	
+	/**
+	 * Define the metabox and field configurations for post-type tipster.
+	 *
+	 * @return void
+	 */
     public function post_type_tipster_metabox() {
         // Start with an underscore to hide fields from custom fields list
         $prefix = '_tipster_';
@@ -487,7 +347,7 @@ class Meta_Boxes_Post_Type {
 	    $cmb_tipster_extra_info->add_field(
 		    array(
 			    'name' => __('Aciertos', $this->plugin_slug),
-			    'desc' => __( 'Escribir la cantidad inicial de aciertos', $this->plugin_slug ),
+			    'desc' => __( '<br>Escribir la cantidad inicial de aciertos.', $this->plugin_slug ),
 			    'id'   => $prefix . 'aciertos_iniciales',
 			    'type' => 'text_small',
 			    'default' => 0
@@ -496,7 +356,7 @@ class Meta_Boxes_Post_Type {
 	    $cmb_tipster_extra_info->add_field(
 		    array(
 			    'name' => __('Fallos', $this->plugin_slug),
-			    'desc' => __( 'Escribir la cantidad inicial de fallos', $this->plugin_slug ),
+			    'desc' => __( '<br>Escribir la cantidad inicial de fallos.', $this->plugin_slug ),
 			    'id'   => $prefix . 'fallos_iniciales',
 			    'type' => 'text_small',
 			    'default' => 0
@@ -505,7 +365,7 @@ class Meta_Boxes_Post_Type {
 	    $cmb_tipster_extra_info->add_field(
 		    array(
 			    'name' => __('Nulos', $this->plugin_slug),
-			    'desc' => __( 'Escribir la cantidad inicial de datos nulos', $this->plugin_slug ),
+			    'desc' => __( '<br>Escribir la cantidad inicial de datos nulos.', $this->plugin_slug ),
 			    'id'   => $prefix . 'nulos_iniciales',
 			    'type' => 'text_small',
 			    'default' => 0
@@ -514,7 +374,7 @@ class Meta_Boxes_Post_Type {
 	    $cmb_tipster_extra_info->add_field(
 		    array(
 			    'name' => __('Unidades jugadas', $this->plugin_slug),
-			    'desc' => __( 'Escribir la cantidad inicial de unidades jugadas', $this->plugin_slug ),
+			    'desc' => __( '<br>Escribir la cantidad inicial de unidades jugadas.<br>Como separador decimal debe utilizar el punto. Ejemplo incorrecto: 1,23 / correcto: 1.23', $this->plugin_slug ),
 			    'id'   => $prefix . 'unidades_jugadas_iniciales',
 			    'type' => 'text_small',
 			    'default' => 0
@@ -523,7 +383,7 @@ class Meta_Boxes_Post_Type {
 	    $cmb_tipster_extra_info->add_field(
 		    array(
 			    'name' => __('Unidades ganadas', $this->plugin_slug),
-			    'desc' => __( 'Escribir la cantidad inicial de unidades ganadas', $this->plugin_slug ),
+			    'desc' => __( '<br>Escribir la cantidad inicial de unidades ganadas.<br>Como separador decimal debe utilizar el punto. Ejemplo incorrecto: 1,23 / correcto: 1.23', $this->plugin_slug ),
 			    'id'   => $prefix . 'unidades_ganadas_iniciales',
 			    'type' => 'text_small',
 			    'default' => 0
@@ -532,10 +392,20 @@ class Meta_Boxes_Post_Type {
 	    $cmb_tipster_extra_info->add_field(
 		    array(
 			    'name' => __('Unidades perdidas', $this->plugin_slug),
-			    'desc' => __( 'Escribir la cantidad inicial de unidades perdidas', $this->plugin_slug ),
+			    'desc' => __( '<br>Escribir la cantidad inicial de unidades perdidas.<br>Como separador decimal debe utilizar el punto. Ejemplo incorrecto: 1,23 / correcto: 1.23', $this->plugin_slug ),
 			    'id'   => $prefix . 'unidades_perdidas_iniciales',
 			    'type' => 'text_small',
 			    'default' => 0
+		    )
+	    );
+	    $months = (integer)get_theme_mod( 'tipster_tap_limit_statistics');
+	    $cmb_tipster_extra_info->add_field(
+		    array(
+			    'name' => __('Estadisticas', $this->plugin_slug),
+			    'desc' => sprintf(__( '<br>Escribir la cantidad de meses a obtener registros para calcular y/o graficar las estadisticas.<br>Por defecto se asumen %s meses.', $this->plugin_slug ), $months),
+			    'id'   => $prefix . 'limit_statistics',
+			    'type' => 'text_small',
+			    'default' => $months
 		    )
 	    );
 	    $cmb_tipster_extra_info->add_field(
@@ -549,18 +419,26 @@ class Meta_Boxes_Post_Type {
 	    );
     }
 
-    function enqueue_scripts(){
+    public function enqueue_scripts(){
         $screen = get_current_screen();
-        switch($screen->id){
-            case "post":
-                wp_enqueue_script( $this->plugin_slug . '-admin-metabox-script', plugins_url( 'assets/js/meta-boxes-post.js', dirname(__FILE__) ), array( 'jquery' ), Tipster_TAP::VERSION );
-                wp_enqueue_script( 'datepicker-es', plugins_url( 'assets/js/datepicker.es.js', dirname(__FILE__) ), array( 'jquery' ), Tipster_TAP::VERSION );
-                break;
-            case "tipster":
-                wp_enqueue_script( $this->plugin_slug . '-admin-metabox-script', plugins_url( 'assets/js/meta-boxes-tipster.js', dirname(__FILE__) ), array( 'jquery' ), Tipster_TAP::VERSION );
-                break;
-            default:
-                break;
+        if(null !== $screen) {
+	        switch ( $screen->id ) {
+		        case 'post':
+			        wp_enqueue_script( $this->plugin_slug . '-admin-metabox-script', plugins_url( 'assets/js/meta-boxes-post.min.js', __DIR__ ), array( 'jquery' ), TipsterTap::VERSION );
+			        wp_enqueue_script( 'datepicker-es', plugins_url( 'assets/js/datepicker.es.min.js', __DIR__ ), array( 'jquery-ui-core', 'jquery-ui-datepicker', 'jquery-ui-datetimepicker' ), TipsterTap::VERSION );
+			        wp_enqueue_script( 'jquery-validation', plugins_url( 'assets/js/jquery-validation/js/jquery.validate.min.js', __DIR__ ), array( 'jquery' ), TipsterTap::VERSION );
+			        wp_enqueue_script( 'jquery-validation-es', plugins_url( 'assets/js/jquery-validation/i18n/messages_es.min.js', __DIR__ ), array( 'jquery-validation' ), TipsterTap::VERSION );
+			        wp_enqueue_script( $this->plugin_slug . '-admin-pick-validation', plugins_url( 'assets/js/pick-validations.min.js', __DIR__ ), array( 'jquery', 'jquery-validation' ), TipsterTap::VERSION );
+			        break;
+		        case 'tipster':
+			        wp_enqueue_script( $this->plugin_slug . '-admin-metabox-script', plugins_url( 'assets/js/meta-boxes-tipster.min.js', __DIR__ ), array( 'jquery' ), TipsterTap::VERSION );
+			        wp_enqueue_script( 'jquery-validation', plugins_url( 'assets/js/jquery-validation/js/jquery.validate.min.js', __DIR__ ), array( 'jquery' ), TipsterTap::VERSION );
+			        wp_enqueue_script( 'jquery-validation-es', plugins_url( 'assets/js/jquery-validation/i18n/messages_es.min.js', __DIR__ ), array( 'jquery-validation' ), TipsterTap::VERSION );
+			        wp_enqueue_script( $this->plugin_slug . '-admin-tipster-validation', plugins_url( 'assets/js/tipster-validations.min.js', __DIR__ ), array( 'jquery', 'jquery-validation' ), TipsterTap::VERSION );
+			        break;
+		        default:
+			        break;
+	        }
         }
     }
 }
