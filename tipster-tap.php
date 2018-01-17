@@ -47,12 +47,12 @@ require_once plugin_dir_path( __FILE__ ) . 'public/class-tipster-tap.php';
  * Register hooks that are fired when the plugin is activated or deactivated.
  * When the plugin is deleted, the uninstall.php file is loaded.
  */
-register_activation_hook( __FILE__, array( TipsterTap::class, 'activate' ) );
-register_deactivation_hook( __FILE__, array( TipsterTap::class, 'deactivate' ) );
+register_activation_hook( __FILE__, array( 'TipsterTAP\Frontend\TipsterTap', 'activate' ) );
+register_deactivation_hook( __FILE__, array( 'TipsterTAP\Frontend\TipsterTap', 'deactivate' ) );
 
 /*
  */
-add_action( 'plugins_loaded', array( TipsterTap::class, 'get_instance' ) );
+add_action( 'plugins_loaded', array( 'TipsterTAP\Frontend\TipsterTap', 'get_instance' ) );
 
 /*----------------------------------------------------------------------------*
  * Dashboard and Administrative Functionality
@@ -73,15 +73,15 @@ add_action( 'plugins_loaded', array( TipsterTap::class, 'get_instance' ) );
 if ( is_admin() ) {
 
     require_once plugin_dir_path( __FILE__ ) . 'admin/class-tipster-tap-admin.php';
-    add_action( 'plugins_loaded', array( TipsterTapAdmin::class, 'get_instance' ) );
+    add_action( 'plugins_loaded', array( 'TipsterTAP\Backend\TipsterTapAdmin', 'get_instance' ) );
 
-    if( !class_exists( MetaBoxesPostType::class )){
+    if( !class_exists( 'TipsterTAP\Backend\Common\MetaBoxesPostType' )){
         require_once plugin_dir_path( __FILE__ ) . 'admin/includes/meta-boxes.php';
-        add_action( 'plugins_loaded', array( MetaBoxesPostType::class, 'get_instance' ) );
+        add_action( 'plugins_loaded', array( 'TipsterTAP\Backend\Common\MetaBoxesPostType', 'get_instance' ) );
     }
 }
 
-if( !class_exists( TipsterPostType::class )){
+if( !class_exists( 'TipsterTAP\Common\TipsterPostType' )){
     require_once plugin_dir_path( __FILE__ ) . 'includes/post-type-tipster.php';
-    add_action( 'plugins_loaded', array( TipsterPostType::class, 'get_instance' ) );
+    add_action( 'plugins_loaded', array( 'TipsterTAP\Common\TipsterPostType', 'get_instance' ) );
 }
