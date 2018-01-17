@@ -87,10 +87,10 @@ class TipsterTap {
          * @updated   2.0.0
          */
         $this->default_options = array(
-            'url_sync_link_bookies' => 'http://todoapuestas.com/api/blocks-bookies/%s/%s/listado-bonos-bookies.json/?access_token=%s&_=%s',
-            'url_sync_link_deportes' => 'http://todoapuestas.com/api/deporte/listado-visible-blogs.json/?access_token=%s&_=%s',
-            'url_sync_link_competiciones' => 'http://todoapuestas.com/api/competicion/listado.json/?access_token=%s&_=%s',
-	        'url_check_ip' => 'http://todoapuestas.com/api/geoip/country-by-ip.json/%s/?access_token=%s&_=%s',
+            'url_sync_link_bookies' => 'https://todoapuestas.com/api/blocks-bookies/%s/%s/listado-bonos-bookies.json/?access_token=%s&_=%s',
+            'url_sync_link_deportes' => 'https://todoapuestas.com/api/deporte/listado-visible-blogs.json/?access_token=%s&_=%s',
+            'url_sync_link_competiciones' => 'https://todoapuestas.com/api/competicion/listado.json/?access_token=%s&_=%s',
+	        'url_check_ip' => 'https://todoapuestas.com/api/geoip/country-by-ip.json/%s/?access_token=%s&_=%s',
             'tracked_web_category' => 'apuestas',
             'tracker' => $_SERVER['HTTP_HOST']
         );

@@ -1,6 +1,6 @@
 === Tipster TAP ===
 Contributors: mrbrazzi, todoapuestas
-Donate link: http://todoapuestas.com/
+Donate link: https://todoapuestas.com/
 Tags: tipster, picks
 Requires at least: 3.5.1
 Tested up to: 4.9.1
