@@ -70,27 +70,26 @@ class MetaBoxesPostType {
         // Start with an underscore to hide fields from custom fields list
         $prefix = '_pick_';
 
-        $tipster_tap_bookies = get_option('tipster_tap_bookies');
+        $tap_bookies = get_option('TAP_BOOKIES');
         $bookies = array();
-        if($tipster_tap_bookies){
-            foreach($tipster_tap_bookies as $k => $v){
+        if($tap_bookies){
+            foreach($tap_bookies as $k => $v){
                 $bookies[$k] = $v['nombre'];
             }
         }
 
-        $tipster_tap_deportes = get_option('tipster_tap_deportes');
+        $tap_deportes = get_option('TAP_DEPORTES');
         $deportes = array();
-        if($tipster_tap_deportes){
-            foreach($tipster_tap_deportes as $k => $v){
+        if($tap_deportes){
+            foreach($tap_deportes as $k => $v){
                 $deportes[$k] = $v['nombre'];
             }
         }
 
-
-        $tipster_tap_competiciones = get_option('tipster_tap_competiciones');
+        $tap_competiciones = get_option('TAP_COMPETICIONES');
         $competiciones = array();
-        if($tipster_tap_competiciones){
-            foreach($tipster_tap_competiciones as $k => $v){
+        if($tap_competiciones){
+            foreach($tap_competiciones as $k => $v){
                 $competiciones[$k] = $v['nombre'];
             }
         }

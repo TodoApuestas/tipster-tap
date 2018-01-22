@@ -33,7 +33,7 @@ class TipsterTap {
 	 *
 	 * @var     string
 	 */
-	const VERSION = '3.0';
+	const VERSION = '3.2';
 
 	/**
 	 * Unique identifier for your plugin.
@@ -65,6 +65,7 @@ class TipsterTap {
 	 * and styles.
 	 *
 	 * @since     1.0.0
+	 * @updated   3.2
 	 */
 	private function __construct() {
 
@@ -79,21 +80,6 @@ class TipsterTap {
 		// Load public-facing style sheet and JavaScript.
 //		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_styles' ) );
 //		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
-
-        /**
-         * Define the default options
-         *
-         * @since     1.0
-         * @updated   2.0.0
-         */
-        $this->default_options = array(
-            'url_sync_link_bookies' => 'https://todoapuestas.com/api/blocks-bookies/%s/%s/listado-bonos-bookies.json/?access_token=%s&_=%s',
-            'url_sync_link_deportes' => 'https://todoapuestas.com/api/deporte/listado-visible-blogs.json/?access_token=%s&_=%s',
-            'url_sync_link_competiciones' => 'https://todoapuestas.com/api/competicion/listado.json/?access_token=%s&_=%s',
-	        'url_check_ip' => 'https://todoapuestas.com/api/geoip/country-by-ip.json/%s/?access_token=%s&_=%s',
-            'tracked_web_category' => 'apuestas',
-            'tracker' => $_SERVER['HTTP_HOST']
-        );
 
         /* Define custom functionality.
          * Refer To http://codex.wordpress.org/Plugin_API#Hooks.2C_Actions_and_Filters
@@ -263,13 +249,9 @@ class TipsterTap {
 	 * Fired for each blog when the plugin is activated.
 	 *
 	 * @since    1.0.0
+	 * @updated   3.2
 	 */
 	private static function single_activate() {
-        add_option('tipster_tap_remote_info', self::get_instance()->default_options);
-        add_option('tipster_tap_bookies', array());
-        add_option('tipster_tap_deportes', array());
-        add_option('tipster_tap_competiciones', array());
-
         //execute db update table
         self::get_instance()->db_update();
         // execute initial synchronization
@@ -280,21 +262,18 @@ class TipsterTap {
 	 * Fired for each blog when the plugin is deactivated.
 	 *
 	 * @since    1.0.0
+	 * @updated   3.2
 	 */
 	private static function single_deactivate() {
 		remove_action( 'tipster_tap_hourly_remote_sync', array( self::$instance, 'remote_sync' ) );
         remove_action( 'wp' , array( self::$instance, 'active_remote_sync'));
-
-        delete_option('tipster_tap_remote_info');
-        delete_option('tipster_tap_bookies');
-        delete_option('tipster_tap_deportes');
-        delete_option('tipster_tap_competiciones');
 	}
 
 	/**
 	 * Load the plugin text domain for translation.
 	 *
 	 * @since    1.0.0
+	 * @updated   3.2
 	 */
 	public function load_plugin_textdomain() {
 
@@ -302,10 +281,18 @@ class TipsterTap {
 		$locale = apply_filters( 'plugin_locale', get_locale(), $domain );
 
 		load_textdomain( $domain, trailingslashit( WP_LANG_DIR ) . $domain . '/' . $domain . '-' . $locale . '.mo' );
-		load_plugin_textdomain( $domain, FALSE, basename( plugin_dir_path( dirname( __FILE__ ) ) ) . '/languages/' );
+		load_plugin_textdomain( $domain, FALSE, basename( plugin_dir_path( __DIR__ ) ) . '/languages/' );
 
 	}
-
+	
+	/**
+	 * @param \WP_Customize_Manager $wp_customize
+	 *
+	 * @since 2.0
+	 * @updated   2.6
+	 * @updated   3.0
+	 * @updated   3.2
+	 */
 	public function customizations(\WP_Customize_Manager $wp_customize)
 	{
 		$domain = $this->plugin_slug;
@@ -316,12 +303,6 @@ class TipsterTap {
 		) );
 
 		// Avatar por defecto para tipsters
-//		$wp_customize->add_setting('tipster_tap_default_avatar', array(
-//			'default'           => plugin_dir_url(__FILE__).'../assets/img/tipster.png',
-//			'default'           => null,
-//			'capability'        => 'edit_theme_options',
-//			'sanitize_callback' => 'sanitize_text_field'
-//		));
 		$wp_customize->add_setting( 'tipster_tap_default_avatar', array( 'sanitize_callback' => 'sanitize_text_field' ) );
 
 		$wp_customize->add_control( new \WP_Customize_Image_Control( $wp_customize, 'tipster_avatar', array(
@@ -407,37 +388,19 @@ class TipsterTap {
         }
     }
 	
-	/**
+    /**
 	 * Execute synchronizations from todoapuestas.com server
 	 *
 	 * @since   1.0
 	 * @updated 2.1.1
+     * @updated 3.2
+     *
 	 * @return void
 	 */
     public function remote_sync() {
-        $option = get_option('tipster_tap_remote_info', $this->default_options);
-
-        $oauthAccessToken = $this->get_oauth_access_token();
-
-	    $timestamp = new \DateTime('now');
-
-        $apiUrl = esc_url(sprintf($option['url_sync_link_bookies'], $option['tracked_web_category'], $option['tracker'], $oauthAccessToken, $timestamp->getTimestamp()));
-	    $list_bookies = $this->get_result_from_api( $apiUrl, true, 'Request Bookies' );
-        if(!empty($list_bookies)){
-            update_option('tipster_tap_bookies', $list_bookies);
-        }
-
-        $apiUrl = esc_url(sprintf($option['url_sync_link_deportes'], $oauthAccessToken, $timestamp->getTimestamp()));
-        $list_deportes = $this->get_result_from_api($apiUrl, true, 'Request Sports');
-        if(!empty($list_deportes['deporte'])){
-            update_option('tipster_tap_deportes', $list_deportes['deporte']);
-        }
-
-        $apiUrl = esc_url(sprintf($option['url_sync_link_competiciones'], $oauthAccessToken, $timestamp->getTimestamp()));
-        $list_competiciones = $this->get_result_from_api($apiUrl, true, 'Request Competitions');
-        if(!empty($list_competiciones['competicion'])){
-            update_option('tipster_tap_competiciones', $list_competiciones['competicion']);
-        }
+        do_action('rest_client_tap_request_bookies');
+        do_action('rest_client_tap_request_sports');
+        do_action('rest_client_tap_request_competitions');
     }
 
 	/**
@@ -525,9 +488,11 @@ class TipsterTap {
 	/**
 	 * @since 2.3.0
 	 * @return array|null
+	 * @deprecated 3.2
 	 */
     private function get_oauth_access_token()
     {
+	    do_action('deprecated_function_run', 'get_oauth_access_token', 'plugin Rest Client Tap', '3.2');
         $session_id = session_id();
         if(empty($session_id) && !headers_sent()){
         	@session_start();
@@ -575,9 +540,11 @@ class TipsterTap {
 	 * @param string $intention
 	 *
 	 * @return array|mixed|object
+	 * @deprecated 3.2
 	 */
     private function get_result_from_api($url, $assoc = true, $intention = 'Request Access Token')
     {
+	    do_action('deprecated_function_run', 'get_result_from_api', 'plugin Rest Client Tap', '3.2');
         $apiResponse = wp_remote_get($url);
 	    $apiResponseCode = wp_remote_retrieve_response_code($apiResponse);
 	    $apiResponseBody = wp_remote_retrieve_body($apiResponse);

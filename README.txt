@@ -2,9 +2,9 @@
 Contributors: mrbrazzi, todoapuestas
 Donate link: https://todoapuestas.com/
 Tags: tipster, picks
-Requires at least: 3.5.1
-Tested up to: 4.9.1
-Stable tag: 3.0
+Requires at least: 3.5
+Tested up to: 4.9.2
+Stable tag: 3.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -52,6 +52,11 @@ Nothing for now
 
 
 == Changelog ==
+
+= 3.2 =
+* Tested up to Wordpress 4.9.2
+* Use Rest Client TAP actions and filters to access TodoApuestas's API services
+* Added multiple improvements
 
 = 3.0 =
 * This is a major release, update as son as possible
@@ -164,12 +169,12 @@ Nothing for now
 
 == Upgrade Notice ==
 
-Upgrade to the last version 3.0 as soon as possible. See Changelog section for details
+Upgrade to the last version 3.2 as soon as possible. See Changelog section for details.
 
 
 == Arbitrary section ==
 
-Nothing for now
+Must have installed [Rest Client TAP](https://www.wordpress.org/plugins/rest-client-tap) plugin version 1.0 o later.
 
 
 == Updates ==

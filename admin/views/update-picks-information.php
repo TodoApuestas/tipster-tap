@@ -15,20 +15,20 @@ use TipsterTAP\Frontend\TipsterTap;
 
 global $wpdb, $post;
 
-$tipster_tap_bookies = get_option('tipster_tap_bookies');
-$bookies = array();
-foreach ( $tipster_tap_bookies as $k => $value ) {
+$tap_bookies = get_option('TAP_BOOKIES');
+$bookies     = array();
+foreach ( $tap_bookies as $k => $value ) {
     $bookies[$k] = $value['nombre'];
 }
 
-$tipster_tap_deportes = get_option('tipster_tap_deportes');
-$deportes = array();
-foreach ( $tipster_tap_deportes as $k => $value ) {
+$tap_deportes = get_option('TAP_DEPORTES');
+$deportes     = array();
+foreach ( $tap_deportes as $k => $value ) {
     $deportes[$k] = $value['nombre'];
 }
-$tipster_tap_competiciones = get_option('tipster_tap_competiciones');
-$competiciones = array();
-foreach ( $tipster_tap_competiciones as $value ) {
+$tap_competiciones = get_option('TAP_COMPETICIONES');
+$competiciones     = array();
+foreach ( $tap_competiciones as $value ) {
     $competiciones[$value['id']] = $value['nombre'];
 }
 $tipster_id = $casa_apuesta = $deporte = $competicion = null;

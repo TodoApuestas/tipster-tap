@@ -10,7 +10,7 @@
  * Plugin Name:       Tipster TAP
  * Plugin URI:       https://todoapuestas.com
  * Description:       Plugin para gestionar tipsters y picks
- * Version:           3.0
+ * Version:           3.2
  * Author:       Alain Sanchez
  * Author URI:       http://www.linkedin.com/in/mrbrazzi/
  * Text Domain:       tipster-tap
@@ -24,11 +24,6 @@
 
 namespace TipsterTAP;
 
-use TipsterTAP\Frontend\TipsterTap;
-use TipsterTAP\Backend\TipsterTapAdmin;
-use TipsterTAP\Backend\Common\MetaBoxesPostType;
-use TipsterTAP\Common\TipsterPostType;
-
 // If this file is called directly, abort.
 if ( ! defined( 'WPINC' ) ) {
 	die;
@@ -40,7 +35,6 @@ if ( ! defined( 'WPINC' ) ) {
 
 /*
  */
-require_once plugin_dir_path( __FILE__ ) . 'includes/InvalidApiResponseException.php';
 require_once plugin_dir_path( __FILE__ ) . 'public/class-tipster-tap.php';
 
 /*

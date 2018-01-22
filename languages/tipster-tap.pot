@@ -1,0 +1,770 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Tipster Tap\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2018-01-21 23:34-0500\n"
+"PO-Revision-Date: 2018-01-21 23:34-0500\n"
+"Last-Translator: Alain Sánchez <brazzisoft.com@gmail.com>\n"
+"Language-Team: Alain Sánchez <luka.ghost@gmail.com>\n"
+"Language: en_US\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Basepath: ..\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-KeywordsList: __;_e;_n:1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;esc_attr__;"
+"esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c;_n_noop:1,2;"
+"_nx_noop:3c,1,2;__ngettext_noop:1,2\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Poedit-SearchPathExcluded-0: *.js\n"
+"X-Poedit-SearchPath-0: .\n"
+
+#: admin/class-tipster-tap-admin.php:188 admin/class-tipster-tap-admin.php:189
+#: admin/class-tipster-tap-admin.php:198 admin/class-tipster-tap-admin.php:207
+#: admin/class-tipster-tap-admin.php:216
+msgid "Tipster TAP"
+msgstr ""
+
+#: admin/class-tipster-tap-admin.php:199 admin/class-tipster-tap-admin.php:260
+msgid "Informacion"
+msgstr ""
+
+#: admin/class-tipster-tap-admin.php:208
+msgid "Manage Tipsters"
+msgstr ""
+
+#: admin/class-tipster-tap-admin.php:217
+msgid "Manage Picks"
+msgstr ""
+
+#: admin/class-tipster-tap-admin.php:309 admin/includes/meta-boxes.php:266
+msgid "Resultado"
+msgstr ""
+
+#: admin/class-tipster-tap-admin.php:313 admin/includes/meta-boxes.php:273
+#: admin/includes/meta-boxes.php:306
+msgid "Pendiente"
+msgstr ""
+
+#: admin/class-tipster-tap-admin.php:316 admin/includes/meta-boxes.php:274
+#: admin/includes/meta-boxes.php:294
+msgid "Acierto"
+msgstr ""
+
+#: admin/class-tipster-tap-admin.php:319 admin/includes/meta-boxes.php:275
+#: admin/includes/meta-boxes.php:298
+msgid "Fallo"
+msgstr ""
+
+#: admin/class-tipster-tap-admin.php:322 admin/includes/meta-boxes.php:276
+#: admin/includes/meta-boxes.php:302
+msgid "Nulo"
+msgstr ""
+
+#: admin/class-tipster-tap-admin.php:868
+#: admin/class-tipster-tap-admin.php:1157 admin/includes/meta-boxes.php:348
+msgid "Aciertos"
+msgstr ""
+
+#: admin/class-tipster-tap-admin.php:869
+#: admin/class-tipster-tap-admin.php:1158 admin/includes/meta-boxes.php:357
+msgid "Fallos"
+msgstr ""
+
+#: admin/class-tipster-tap-admin.php:870 admin/includes/meta-boxes.php:366
+msgid "Nulos"
+msgstr ""
+
+#: admin/class-tipster-tap-admin.php:871
+msgid "Beneficios"
+msgstr ""
+
+#: admin/class-tipster-tap-admin.php:872
+#: admin/class-tipster-tap-admin.php:1161
+msgid "Yield"
+msgstr ""
+
+#: admin/class-tipster-tap-admin.php:1159
+msgid "Voids"
+msgstr ""
+
+#: admin/class-tipster-tap-admin.php:1160
+msgid "U. ganadas"
+msgstr ""
+
+#: admin/class-tipster-tap-admin.php:1221
+msgid "Migration is not necessary."
+msgstr ""
+
+#: admin/class-tipster-tap-admin.php:1302
+msgid "Migration successfully."
+msgstr ""
+
+#: admin/class-tipster-tap-admin.php:1340
+#, php-format
+msgid "%s. Invalid data to %s: %s"
+msgstr ""
+
+#: admin/includes/meta-boxes.php:116 admin/includes/meta-boxes.php:329
+msgid "Informacion adicional"
+msgstr ""
+
+#: admin/includes/meta-boxes.php:123 admin/includes/meta-boxes.php:137
+msgid "Tipo de publicacion"
+msgstr ""
+
+#: admin/includes/meta-boxes.php:124
+msgid ""
+"Seleccionar el tipo de publicacion.<br>Si no es un <strong>PICK</strong> "
+"debes dejar el valor por defecto: <strong>POST</strong>"
+msgstr ""
+
+#: admin/includes/meta-boxes.php:128
+msgid "Post"
+msgstr ""
+
+#: admin/includes/meta-boxes.php:129
+msgid "Pick"
+msgstr ""
+
+#: admin/includes/meta-boxes.php:144
+msgid "Pronostico de pago"
+msgstr ""
+
+#: admin/includes/meta-boxes.php:145
+msgid "Seleccionar si es un pronostico de pago"
+msgstr ""
+
+#: admin/includes/meta-boxes.php:152
+msgid "Live"
+msgstr ""
+
+#: admin/includes/meta-boxes.php:153
+msgid "Seleccionar si es live"
+msgstr ""
+
+#: admin/includes/meta-boxes.php:160
+msgid "Evento"
+msgstr ""
+
+#: admin/includes/meta-boxes.php:161
+msgid ""
+"Escribir el nombre del evento deportivo, social o lo que sea que permita una "
+"apuesta"
+msgstr ""
+
+#: admin/includes/meta-boxes.php:168
+msgid "Fecha del Evento"
+msgstr ""
+
+#: admin/includes/meta-boxes.php:169
+msgid ""
+"<br>Seleccionar la fecha en que ocurre el evento deportivo.<br>Indicar "
+"utilizando el formato yyyy-mm-dd"
+msgstr ""
+
+#: admin/includes/meta-boxes.php:177
+msgid "Hora del Evento"
+msgstr ""
+
+#: admin/includes/meta-boxes.php:178
+msgid ""
+"<br>Seleccionar la hora en que ocurre el evento deportivo.<br>Indicar "
+"utilizando el formato hh:mm"
+msgstr ""
+
+#: admin/includes/meta-boxes.php:186
+msgid "Pronostico"
+msgstr ""
+
+#: admin/includes/meta-boxes.php:187
+msgid "Escribir que apuesta/pronostico vas a realizar"
+msgstr ""
+
+#: admin/includes/meta-boxes.php:194
+msgid "Cuota"
+msgstr ""
+
+#: admin/includes/meta-boxes.php:195
+msgid ""
+"Escribir la cuota de la apuesta.<br>Como separador decimal debe utilizar el "
+"punto. Ejemplo incorrecto: 1,23 / correcto: 1.23"
+msgstr ""
+
+#: admin/includes/meta-boxes.php:202
+msgid "Stake"
+msgstr ""
+
+#: admin/includes/meta-boxes.php:203
+msgid ""
+"Escribir el nivel de confianza en la apuesta.<br>Como separador decimal debe "
+"utilizar el punto. Ejemplo incorrecto: 1,23 / correcto: 1.23"
+msgstr ""
+
+#: admin/includes/meta-boxes.php:210
+msgid "Casa de apuestas"
+msgstr ""
+
+#: admin/includes/meta-boxes.php:211
+msgid "Seleccionar la casa de apuestas donde haz realizado la apuesta"
+msgstr ""
+
+#: admin/includes/meta-boxes.php:219
+msgid "Tipo de apuesta"
+msgstr ""
+
+#: admin/includes/meta-boxes.php:220
+msgid ""
+"Seleccionar el tipo de apuesta hecha, ya sea un over, under, handicap..."
+msgstr ""
+
+#: admin/includes/meta-boxes.php:224 admin/includes/post-type-pick.php:232
+msgid "Ganador"
+msgstr ""
+
+#: admin/includes/meta-boxes.php:225 admin/includes/post-type-pick.php:233
+msgid "Perdedor"
+msgstr ""
+
+#: admin/includes/meta-boxes.php:226 admin/includes/post-type-pick.php:234
+msgid "Under"
+msgstr ""
+
+#: admin/includes/meta-boxes.php:227 admin/includes/post-type-pick.php:235
+msgid "Over"
+msgstr ""
+
+#: admin/includes/meta-boxes.php:228 admin/includes/post-type-pick.php:236
+msgid "Handicap"
+msgstr ""
+
+#: admin/includes/meta-boxes.php:229 admin/includes/post-type-pick.php:237
+msgid "Resultado concreto"
+msgstr ""
+
+#: admin/includes/meta-boxes.php:230 admin/includes/post-type-pick.php:238
+msgid "Combinada"
+msgstr ""
+
+#: admin/includes/meta-boxes.php:231 admin/includes/post-type-pick.php:239
+msgid "Funbet"
+msgstr ""
+
+#: admin/includes/meta-boxes.php:232 admin/includes/post-type-pick.php:240
+msgid "Reto"
+msgstr ""
+
+#: admin/includes/meta-boxes.php:233 admin/includes/post-type-pick.php:241
+msgid "Otro"
+msgstr ""
+
+#: admin/includes/meta-boxes.php:239
+msgid "Tipster"
+msgstr ""
+
+#: admin/includes/meta-boxes.php:240
+msgid "Seleccionar el tipster que promueve la apuesta"
+msgstr ""
+
+#: admin/includes/meta-boxes.php:248
+#: admin/views/update-picks-information.php:132
+msgid "Competicion"
+msgstr ""
+
+#: admin/includes/meta-boxes.php:249
+msgid "Seleccionar el nombre de la competencion asociada a la apuesta"
+msgstr ""
+
+#: admin/includes/meta-boxes.php:257
+#: admin/views/update-picks-information.php:121
+msgid "Deporte"
+msgstr ""
+
+#: admin/includes/meta-boxes.php:258
+msgid "Seleccionar el deporte asociado a la apuesta"
+msgstr ""
+
+#: admin/includes/meta-boxes.php:267
+msgid ""
+"Seleccionar el resultado de la apuesta: pendiente, acierto, fallo o nulo."
+"<br>Si el evento aún no se ha resuelto debes dejar el resultado "
+"<strong>PENDIENTE</strong> como seleccionado.<br>Cuando el evento se "
+"resuelva actualiza el resultado según sea <strong>ACIERTO</strong>, "
+"<strong>FALLO</strong> o <strong>NULO</strong>"
+msgstr ""
+
+#: admin/includes/meta-boxes.php:336
+msgid "Datos iniciales"
+msgstr ""
+
+#: admin/includes/meta-boxes.php:337
+msgid ""
+"Seleccionar si se utilizaran o no valores iniciales para realizar los "
+"calculos."
+msgstr ""
+
+#: admin/includes/meta-boxes.php:341
+msgid "NO"
+msgstr ""
+
+#: admin/includes/meta-boxes.php:342
+msgid "SI"
+msgstr ""
+
+#: admin/includes/meta-boxes.php:349
+msgid "<br>Escribir la cantidad inicial de aciertos."
+msgstr ""
+
+#: admin/includes/meta-boxes.php:358
+msgid "<br>Escribir la cantidad inicial de fallos."
+msgstr ""
+
+#: admin/includes/meta-boxes.php:367
+msgid "<br>Escribir la cantidad inicial de datos nulos."
+msgstr ""
+
+#: admin/includes/meta-boxes.php:375
+msgid "Unidades jugadas"
+msgstr ""
+
+#: admin/includes/meta-boxes.php:376
+msgid ""
+"<br>Escribir la cantidad inicial de unidades jugadas.<br>Como separador "
+"decimal debe utilizar el punto. Ejemplo incorrecto: 1,23 / correcto: 1.23"
+msgstr ""
+
+#: admin/includes/meta-boxes.php:384
+msgid "Unidades ganadas"
+msgstr ""
+
+#: admin/includes/meta-boxes.php:385
+msgid ""
+"<br>Escribir la cantidad inicial de unidades ganadas.<br>Como separador "
+"decimal debe utilizar el punto. Ejemplo incorrecto: 1,23 / correcto: 1.23"
+msgstr ""
+
+#: admin/includes/meta-boxes.php:393
+msgid "Unidades perdidas"
+msgstr ""
+
+#: admin/includes/meta-boxes.php:394
+msgid ""
+"<br>Escribir la cantidad inicial de unidades perdidas.<br>Como separador "
+"decimal debe utilizar el punto. Ejemplo incorrecto: 1,23 / correcto: 1.23"
+msgstr ""
+
+#: admin/includes/meta-boxes.php:403 public/class-tipster-tap.php:343
+msgid "Estadisticas"
+msgstr ""
+
+#: admin/includes/meta-boxes.php:404
+#, php-format
+msgid ""
+"<br>Escribir la cantidad de meses a obtener registros para calcular y/o "
+"graficar las estadisticas.<br>Por defecto se asumen %s meses."
+msgstr ""
+
+#: admin/includes/meta-boxes.php:412
+msgid "Google+"
+msgstr ""
+
+#: admin/includes/meta-boxes.php:413
+msgid "Escribir la url del profile en Google Plus"
+msgstr ""
+
+#: admin/includes/post-type-pick.php:82
+msgctxt "post type general name"
+msgid "Picks"
+msgstr ""
+
+#: admin/includes/post-type-pick.php:83
+msgctxt "post type singular name"
+msgid "Pick"
+msgstr ""
+
+#: admin/includes/post-type-pick.php:84
+msgctxt "admin menu"
+msgid "Pick"
+msgstr ""
+
+#: admin/includes/post-type-pick.php:85
+msgctxt "add new on admin bar"
+msgid "Pick"
+msgstr ""
+
+#: admin/includes/post-type-pick.php:86
+msgid "Pick padre:"
+msgstr ""
+
+#: admin/includes/post-type-pick.php:87
+msgid "Todos los picks"
+msgstr ""
+
+#: admin/includes/post-type-pick.php:88
+msgid "Ver pick"
+msgstr ""
+
+#: admin/includes/post-type-pick.php:89
+msgid "Agregar pick"
+msgstr ""
+
+#: admin/includes/post-type-pick.php:90
+msgctxt "pick"
+msgid "Agregar nuevo"
+msgstr ""
+
+#: admin/includes/post-type-pick.php:91
+msgid "Editar pick"
+msgstr ""
+
+#: admin/includes/post-type-pick.php:92
+msgid "Actualizar pick"
+msgstr ""
+
+#: admin/includes/post-type-pick.php:93
+msgid "Buscar picks"
+msgstr ""
+
+#: admin/includes/post-type-pick.php:94
+msgid "No se encontraron picks"
+msgstr ""
+
+#: admin/includes/post-type-pick.php:95
+msgid "No se encontraron picks en la papelera"
+msgstr ""
+
+#: admin/includes/post-type-pick.php:98
+msgid "pick"
+msgstr ""
+
+#: admin/includes/post-type-pick.php:99
+msgid "Gestiona los picks y la informacion de los picks"
+msgstr ""
+
+#: admin/includes/post-type-pick.php:124
+msgctxt "taxonomy general name"
+msgid "Categorias de Picks"
+msgstr ""
+
+#: admin/includes/post-type-pick.php:125
+msgctxt "taxonomy singular name"
+msgid "Categoria de Pick"
+msgstr ""
+
+#: admin/includes/post-type-pick.php:126 includes/post-type-tipster.php:109
+msgid "Buscar categorias"
+msgstr ""
+
+#: admin/includes/post-type-pick.php:127 includes/post-type-tipster.php:110
+msgid "Todas las categorias"
+msgstr ""
+
+#: admin/includes/post-type-pick.php:128 includes/post-type-tipster.php:111
+msgid "Categoria padre"
+msgstr ""
+
+#: admin/includes/post-type-pick.php:129 includes/post-type-tipster.php:112
+msgid "Categoria padre:"
+msgstr ""
+
+#: admin/includes/post-type-pick.php:130 includes/post-type-tipster.php:113
+msgid "Editar categoria"
+msgstr ""
+
+#: admin/includes/post-type-pick.php:131 includes/post-type-tipster.php:114
+msgid "Actualizar categoria"
+msgstr ""
+
+#: admin/includes/post-type-pick.php:132 includes/post-type-tipster.php:115
+msgid "Agregar nueva"
+msgstr ""
+
+#: admin/includes/post-type-pick.php:133 includes/post-type-tipster.php:116
+msgid "Agregar categoria"
+msgstr ""
+
+#: admin/includes/post-type-pick.php:134
+msgid "Categorias de Picks"
+msgstr ""
+
+#: admin/includes/post-type-pick.php:181
+#, php-format
+msgid "Pick actualizado. <a href=\"%s\">Ver pick</a>"
+msgstr ""
+
+#: admin/includes/post-type-pick.php:182 includes/post-type-tipster.php:164
+msgid "Campo personalizado actualizado."
+msgstr ""
+
+#: admin/includes/post-type-pick.php:183 includes/post-type-tipster.php:165
+msgid "Campo personalizado eliminado."
+msgstr ""
+
+#: admin/includes/post-type-pick.php:184
+msgid "Pick actualizado."
+msgstr ""
+
+#: admin/includes/post-type-pick.php:185
+#, php-format
+msgid "Pick restaurado desde la revision from %s"
+msgstr ""
+
+#: admin/includes/post-type-pick.php:186
+#, php-format
+msgid "Pick publicado. <a href=\"%s\">Ver pick</a>"
+msgstr ""
+
+#: admin/includes/post-type-pick.php:187
+msgid "Pick guardado."
+msgstr ""
+
+#: admin/includes/post-type-pick.php:188
+#, php-format
+msgid "Pick enviado. <a target=\"_blank\" href=\"%s\">Ver pick</a>"
+msgstr ""
+
+#: admin/includes/post-type-pick.php:189
+#, php-format
+msgid ""
+"Pick planificado para: <strong>%1$s</strong>. <a target=\"_blank\" href="
+"\"%2$s\">Ver pick</a>"
+msgstr ""
+
+#: admin/includes/post-type-pick.php:189 includes/post-type-tipster.php:171
+msgid "M j, Y @ G:i"
+msgstr ""
+
+#: admin/includes/post-type-pick.php:190
+#, php-format
+msgid ""
+"Borrador del pick actualizado. <a target=\"_blank\" href=\"%s\">Ver pick</a>"
+msgstr ""
+
+#: admin/views/admin.php:23 admin/views/manage-tipsters.php:36
+msgid "Tipster information"
+msgstr ""
+
+#: admin/views/admin.php:26 admin/views/admin.php:35
+msgid "View more"
+msgstr ""
+
+#: admin/views/admin.php:32
+msgid "Migrate Picks"
+msgstr ""
+
+#: admin/views/admin.php:41
+msgid "FAQs"
+msgstr ""
+
+#: admin/views/admin.php:42
+msgid "Under construction"
+msgstr ""
+
+#: admin/views/manage-picks.php:26
+msgid "Migrate picks"
+msgstr ""
+
+#: admin/views/manage-picks.php:32
+msgid "Click button to execute migration"
+msgstr ""
+
+#: admin/views/manage-picks.php:41
+msgid "Migrate"
+msgstr ""
+
+#: admin/views/manage-tipsters.php:42
+msgid ""
+"Select a tipster and click button to update and view tipster information"
+msgstr ""
+
+#: admin/views/manage-tipsters.php:65
+msgid "Update information"
+msgstr ""
+
+#: admin/views/update-picks-information.php:98
+msgid "Actualizacion realizada satisfactoriamente"
+msgstr ""
+
+#: admin/views/update-picks-information.php:106
+msgid ""
+"Hacer clic en el boton para actualizar la informacion de los metadatos de "
+"las publicaciones de tipo Picks"
+msgstr ""
+
+#: admin/views/update-picks-information.php:110
+msgid "Bookies"
+msgstr ""
+
+#: admin/views/update-picks-information.php:144
+msgid "Actualizar informacion"
+msgstr ""
+
+#: includes/post-type-tipster.php:65
+msgctxt "post type general name"
+msgid "Tipsters"
+msgstr ""
+
+#: includes/post-type-tipster.php:66
+msgctxt "post type singular name"
+msgid "Tipster"
+msgstr ""
+
+#: includes/post-type-tipster.php:67
+msgctxt "admin menu"
+msgid "Tipster"
+msgstr ""
+
+#: includes/post-type-tipster.php:68
+msgctxt "add new on admin bar"
+msgid "Tipster"
+msgstr ""
+
+#: includes/post-type-tipster.php:69
+msgid "Tipster padre:"
+msgstr ""
+
+#: includes/post-type-tipster.php:70
+msgid "Todos los tipster"
+msgstr ""
+
+#: includes/post-type-tipster.php:71
+msgid "Ver tipster"
+msgstr ""
+
+#: includes/post-type-tipster.php:72
+msgid "Agregar tipster"
+msgstr ""
+
+#: includes/post-type-tipster.php:73
+msgctxt "tipster"
+msgid "Agregar nuevo"
+msgstr ""
+
+#: includes/post-type-tipster.php:74
+msgid "Editar tipster"
+msgstr ""
+
+#: includes/post-type-tipster.php:75
+msgid "Actualizar tipster"
+msgstr ""
+
+#: includes/post-type-tipster.php:76
+msgid "Buscar tipster"
+msgstr ""
+
+#: includes/post-type-tipster.php:77
+msgid "No se encontraron tipster"
+msgstr ""
+
+#: includes/post-type-tipster.php:78
+msgid "No se encontraron tipster en la papelera"
+msgstr ""
+
+#: includes/post-type-tipster.php:81
+msgid "tipster"
+msgstr ""
+
+#: includes/post-type-tipster.php:82
+msgid "Gestiona los tipsters y la informacion de los tipsters"
+msgstr ""
+
+#: includes/post-type-tipster.php:107
+msgctxt "taxonomy general name"
+msgid "Categorias de Tipsters"
+msgstr ""
+
+#: includes/post-type-tipster.php:108
+msgctxt "taxonomy singular name"
+msgid "Categoria de Tipster"
+msgstr ""
+
+#: includes/post-type-tipster.php:117
+msgid "Categorias de Tipsters"
+msgstr ""
+
+#: includes/post-type-tipster.php:163
+#, php-format
+msgid "Tipster actualizado. <a href=\"%s\">Ver tipster</a>"
+msgstr ""
+
+#: includes/post-type-tipster.php:166
+msgid "Tipster actualizado."
+msgstr ""
+
+#: includes/post-type-tipster.php:167
+#, php-format
+msgid "Tipster restaurado desde la revision from %s"
+msgstr ""
+
+#: includes/post-type-tipster.php:168
+#, php-format
+msgid "Tipster publicado. <a href=\"%s\">Ver tipster</a>"
+msgstr ""
+
+#: includes/post-type-tipster.php:169
+msgid "Tipster guardado."
+msgstr ""
+
+#: includes/post-type-tipster.php:170
+#, php-format
+msgid "Tipster enviado. <a target=\"_blank\" href=\"%s\">Ver tipster</a>"
+msgstr ""
+
+#: includes/post-type-tipster.php:171
+#, php-format
+msgid ""
+"Tipster planificado para: <strong>%1$s</strong>. <a target=\"_blank\" href="
+"\"%2$s\">Ver tipster</a>"
+msgstr ""
+
+#: includes/post-type-tipster.php:172
+#, php-format
+msgid ""
+"Borrador del tipster actualizado. <a target=\"_blank\" href=\"%s\">Ver "
+"tipster</a>"
+msgstr ""
+
+#: public/class-tipster-tap.php:288
+msgid "Tipsters"
+msgstr ""
+
+#: public/class-tipster-tap.php:297
+msgid "Avatar por defecto"
+msgstr ""
+
+#: public/class-tipster-tap.php:298
+msgid ""
+"Seleccionar la imagen a utilizar como avatar por defecto. La dimensiones "
+"minimas deben ser de 200x200."
+msgstr ""
+
+#: public/class-tipster-tap.php:313
+msgid "Total de picks"
+msgstr ""
+
+#: public/class-tipster-tap.php:314
+msgid ""
+"Escribir la cantidad maxima de registros no pendientes (Aciertos, Fallos, "
+"Nulos) a procesar para calculos de Yield, Beneficio, Estadisticas, etc."
+msgstr ""
+
+#: public/class-tipster-tap.php:328
+msgid "Racha"
+msgstr ""
+
+#: public/class-tipster-tap.php:329
+msgid ""
+"Escribir la cantidad maxima de registros no pendientes (Aciertos, Fallos, "
+"Nulos) a visualizar como racha"
+msgstr ""
+
+#: public/class-tipster-tap.php:344
+msgid ""
+"Escribir la cantidad de meses a obtener registros para calcular y/o graficar "
+"las estadisticas. Por defecto se asumen 6 meses."
+msgstr ""
+
+#: public/class-tipster-tap.php:542
+#, php-format
+msgid "[%s] Invalid API response.%s%s"
+msgstr ""
