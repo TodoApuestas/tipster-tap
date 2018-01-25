@@ -1,10 +1,10 @@
 === Tipster TAP ===
 Contributors: mrbrazzi, todoapuestas
-Donate link: https://todoapuestas.com/
+Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=brazzisoft.com@gmail.com&lc=US&item_name=For%20improve%20Wordpress%20plugin%20Tipster%20TAP&currency_code=USD&no_note=0&bn=PP-DonationsBF:btn_donateCC_LG.gif:NonHostedGuest
 Tags: tipster, picks
 Requires at least: 3.5
 Tested up to: 4.9.2
-Stable tag: 3.2
+Stable tag: 3.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -52,6 +52,9 @@ Nothing for now
 
 
 == Changelog ==
+
+= 3.3 =
+* Fixed some minor bugs
 
 = 3.2 =
 * Tested up to Wordpress 4.9.2

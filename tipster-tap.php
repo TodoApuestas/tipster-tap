@@ -8,9 +8,9 @@
  *
  * @wordpress-plugin
  * Plugin Name:       Tipster TAP
- * Plugin URI:       https://todoapuestas.com
+ * Plugin URI:       https://wordpress.org/plugins/tipster-tap
  * Description:       Plugin para gestionar tipsters y picks
- * Version:           3.2
+ * Version:           3.3
  * Author:       Alain Sanchez
  * Author URI:       http://www.linkedin.com/in/mrbrazzi/
  * Text Domain:       tipster-tap

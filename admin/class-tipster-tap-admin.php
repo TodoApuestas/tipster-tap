@@ -101,6 +101,7 @@ class TipsterTapAdmin {
 		add_action( 'tipster_tap_update_graphic_statistics', array( $this, 'update_graphic_statistics' ) );
 		
 		add_action( 'tipster_tap_execute_pick_migration', array( $this, 'execute_pick_migration' ) );
+		add_action( 'tipster_tap_update_tipster_metas', array( $this, 'update_picks_date' ) );
 		add_action( 'tipster_tap_update_tipster_metas', array( $this, 'update_tipster_metas' ) );
 	}
 
@@ -1166,8 +1167,10 @@ class TipsterTapAdmin {
 	
 	/**
 	 * @param $tipster
+	 *
+	 * @deprecated 3.0
      *
-     * @deprecated 3.0
+	 * @throws \Exception
 	 */
 	public function tipster_yield_history($tipster){
 		do_action('deprecated_function_run', 'tipster_yield_history', 'update_yield_history', '3.0');
@@ -1270,7 +1273,9 @@ class TipsterTapAdmin {
                             $pick_date     = get_post_meta( $post->ID, '_pick_fecha_evento', true );
                             $pick_time     = get_post_meta( $post->ID, '_pick_hora_evento', true );
                             $pick_datetime = \DateTime::createFromFormat( 'd/m/Y H:i', sprintf( '%s %s', $pick_date, $pick_time ) );
-//					                $pick_datetime = new \DateTime(sprintf('%s %s', $pick_date, $pick_time));
+                            if( false === ($pick_datetime instanceof \DateTime) ){
+                                $pick_datetime = new \DateTime($post->post_date);
+                            }
                             $tipsters_args = array(
                                 'tipster_id'     => (integer) get_post_meta( $post->ID, '_pick_tipster', true ),
                                 'pick_id'        => $post->ID,
@@ -1314,6 +1319,32 @@ class TipsterTapAdmin {
     public function update_tipster_metas($tipster_id){
 	    do_action( 'tipster_tap_get_total_picks', $tipster_id );
 	    do_action( 'tipster_tap_update_statistics_by_month', $tipster_id );
+    }
+	
+	/**
+	 * @param $tipster_id
+     *
+     * @since 3.3
+	 */
+    public function update_picks_date($tipster_id) {
+        global $wpdb;
+	    try {
+		    $tipster_picks = $wpdb->get_results( $wpdb->prepare( 'SELECT * FROM ' . $wpdb->base_prefix . "picks WHERE tipster_id = '%s' AND pick_datetime IS NULL;", $tipster_id ), ARRAY_A );
+		    foreach ( $tipster_picks as $pick ) {
+			    $post = get_post( $pick['pick_id'] );
+			    if ( $post instanceof \WP_Post ) {
+				    $pick_datetime = new \DateTime( $post->post_date );
+				    $args = array(
+					    'pick_datetime' => $pick_datetime->getTimestamp()
+				    );
+				    $where = array( 'pick_id' => $post->ID );
+				    $this->pick_insert_or_update( $args, $where );
+			    }
+		    }
+	    }catch (\Exception $e){
+		    $_SESSION['TIPSTER_TAP_ERRORS'][] = $e->getMessage();
+		    add_settings_error( 'tipstertap-manage-tipsters-metas', 'tipstertap-manage-tipsters-metas', $e->getMessage() );
+	    }
     }
 	
 	/**

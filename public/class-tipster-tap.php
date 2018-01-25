@@ -11,8 +11,6 @@
 
 namespace TipsterTAP\Frontend;
 
-use TipsterTAP\Exceptions\InvalidApiResponseException;
-
 /**
  * Plugin class. This class should ideally be used to work with the
  * public-facing side of the WordPress site.
@@ -33,7 +31,7 @@ class TipsterTap {
 	 *
 	 * @var     string
 	 */
-	const VERSION = '3.2';
+	const VERSION = '3.3';
 
 	/**
 	 * Unique identifier for your plugin.
