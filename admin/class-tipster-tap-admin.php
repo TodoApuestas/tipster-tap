@@ -350,8 +350,11 @@ class TipsterTapAdmin {
                     if ( strcmp( $tipo_publicacion, 'pick' ) !== 0 ) {
                         continue;
                     }
-	                update_post_meta( $post_id, '_pick_resultado', $_POST[ '_pick_resultado' ] );
-	                $this->save_pick($post_id);
+	                $pick_resultado = trim($_POST['_pick_resultado']);
+	                if(false !== empty($pick_resultado)) {
+		                update_post_meta( $post_id, '_pick_resultado', $pick_resultado );
+		                $this->save_pick( $post_id );
+	                }
                 }
                 
             }
@@ -404,9 +407,11 @@ class TipsterTapAdmin {
 		}
 		
 		if ( true === $update && isset( $_REQUEST['_pick_resultado'] ) ) {
-		    $pick_resultado = $_REQUEST['_pick_resultado'];
-			update_post_meta( $post_ID, '_pick_resultado', $pick_resultado );
-			$this->save_pick($post_ID, $post, $update);
+		    $pick_resultado = trim($_REQUEST['_pick_resultado']);
+		    if(false !== empty($pick_resultado)) {
+			    update_post_meta( $post_ID, '_pick_resultado', $pick_resultado );
+			    $this->save_pick( $post_ID, $post, $update );
+		    }
 		}
 		
 		return $post_ID;

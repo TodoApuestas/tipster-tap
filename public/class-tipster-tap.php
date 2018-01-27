@@ -31,7 +31,7 @@ class TipsterTap {
 	 *
 	 * @var     string
 	 */
-	const VERSION = '3.3';
+	const VERSION = '3.4';
 
 	/**
 	 * Unique identifier for your plugin.
@@ -711,7 +711,7 @@ class TipsterTap {
 	    	$order = sprintf(' ORDER BY pick_datetime %s', $order_type);
 	    }
 		
-		$tipster_picks = $wpdb->get_results($wpdb->prepare('SELECT * FROM ' . $wpdb->base_prefix . "picks WHERE tipster_id = '%s'" . $where . $order . $limits . ';', $tipster), ARRAY_A);
+		$tipster_picks = $wpdb->get_results($wpdb->prepare('SELECT * FROM ' . $wpdb->base_prefix . "picks WHERE pick_result <> '' AND tipster_id = '%s'" . $where . $order . $limits . ';', $tipster), ARRAY_A);
 		
 		return $tipster_picks;
 	}
