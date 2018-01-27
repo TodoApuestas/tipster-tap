@@ -172,7 +172,7 @@ Nothing for now
 
 == Upgrade Notice ==
 
-Upgrade to the last version 3.2 as soon as possible. See Changelog section for details.
+Upgrade to the last version 3.4 as soon as possible. See Changelog section for details.
 
 
 == Arbitrary section ==
