@@ -858,7 +858,7 @@ class TipsterTapAdmin {
 		    $aciertos[] = array( $year_month, $acierto );
 		    $fallos[] = array( $year_month, $fallo );
 		    $nulos[] = array( $year_month, $nulo );
-		    $beneficios[] = array( $year_month, number_format( $beneficio, '.', '' ) );
+		    $beneficios[] = array( $year_month, number_format( $beneficio, 2, '.', '' ) );
 		    $yields[] = array( $year_month, number_format( $yield, 2, '.', '' ) );
 	    }
 	
