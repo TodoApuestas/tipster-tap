@@ -120,7 +120,13 @@ $tipsters = get_posts($args)
                 </tr>
             </tbody>
         </table>
-        <?php $months = (integer)get_theme_mod( 'tipster_tap_limit_statistics');  ?>
+        <?php
+        $months = (integer)get_theme_mod( 'tipster_tap_limit_statistics');
+        $months_tipster = (integer)get_post_meta($tipster_id, '_tipster_limit_statistics', true);
+        if($months_tipster > 0){
+	        $months = $months_tipster;
+        }
+        ?>
         <h4><?php printf('Estadisticas (ultimos %d meses)', $months); ?></h4>
         <?php $statistics = get_post_meta($tipster_id, '_tipster_statistics_monthly', true); ?>
 	    <?php foreach ( $statistics as $year_month => $statistic ) : ?>

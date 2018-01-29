@@ -31,7 +31,7 @@ class TipsterTap {
 	 *
 	 * @var     string
 	 */
-	const VERSION = '3.4';
+	const VERSION = '3.5';
 
 	/**
 	 * Unique identifier for your plugin.
@@ -484,83 +484,6 @@ class TipsterTap {
     }
 
 	/**
-	 * @since 2.3.0
-	 * @return array|null
-	 * @deprecated 3.2
-	 */
-    private function get_oauth_access_token()
-    {
-	    do_action('deprecated_function_run', 'get_oauth_access_token', 'plugin Rest Client Tap', '3.2');
-        $session_id = session_id();
-        if(empty($session_id) && !headers_sent()){
-        	@session_start();
-        }
-        
-        if(isset($_SESSION['TAP_OAUTH_CLIENT'])){
-            $now = new \DateTime('now');
-            if($now->getTimestamp() <= (integer)$_SESSION['TAP_OAUTH_CLIENT']['expires_in']){
-                $oauthAccessToken = $_SESSION['TAP_OAUTH_CLIENT']['access_token'];
-                return $oauthAccessToken;
-            }
-            unset($_SESSION['TAP_OAUTH_CLIENT']);
-        }
-
-        $oauthUrl = get_option('TAP_OAUTH_CLIENT_CREDENTIALS_URL');
-        $publicId = get_option('TAP_PUBLIC_ID');
-        $secretKey = get_option('TAP_SECRET_KEY');
-        if(empty($publicId) || empty($secretKey)){
-            $_SESSION['TIPSTER_TAP_ERRORS'][] = 'No public or secret key given';
-	        return null;
-        }
-
-        $oauthUrl = sprintf($oauthUrl, $publicId, $secretKey);
-        $oauthResponseBody = $this->get_result_from_api($oauthUrl, false, 'Get Access Token');
-        if(!is_object($oauthResponseBody)){
-            $_SESSION['TIPSTER_TAP_ERRORS'][] = sprintf('Invalid OAuth response body');
-	        return null;
-        }
-        $oauthAccessToken = $oauthResponseBody->access_token;
-
-        if(!isset($_SESSION['TAP_OAUTH_CLIENT'])){
-            $now = new \DateTime('now');
-            $_SESSION['TAP_OAUTH_CLIENT'] = array(
-                'access_token' => $oauthAccessToken,
-                'expires_in' => $now->getTimestamp() + (integer)$oauthResponseBody->expires_in
-            );
-        }
-
-        return $oauthAccessToken;
-    }
-	
-	/**
-	 * @param string $url
-	 * @param bool $assoc
-	 * @param string $intention
-	 *
-	 * @return array|mixed|object
-	 * @deprecated 3.2
-	 */
-    private function get_result_from_api($url, $assoc = true, $intention = 'Request Access Token')
-    {
-	    do_action('deprecated_function_run', 'get_result_from_api', 'plugin Rest Client Tap', '3.2');
-        $apiResponse = wp_remote_get($url);
-	    $apiResponseCode = wp_remote_retrieve_response_code($apiResponse);
-	    $apiResponseBody = wp_remote_retrieve_body($apiResponse);
-        if(strcmp($apiResponseCode, '200') !== 0){
-        	if('' !== trim($apiResponseCode)){
-        		$apiResponseCode = sprintf(' Code: %s.', $apiResponseCode);
-	        }
-	        if('' !== trim($apiResponseBody)){
-		        $apiResponseBody = sprintf(' Body content: %s.', $apiResponseBody);
-	        }
-	        $_SESSION['TIPSTER_TAP_ERRORS'][] = sprintf( __( '[%s] Invalid API response.%s%s', 'epic' ), $intention, $apiResponseCode, $apiResponseBody );
-	        return null;
-        }
-
-        return json_decode($apiResponseBody, $assoc);
-    }
-
-	/**
 	 * @param $title
 	 * @param $class
 	 * @param $style
@@ -573,96 +496,6 @@ class TipsterTap {
 
 	    return $image;
     }
-	
-	/**
-	 * @param $tipster
-	 * @param int $limit
-	 * @param int $start
-	 * @param bool $pendientes
-	 *
-	 * @return array
-	 *
-	 * @deprecated 3.0
-	 */
-	public function get_tipster_picks($tipster, $limit = -1, $start = 1, $pendientes = false)
-	{
-		do_action('deprecated_function_run', 'get_tipster_picks', 'get_picks', '3.0');
-		$tipster_picks = array();
-		$total = 0;
-
-		// Obtener apuestas acertadas, falladas y nulas pertenecientes al tipster asociado al post
-		$meta_query = array(
-			'relation' => 'AND'
-		);
-
-		$meta_query[] = array(
-			'key'     => '_post_tipo_publicacion',
-			'value'   => 'pick',
-			'compare' => '=',
-		);
-
-		$meta_query[] = array(
-			'key'     => '_pick_tipster',
-			'value'   => $tipster,
-			'compare' => '=',
-		);
-
-		if($pendientes){
-			$meta_query[] = array(
-				'key'     => '_pick_resultado',
-				'value'   => 'pendiente',
-				'compare' => '=',
-			);
-		}else{
-			$meta_query[] = array(
-				'relation' => 'OR',
-				array(
-					'key'     => '_pick_resultado',
-					'value'   => 'acierto',
-					'compare' => '=',
-				),
-				array(
-					'key'     => '_pick_resultado',
-					'value'   => 'fallo',
-					'compare' => '=',
-				),
-				array(
-					'key'     => '_pick_resultado',
-					'value'   => 'nulo',
-					'compare' => '=',
-				),
-			);
-		}
-
-		$query = array(
-			'post_type'              => 'post',
-			'post_status'            => 'publish',
-			'posts_per_page'         => $limit,
-			'paged'                  => $start,
-			'order'                  => 'DESC',
-			'meta_query'             => $meta_query,
-			'cache_results'          => false,
-			'update_post_meta_cache' => false,
-			'update_post_term_cache' => false,
-			'ignore_sticky_posts'    => true
-		);
-
-		$query_result = new \WP_Query($query);
-		if($query_result->have_posts()){
-			$tipster_picks = $query_result->get_posts();
-			$total = $query_result->post_count;
-		}
-
-		if(!$pendientes && $limit === -1){
-			update_post_meta($tipster, '_tipster_total_picks_finalizados', $total);
-		}
-
-		if($pendientes && $limit === -1){
-			update_post_meta($tipster, '_tipster_total_picks_pendientes', $total);
-		}
-
-		return $tipster_picks;
-	}
 	
 	/**
 	 * @param integer $tipster Tipster id

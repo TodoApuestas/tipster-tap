@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=brazz
 Tags: tipster, picks
 Requires at least: 3.5
 Tested up to: 4.9.2
-Stable tag: 3.4
+Stable tag: 3.5
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -52,6 +52,10 @@ Nothing for now
 
 
 == Changelog ==
+
+= 3.5 =
+* Fixed bug when calculate accumulated tipster's information
+* Deleted @deprecated methods
 
 = 3.4 =
 * Fixed some minor bugs
