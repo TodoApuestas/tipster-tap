@@ -374,6 +374,7 @@ class TipsterTapAdmin {
 	 *
 	 * @since    2.6
      * @updated  3.0
+     * @updated  3.6
 	 */
 	public function save_pick_result_meta($post_ID, $post, $update){
         // pointless if $_POST is empty (this happens on bulk edit)
@@ -406,10 +407,18 @@ class TipsterTapAdmin {
 			return $post_ID;
 		}
 		
-		if ( true === $update && isset( $_REQUEST['_pick_resultado'] ) ) {
+		if ( true === $update && isset( $_REQUEST['_pick_resultado'] ) && strcmp($tipo_publicacion, 'pick') === 0 ) {
+			$pick_evento = trim($_REQUEST['_pick_evento']);
+			$pick_fecha_evento = trim($_REQUEST['_pick_fecha_evento']);
+			$pick_hora_evento = trim($_REQUEST['_pick_hora_evento']);
+			$pick_pronostico = trim($_REQUEST['_pick_pronostico']);
+			$pick_cuota = trim($_REQUEST['_pick_cuota']);
+			$pick_stake= trim($_REQUEST['_pick_stake']);
 		    $pick_resultado = trim($_REQUEST['_pick_resultado']);
-		    if(false !== empty($pick_resultado)) {
-			    update_post_meta( $post_ID, '_pick_resultado', $pick_resultado );
+		    if( false === empty($pick_evento) && false === empty($pick_fecha_evento) && false === empty($pick_hora_evento)
+		        && false === empty($pick_pronostico) && false === empty($pick_cuota) && false === empty($pick_stake)
+                && false === empty($pick_resultado) ) {
+//			    update_post_meta( $post_ID, '_pick_resultado', $pick_resultado );
 			    $this->save_pick( $post_ID, $post, $update );
 		    }
 		}
@@ -425,6 +434,7 @@ class TipsterTapAdmin {
      * @return mixed
      *
 	 * @since    3.0
+     * @updated  3.6
 	 */
 	public function save_pick($post_ID, $post = null, $update = true){
 		global $wpdb;
@@ -441,6 +451,7 @@ class TipsterTapAdmin {
 				delete_post_meta($post_ID, '_pick_hora_evento');
 				delete_post_meta($post_ID, '_pick_pronostico');
 				delete_post_meta($post_ID, '_pick_cuota');
+	            delete_post_meta($post_ID, '_pick_stake');
 				delete_post_meta($post_ID, '_pick_casa_apuesta');
 				delete_post_meta($post_ID, '_pick_tipo_apuesta');
 				delete_post_meta($post_ID, '_pick_tipster');
@@ -463,39 +474,51 @@ class TipsterTapAdmin {
 				return $post_ID;
 			}
 		
-		    $tipster_ID = get_post_meta( $post_ID, '_pick_tipster', true );
-			$resultado = get_post_meta( $post_ID, '_pick_resultado', true );
+		    if(false === wp_is_post_revision($post) && strcmp($post->post_type, 'post') === 0
+		       && strcmp($post->post_status, 'publish') === 0 && strcmp($tipo_publicacion, 'pick') === 0) {
+			    $tipster_ID = get_post_meta( $post_ID, '_pick_tipster', true );
+			    $resultado  = get_post_meta( $post_ID, '_pick_resultado', true );
 			
-			$pick_date     = get_post_meta( $post_ID, '_pick_fecha_evento', true );
-			$pick_time     = get_post_meta( $post_ID, '_pick_hora_evento', true );
-			$pick_datetime = new \DateTime( sprintf( '%s %s', $pick_date, $pick_time ) );
+			    $pick_evento = get_post_meta( $post_ID, '_pick_evento', true );
+			    $pick_pronostico = get_post_meta( $post_ID, '_pick_pronostico', true );
+			    $pick_cuota = get_post_meta( $post_ID, '_pick_cuota', true );
+			    $pick_stake = get_post_meta( $post_ID, '_pick_stake', true );
 			
-			$args = array(
-				'tipster_id'     => (integer) get_post_meta( $post_ID, '_pick_tipster', true ),
-				'pick_id'        => $post_ID,
-				'bookie_id'      => get_post_meta( $post_ID, '_pick_casa_apuesta', true ),
-				'sport_id'       => (integer) get_post_meta( $post_ID, '_pick_deporte', true ),
-				'competition_id' => (integer) get_post_meta( $post_ID, '_pick_competicion', true ),
-				'pick_datetime'  => $pick_datetime instanceof \DateTime ? $pick_datetime->getTimestamp() : null,
-				'pick_cuote'     => (double) get_post_meta( $post_ID, '_pick_cuota', true ),
-				'pick_stake'     => (double) get_post_meta( $post_ID, '_pick_stake', true ),
-				'pick_type'      => get_post_meta( $post_ID, '_pick_tipo_apuesta', true ),
-				'pick_result'    => $resultado,
-			);
+			    $pick_date     = get_post_meta( $post_ID, '_pick_fecha_evento', true );
+			    $pick_time     = get_post_meta( $post_ID, '_pick_hora_evento', true );
+			    $pick_datetime = new \DateTime( sprintf( '%s %s', $pick_date, $pick_time ) );
 			
-			$pick_exist = $wpdb->get_var( $wpdb->prepare( 'SELECT COUNT(*) FROM ' . $wpdb->base_prefix . 'picks WHERE pick_id = %d', array( $post_ID ) ) );
-			if ( null !== $pick_exist && true === (boolean)$pick_exist ) {
-				$where = array( 'pick_id' => $post_ID );
-				$this->pick_insert_or_update( $args, $where );
-			} else {
-				$this->pick_insert_or_update( $args );
-			}
-		
-			// solo se ejecuta actualizacion de estadisticas si el resultado del pick es acierto, fallo o nulo
-		    if(false === wp_is_post_revision($post) && strcmp($post->post_type, 'post') === 0 && strcmp($tipo_publicacion, 'pick') === 0
-		       && (strcmp($resultado, 'acierto') === 0 || strcmp($resultado, 'fallo') === 0 || strcmp($resultado, 'nulo') === 0 )) {
-			    do_action( 'tipster_tap_get_total_picks', $tipster_ID );
-			    do_action( 'tipster_tap_update_statistics_by_month', $tipster_ID );
+			    if( false === empty($pick_evento) && false === empty($pick_date) && false === empty($pick_time)
+			        && false === empty($pick_pronostico) && false === empty($pick_cuota) && false === empty($pick_stake)
+			        && false === empty($resultado) && false === empty($tipster_ID) ) {
+				
+				    $args = array(
+					    'tipster_id'     => (integer) get_post_meta( $post_ID, '_pick_tipster', true ),
+					    'pick_id'        => $post_ID,
+					    'bookie_id'      => get_post_meta( $post_ID, '_pick_casa_apuesta', true ),
+					    'sport_id'       => (integer) get_post_meta( $post_ID, '_pick_deporte', true ),
+					    'competition_id' => (integer) get_post_meta( $post_ID, '_pick_competicion', true ),
+					    'pick_datetime'  => $pick_datetime instanceof \DateTime ? $pick_datetime->getTimestamp() : null,
+					    'pick_cuote'     => (double) $pick_cuota,
+					    'pick_stake'     => (double) $pick_stake,
+					    'pick_type'      => get_post_meta( $post_ID, '_pick_tipo_apuesta', true ),
+					    'pick_result'    => $resultado,
+				    );
+				
+				    $pick_exist = $wpdb->get_var( $wpdb->prepare( 'SELECT COUNT(*) FROM ' . $wpdb->base_prefix . 'picks WHERE pick_id = %d', array( $post_ID ) ) );
+				    if ( null !== $pick_exist && true === (boolean) $pick_exist ) {
+					    $where = array( 'pick_id' => $post_ID );
+					    $this->pick_insert_or_update( $args, $where );
+				    } else {
+					    $this->pick_insert_or_update( $args );
+				    }
+				
+				    // solo se ejecuta actualizacion de estadisticas si el resultado del pick es acierto, fallo o nulo
+				    if ( strcmp( $resultado, 'acierto' ) === 0 || strcmp( $resultado, 'fallo' ) === 0 || strcmp( $resultado, 'nulo' ) === 0 ) {
+					    do_action( 'tipster_tap_get_total_picks', $tipster_ID );
+					    do_action( 'tipster_tap_update_statistics_by_month', $tipster_ID );
+				    }
+			    }
 		    }
 		}catch (\Exception $e){
 			$_SESSION['TIPSTER_TAP_ERRORS'][] = $e->getMessage();

@@ -2,9 +2,9 @@
 Contributors: mrbrazzi, todoapuestas
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=brazzisoft.com@gmail.com&lc=US&item_name=For%20improve%20Wordpress%20plugin%20Tipster%20TAP&currency_code=USD&no_note=0&bn=PP-DonationsBF:btn_donateCC_LG.gif:NonHostedGuest
 Tags: tipster, picks
-Requires at least: 3.5
+Requires at least: 3.6
 Tested up to: 4.9.2
-Stable tag: 3.5
+Stable tag: 3.6
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -52,6 +52,9 @@ Nothing for now
 
 
 == Changelog ==
+
+= 3.6 =
+* Added some missing validations
 
 = 3.5 =
 * Fixed bug when calculate accumulated tipster's information
