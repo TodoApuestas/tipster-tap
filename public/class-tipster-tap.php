@@ -31,7 +31,7 @@ class TipsterTap {
 	 *
 	 * @var     string
 	 */
-	const VERSION = '3.6';
+	const VERSION = '3.7';
 
 	/**
 	 * Unique identifier for your plugin.

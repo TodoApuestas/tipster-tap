@@ -903,13 +903,6 @@ class TipsterTapAdmin {
     public function execute_pick_migration(){
         global $wpdb;
         
-	    $option = (float)get_option('tipster_tap_version');
-	    if( $option >= 3.1 ) {
-		    $message = __( 'Migration is not necessary.', $this->plugin_slug );
-		    add_settings_error('tipstertap-manage-picks-migration', 'tipstertap-manage-picks-migration', $message);
-	        return;
-	    }
-	
 	    $tipsters_args = array(
 		    'post_type'              => 'tipster',
 		    'post_status'            => 'publish',
@@ -954,24 +947,45 @@ class TipsterTapAdmin {
                 foreach ( $tipster_posts as $post ) {
                     if($post instanceof \WP_Post) {
                         try {
-                            $pick_date     = get_post_meta( $post->ID, '_pick_fecha_evento', true );
-                            $pick_time     = get_post_meta( $post->ID, '_pick_hora_evento', true );
-                            $pick_datetime = \DateTime::createFromFormat( 'd/m/Y H:i', sprintf( '%s %s', $pick_date, $pick_time ) );
-                            if( false === ($pick_datetime instanceof \DateTime) ){
-                                $pick_datetime = new \DateTime($post->post_date);
+                            $pick_date = get_post_meta( $post->ID, '_pick_fecha_evento', true );
+                            $pick_time = get_post_meta( $post->ID, '_pick_hora_evento', true );
+	
+	                        $pick_datetime = sprintf( '%s %s', $pick_date, $pick_time );
+                            if(false !== preg_match('/\d{2}\/\d{2}\/\d{4}\ \d{2}:\d{2}/', $pick_datetime)){
+	                            $pick_datetime = \DateTime::createFromFormat( 'd/m/Y H:i', sprintf( '%s %s', $pick_date, $pick_time ) );
+                            }else{
+	                            $pick_datetime = new \DateTime($pick_datetime);
                             }
+	                        if( false === ($pick_datetime instanceof \DateTime) ){
+		                        $pick_datetime = new \DateTime($post->post_date);
+	                        }
+                            
+                            $pick_cuota = get_post_meta( $post->ID, '_pick_cuota', true );
+	                        if(true === strpos(',', $pick_cuota)){
+		                        $pick_cuota = (double)str_replace( ',', '.', $pick_cuota );
+                            }
+                            
+                            $pick_stake = get_post_meta( $post->ID, '_pick_stake', true );
+	                        if(true === strpos(',', $pick_stake)){
+		                        $pick_stake = (integer)str_replace( ',', '.', $pick_stake );
+	                        }
+                            
                             $tipsters_args = array(
                                 'tipster_id'     => (integer) get_post_meta( $post->ID, '_pick_tipster', true ),
                                 'pick_id'        => $post->ID,
                                 'bookie_id'      => get_post_meta( $post->ID, '_pick_casa_apuesta', true ),
                                 'sport_id'       => (integer) get_post_meta( $post->ID, '_pick_deporte', true ),
                                 'competition_id' => (integer) get_post_meta( $post->ID, '_pick_competicion', true ),
-                                'pick_datetime'  => $pick_datetime instanceof \DateTime ? $pick_datetime->getTimestamp() : null,
-                                'pick_cuote'     => (double) get_post_meta( $post->ID, '_pick_cuota', true ),
-                                'pick_stake'     => (integer) get_post_meta( $post->ID, '_pick_stake', true ),
+                                'pick_datetime'  => $pick_datetime->getTimestamp(),
+                                'pick_cuote'     => (double) $pick_cuota,
+                                'pick_stake'     => (integer) $pick_stake,
                                 'pick_type'      => get_post_meta( $post->ID, '_pick_tipo_apuesta', true ),
                                 'pick_result'    => get_post_meta( $post->ID, '_pick_resultado', true )
                             );
+	
+	                        update_post_meta( $post->ID, '_pick_fecha_evento', $pick_datetime->format('Y-m-d') );
+	                        update_post_meta( $post->ID, '_pick_cuota', (double)$pick_cuota );
+	                        update_post_meta( $post->ID, '_pick_stake', (integer)$pick_stake );
                 
                             $pick_exist = $wpdb->get_col($wpdb->prepare('SELECT COUNT(*) FROM '.$wpdb->base_prefix.'picks WHERE pick_id = %d', array($post->ID)));
                             if(null !== $pick_exist && isset($pick_exist[0]) && true === (boolean)$pick_exist[0]) {
@@ -991,8 +1005,6 @@ class TipsterTapAdmin {
         add_settings_error( 'tipstertap-manage-picks-migration', 'tipstertap-manage-picks-migration', __( 'Migration successfully.', $this->plugin_slug ), 'updated' );
 	    
         update_option('tipster_tap_version', TipsterTap::VERSION);
-	    //TODO: For test propose uncomment next line, comment again when test finish
-        //delete_option('tipster_tap_version');
     }
 	
 	/**
