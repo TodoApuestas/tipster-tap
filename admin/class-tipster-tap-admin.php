@@ -144,8 +144,12 @@ class TipsterTapAdmin {
 		}
 
 		$screen = get_current_screen();
-		if ( $this->plugin_screen_hook_suffix['root'] === $screen->id ) {
-			wp_enqueue_style( $this->plugin_slug .'-admin-styles', plugins_url( 'assets/css/admin.css', __FILE__ ), array(), TipsterTap::VERSION );
+		if ( $this->plugin_screen_hook_suffix['manage_picks'] === $screen->id ) {
+			wp_enqueue_style( 'jquery-ui', plugins_url( 'assets/css/jquery-ui/jquery-ui.min.css', __FILE__ ), array(), '1.11.4' );
+		    wp_enqueue_style( 'datatables', plugins_url( 'assets/js/DataTables/datatables.min.css', __FILE__ ), array(), '1.10.6' );
+			add_action( 'admin_head', function(){
+				print '<style type="text/css" rel="stylesheet">.ui-datepicker-calendar {display: none !important;} #manage-picks-spinner { display: none; }</style>';
+            }, 9999 );
 		}
 
 	}
@@ -165,8 +169,9 @@ class TipsterTapAdmin {
 		}
 
 		$screen = get_current_screen();
-		if ( $this->plugin_screen_hook_suffix['root'] === $screen->id ) {
-//			wp_enqueue_script( $this->plugin_slug . '-admin-script', plugins_url( 'assets/js/admin.js', __FILE__ ), array( 'jquery' ), TipsterTap::VERSION, true );
+		if ( $this->plugin_screen_hook_suffix['manage_picks'] === $screen->id ) {
+		    wp_enqueue_script( 'datatables', plugins_url( 'assets/js/DataTables/datatables.js', __FILE__ ), array( 'jquery' ), '1.10.6', true );
+			wp_enqueue_script( $this->plugin_slug . '-manage-pick', plugins_url( 'assets/js/manage-pick.js', __FILE__ ), array( 'datatables', 'jquery-ui-core', 'jquery-ui-datepicker' ), TipsterTap::VERSION, true );
 		}
 
 	}
