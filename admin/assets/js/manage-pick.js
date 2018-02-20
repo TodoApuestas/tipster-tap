@@ -85,8 +85,10 @@ var ManagePicks = function () {
                 {"data":{"_":"resultado.display", "sort":"resultado.sort"}, "className":"all", "class":"text-center"},
                 {"data":"accion", "className":"not-mobile", "class":"text-left", "sortable":false, "searchable":false}
             ],
-            "columnDefs": [{ "visible": false,  "targets": [ 0 ] }],
+            "columnDefs": [{ "visible": false,  "targets": [ 0 ] }]
         });
+
+        new jQuery.fn.dataTable.FixedHeader( oPicksTable );
     };
 
     var executeFiltrar = function() {
