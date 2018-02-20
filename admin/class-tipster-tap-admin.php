@@ -146,7 +146,8 @@ class TipsterTapAdmin {
 		$screen = get_current_screen();
 		if ( $this->plugin_screen_hook_suffix['manage_picks'] === $screen->id ) {
 			wp_enqueue_style( 'jquery-ui', plugins_url( 'assets/css/jquery-ui/jquery-ui.min.css', __FILE__ ), array(), '1.11.4' );
-		    wp_enqueue_style( 'datatables', plugins_url( 'assets/js/DataTables/datatables.min.css', __FILE__ ), array(), '1.10.6' );
+		    wp_enqueue_style( 'jquery-datatables', plugins_url( 'assets/js/DataTables/DataTables-1.10.16/css/jquery.dataTables.min.css', __FILE__ ), array(), '1.10.6' );
+			wp_enqueue_style( 'datatables-responsive', plugins_url( 'assets/js/DataTables/Responsive-2.2.1/css/responsive.dataTables.min.css', __FILE__ ), array(), '2.2.1' );
 			add_action( 'admin_head', function(){
 				print '<style type="text/css" rel="stylesheet">.ui-datepicker-calendar {display: none !important;} #manage-picks-spinner { display: none; }</style>';
             }, 9999 );
@@ -170,8 +171,9 @@ class TipsterTapAdmin {
 
 		$screen = get_current_screen();
 		if ( $this->plugin_screen_hook_suffix['manage_picks'] === $screen->id ) {
-		    wp_enqueue_script( 'datatables', plugins_url( 'assets/js/DataTables/datatables.js', __FILE__ ), array( 'jquery' ), '1.10.6', true );
-			wp_enqueue_script( $this->plugin_slug . '-manage-pick', plugins_url( 'assets/js/manage-pick.js', __FILE__ ), array( 'datatables', 'jquery-ui-core', 'jquery-ui-datepicker' ), TipsterTap::VERSION, true );
+		    wp_enqueue_script( 'jquery-datatables', plugins_url( 'assets/js/DataTables/DataTables-1.10.16/js/jquery.dataTables.min.js', __FILE__ ), array( 'jquery' ), '1.10.6', true );
+			wp_enqueue_script( 'datatables-responsive', plugins_url( 'assets/js/DataTables/Responsive-2.2.1/js/dataTables.responsive.min.js', __FILE__ ), array( 'jquery' ), '2.2.1', true );
+			wp_enqueue_script( $this->plugin_slug . '-manage-pick', plugins_url( 'assets/js/manage-pick.js', __FILE__ ), array( 'jquery-datatables', 'datatables-responsive', 'jquery-ui-core', 'jquery-ui-datepicker' ), TipsterTap::VERSION, true );
 		}
 
 	}
