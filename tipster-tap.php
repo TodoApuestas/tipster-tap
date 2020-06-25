@@ -10,7 +10,7 @@
  * Plugin Name:       Tipster TAP
  * Plugin URI:       https://wordpress.org/plugins/tipster-tap
  * Description:       Plugin para gestionar tipsters y picks
- * Version:           4.0
+ * Version:           4.1
  * Author:       Alain Sanchez
  * Author URI:       http://www.linkedin.com/in/mrbrazzi/
  * Text Domain:       tipster-tap

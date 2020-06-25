@@ -46,7 +46,7 @@ class PickPostType{
     	$this->plugin_slug = TipsterTap::get_instance()->get_plugin_slug();
         add_action( 'init', array( $this, 'post_type_pick') );
         add_action( 'init', array( $this, 'post_type_pick_taxonomies' ), 0 );
-        add_action( 'contextual_help', array( $this, 'post_type_pick_contextual_help' ), 10, 3 );
+//        add_action( 'contextual_help', array( $this, 'post_type_pick_contextual_help' ), 10, 3 );
 
         add_filter( 'post_updated_messages', array( $this, 'post_type_pick_updated_messages' ) );
     }

@@ -28,10 +28,11 @@ class TipsterTap {
 	 * Plugin version, used for cache-busting of style and script file references.
 	 *
 	 * @since   1.0.0
+     * @updated 4.1
 	 *
 	 * @var     string
 	 */
-	const VERSION = '4.0';
+	const VERSION = '4.1';
 
 	/**
 	 * Unique identifier for your plugin.
@@ -492,7 +493,7 @@ class TipsterTap {
 	 */
     public function default_avatar($title, $class, $style)
     {
-    	$image = sprintf('<img src="%1$s" class="%2$s" alt="%3$s" title="%3$s" style="%4$s">', get_theme_mod('tipster_tap_default_avatar'), $class, $title, $style);
+    	$image = sprintf('<img src="%1$s" class="%2$s" alt="%3$s" title="%3$s" style="%4$s" loading="lazy">', get_theme_mod('tipster_tap_default_avatar'), $class, $title, $style);
 
 	    return $image;
     }

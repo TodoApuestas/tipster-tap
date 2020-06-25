@@ -28,7 +28,7 @@ class TipsterPostType{
     private function __construct() {
         add_action( 'init', array( $this, 'post_type_tipster') );
         add_action( 'init', array( $this, 'post_type_tipster_taxonomies' ), 0 );
-        add_action( 'contextual_help', array( $this, 'post_type_tipster_contextual_help' ), 10, 3 );
+//        add_action( 'contextual_help', array( $this, 'post_type_tipster_contextual_help' ), 10, 3 );
 
         add_filter( 'post_updated_messages', array( $this, 'post_type_tipster_updated_messages' ) );
     }
