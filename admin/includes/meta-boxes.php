@@ -74,7 +74,9 @@ class MetaBoxesPostType {
         $bookies = array();
         if($tap_bookies){
             foreach($tap_bookies as $k => $v){
-                $bookies[$k] = $v['nombre'];
+                if(is_array($v) && in_array('nombre', $v)){
+                    $bookies[$k] = $v['nombre'];
+                }
             }
         }
 
@@ -82,7 +84,9 @@ class MetaBoxesPostType {
         $deportes = array();
         if($tap_deportes){
             foreach($tap_deportes as $k => $v){
-                $deportes[$k] = $v['nombre'];
+                if(is_array($v) && in_array('nombre', $v)){
+                    $deportes[$k] = $v['nombre'];
+                }
             }
         }
 
@@ -90,7 +94,9 @@ class MetaBoxesPostType {
         $competiciones = array();
         if($tap_competiciones){
             foreach($tap_competiciones as $k => $v){
-                $competiciones[$k] = $v['nombre'];
+                if(is_array($v) && in_array('nombre', $v)){
+                    $competiciones[$k] = $v['nombre'];
+                }
             }
         }
 
