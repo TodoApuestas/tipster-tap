@@ -38,6 +38,26 @@ class MetaBoxesPostType {
     }
 
     /**
+     * @param array $elements
+     * @return array
+     * @since
+     */
+    private function get_options($elements) {
+        $options = array();
+        foreach($elements as $k => $v){
+            try {
+                if (is_array($v) && !empty($v['nombre'])) {
+                    $options[$k] = $v['nombre'];
+                }
+            } catch (\Exception $e) {
+                continue;
+            }
+        }
+
+        return $options;
+    }
+
+    /**
      * Return an instance of this class.
      *
      * @since     1.0.0
@@ -73,31 +93,19 @@ class MetaBoxesPostType {
         $tap_bookies = get_option('TAP_BOOKIES');
         $bookies = array();
         if($tap_bookies){
-            foreach($tap_bookies as $k => $v){
-                if(is_array($v) && in_array('nombre', $v)){
-                    $bookies[$k] = $v['nombre'];
-                }
-            }
+            $bookies = $this->get_options($tap_bookies);
         }
 
         $tap_deportes = get_option('TAP_DEPORTES');
         $deportes = array();
         if($tap_deportes){
-            foreach($tap_deportes as $k => $v){
-                if(is_array($v) && in_array('nombre', $v)){
-                    $deportes[$k] = $v['nombre'];
-                }
-            }
+            $deportes = $this->get_options($tap_deportes);
         }
 
         $tap_competiciones = get_option('TAP_COMPETICIONES');
         $competiciones = array();
         if($tap_competiciones){
-            foreach($tap_competiciones as $k => $v){
-                if(is_array($v) && in_array('nombre', $v)){
-                    $competiciones[$k] = $v['nombre'];
-                }
-            }
+            $competiciones = $this->get_options($tap_competiciones);
         }
 
         $tipsters = array();

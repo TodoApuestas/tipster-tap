@@ -2,9 +2,9 @@
 Contributors: mrbrazzi, todoapuestas
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=brazzisoft.com@gmail.com&lc=US&item_name=For%20improve%20Wordpress%20plugin%20Tipster%20TAP&currency_code=USD&no_note=0&bn=PP-DonationsBF:btn_donateCC_LG.gif:NonHostedGuest
 Tags: tipster, picks
-Requires at least: 4.4
-Tested up to: 5.4.2
-Stable tag: 4.1.1
+Requires at least: 5.5
+Tested up to: 5.5.3
+Stable tag: 4.2.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -52,6 +52,10 @@ Nothing for now
 
 
 == Changelog ==
+
+= 4.2.0 =
+* Tested up to Wordpress 5.5.3
+* Added some minor improvements
 
 = 4.1.1 =
 * Added some fixes

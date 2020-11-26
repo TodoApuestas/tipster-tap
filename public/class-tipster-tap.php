@@ -29,10 +29,11 @@ class TipsterTap {
 	 *
 	 * @since   1.0.0
      * @updated 4.1
+     * @updated 4.2
 	 *
 	 * @var     string
 	 */
-	const VERSION = '4.1.1';
+	const VERSION = TIPSTER_TAP_VERSION;
 
 	/**
 	 * Unique identifier for your plugin.
