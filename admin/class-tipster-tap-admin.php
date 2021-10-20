@@ -90,7 +90,9 @@ class TipsterTapAdmin {
 		add_action( 'before_delete_post', array( $this, 'delete_pick' ), 9999, 1 );
 		
 		$session_id = session_id();
-		if(empty($session_id) && !headers_sent()) @session_start();
+		if(empty($session_id) && !headers_sent()) {
+            @session_start();
+        }
 		if(!empty($_SESSION) && array_key_exists('TIPSTER_TAP_ERRORS', $_SESSION)){
 			add_action( 'admin_notices', array( $this, 'display_errors' ));
 		}
@@ -150,7 +152,7 @@ class TipsterTapAdmin {
 			wp_enqueue_style( 'dataTables-fixedHeader', plugins_url( 'assets/js/DataTables/FixedHeader-3.1.3/css/fixedHeader.dataTables.min.css', __FILE__ ), array(), '3.1.3' );
 		    wp_enqueue_style( 'dataTables-responsive', plugins_url( 'assets/js/DataTables/Responsive-2.2.1/css/responsive.dataTables.min.css', __FILE__ ), array(), '2.2.1' );
 			add_action( 'admin_head', function(){
-				print '<style type="text/css" rel="stylesheet">.ui-datepicker-calendar {display: none !important;} #manage-picks-spinner { display: none; } table.fixedHeader-floating{top: 30px !important;}</style>';
+				print '<style rel="stylesheet">.ui-datepicker-calendar {display: none !important;} #manage-picks-spinner { display: none; } table.fixedHeader-floating{top: 30px !important;}</style>';
             }, 9999 );
 		}
 
@@ -186,7 +188,7 @@ class TipsterTapAdmin {
 	 * @since    1.0.0
 	 */
 	public function add_plugin_admin_menu() {
-
+        $title = 'Tipster TAP';
 		/*
 		 * Add a settings page for this plugin to the menu.
 		 *
@@ -195,8 +197,8 @@ class TipsterTapAdmin {
 		 *        Administration Menus: http://codex.wordpress.org/Administration_Menus
 		 */
         $this->plugin_screen_hook_suffix['root'] = add_menu_page(
-            __( 'Tipster TAP', $this->plugin_slug ),
-            __( 'Tipster TAP', $this->plugin_slug ),
+            __($title, $this->plugin_slug),
+            __($title, $this->plugin_slug),
             'manage_options',
             $this->plugin_slug,
             '',
@@ -205,7 +207,7 @@ class TipsterTapAdmin {
 
         $this->plugin_screen_hook_suffix['info'] = add_submenu_page(
             $this->plugin_slug,
-            __('Tipster TAP', $this->plugin_slug),
+            __($title, $this->plugin_slug),
             __('Informacion', $this->plugin_slug),
             'manage_options',
             $this->plugin_slug,
@@ -214,7 +216,7 @@ class TipsterTapAdmin {
 
         $this->plugin_screen_hook_suffix['manage_tipsters'] = add_submenu_page(
 			$this->plugin_slug,
-			__('Tipster TAP', $this->plugin_slug),
+			__($title, $this->plugin_slug),
 			__('Manage Tipsters', $this->plugin_slug),
 			'manage_options',
 			$this->plugin_slug . '/manage-tipsters',
@@ -223,7 +225,7 @@ class TipsterTapAdmin {
 		
 		$this->plugin_screen_hook_suffix['manage_picks'] = add_submenu_page(
 			$this->plugin_slug,
-			__('Tipster TAP', $this->plugin_slug),
+			__($title, $this->plugin_slug),
 			__('Manage Picks', $this->plugin_slug),
 			'manage_options',
 			$this->plugin_slug . '/manage-picks',
@@ -293,6 +295,8 @@ class TipsterTapAdmin {
                 case '_pick_resultado':
                     $query->set( 'meta_key', '_pick_resultado' );
                     $query->set( 'orderby', 'meta_value' );
+                    break;
+                default:
                     break;
             }
         }
@@ -385,22 +389,27 @@ class TipsterTapAdmin {
      * @updated  3.0
      * @updated  3.6
 	 */
-	public function save_pick_result_meta($post_ID, $post, $update){
+	public function save_pick_result_meta($post_ID, $post, $update)
+    {
         // pointless if $_POST is empty (this happens on bulk edit)
-        if ( empty( $_POST ) )
+        if (empty($_POST)) {
             return $post_ID;
+        }
 
         // verify quick edit nonce
-        if ( isset( $_POST[ '_inline_edit' ] ) && ! wp_verify_nonce( $_POST[ '_inline_edit' ], 'inlineeditnonce' ) )
+        if (isset($_POST['_inline_edit']) && !wp_verify_nonce($_POST['_inline_edit'], 'inlineeditnonce')) {
             return $post_ID;
+        }
 
         // don't save for autosave
-        if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE )
+        if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
             return $post_ID;
+        }
 
         // dont save for revisions
-        if ( isset( $post->post_type ) && $post->post_type === 'revision' )
+        if (isset($post->post_type) && $post->post_type === 'revision') {
             return $post_ID;
+        }
 
         if ( !current_user_can( 'edit_post', $post_ID ) ) {
             return $post_ID;

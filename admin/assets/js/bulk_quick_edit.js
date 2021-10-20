@@ -31,7 +31,7 @@
 		
 	};
 	
-	$( '#bulk_edit' ).live( 'click', function() {
+	$( '#bulk_edit' ).on( 'click', function() {
 	
 		// define the bulk edit row
 		var $bulk_row = $( '#bulk-edit' );

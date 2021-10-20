@@ -10,7 +10,7 @@
  * Plugin Name:       Tipster TAP
  * Plugin URI:       https://wordpress.org/plugins/tipster-tap
  * Description:       Plugin para gestionar tipsters y picks
- * Version:           4.2.0
+ * Version:           4.2.1
  * Author:       Alain Sanchez
  * Author URI:       http://www.linkedin.com/in/mrbrazzi/
  * Text Domain:       tipster-tap
@@ -34,7 +34,7 @@ if ( ! defined( 'WPINC' ) ) {
  * Start at version 1.0.0 and use SemVer - https://semver.org
  * Rename this for your plugin and update it as you release new versions.
  */
-define( 'TIPSTER_TAP_VERSION', '4.2.0' );
+define( 'TIPSTER_TAP_VERSION', '4.2.1' );
 
 /*----------------------------------------------------------------------------*
  * Public-Facing Functionality

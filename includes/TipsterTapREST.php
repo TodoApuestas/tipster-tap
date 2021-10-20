@@ -53,6 +53,9 @@ class TipsterTapREST {
 		register_rest_route('tipster-tap/v4', '/picks/(?P<tipster>\d+)/(?P<yearmonth>\d{4}-\d{2})', array(
 				'methods' => 'GET',
 				'callback' => array( $this, 'get_picks_by_tipster' ),
+                'permission_callback' => function() {
+                    return true;
+                },
 				'args' => array(
 					'tipster' => array(
 						'validate_callback' => function($param, $request, $key){
