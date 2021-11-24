@@ -36,6 +36,15 @@ use TipsterTAP\Frontend\TipsterTap;
             </a>
         </p>
     </div>
+
+    <div class="card">
+        <h3><?php _e('Troubleshoot', TipsterTap::get_instance()->get_plugin_slug()) ?></h3>
+        <p>
+            <a href="<?php echo admin_url( 'admin.php?page=' . TipsterTap::get_instance()->get_plugin_slug() . '/troubleshoot' ) ?>">
+                <?php _e('View more', TipsterTap::get_instance()->get_plugin_slug()) ?>
+            </a>
+        </p>
+    </div>
     
     <div class="card">
         <h3><?php _e('FAQs', TipsterTap::get_instance()->get_plugin_slug()) ?></h3>

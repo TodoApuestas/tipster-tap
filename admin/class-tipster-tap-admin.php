@@ -186,6 +186,7 @@ class TipsterTapAdmin {
 	 * Register the administration menu for this plugin into the WordPress Dashboard menu.
 	 *
 	 * @since    1.0.0
+     * @updated 4.2.2
 	 */
 	public function add_plugin_admin_menu() {
         $title = 'Tipster TAP';
@@ -231,6 +232,15 @@ class TipsterTapAdmin {
 			$this->plugin_slug . '/manage-picks',
 			array( $this, 'manage_picks_page' )
 		);
+
+        $this->plugin_screen_hook_suffix['troubleshoot'] = add_submenu_page(
+            $this->plugin_slug,
+            __($title, $this->plugin_slug),
+            __('Troubleshoot', $this->plugin_slug),
+            'manage_options',
+            $this->plugin_slug . '/troubleshoot',
+            array( $this, 'troubleshoot_page' )
+        );
 	}
 
     /**
@@ -239,7 +249,7 @@ class TipsterTapAdmin {
 	 * @since    1.0.0
 	 */
 	public function display_plugin_admin_page() {
-		include_once 'views/admin.php';
+		include_once __DIR__ . '/views/admin.php';
 	}
 
     /**
@@ -248,7 +258,7 @@ class TipsterTapAdmin {
      * @since    3.0
      */
     public function manage_picks_page(){
-        include_once 'views/manage-picks.php';
+        include_once __DIR__ . '/views/manage-picks.php';
     }
 	
 	/**
@@ -257,8 +267,17 @@ class TipsterTapAdmin {
 	 * @since    3.0
 	 */
 	public function manage_tipsters_page(){
-		include_once 'views/manage-tipsters.php';
+		include_once __DIR__ . '/views/manage-tipsters.php';
 	}
+
+    /**
+     * Render the troubleshooting page
+     *
+     * @since    4.2.2
+     */
+    public function troubleshoot_page(){
+        include_once __DIR__ . '/views/troubleshoot.php';
+    }
 
 	/**
 	 * Add settings action link to the plugins page.

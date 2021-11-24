@@ -40,14 +40,20 @@ class MetaBoxesPostType {
     /**
      * @param array $elements
      * @return array
-     * @since
+     *
+     * @since 1.0.0
+     * @updated 4.2.2
      */
     private function get_options($elements) {
         $options = array();
         foreach($elements as $k => $v){
             try {
-                if (is_array($v) && !empty($v['nombre'])) {
-                    $options[$k] = $v['nombre'];
+                if (is_array($v) && array_key_exists('nombre', $v) && !empty($v['nombre'])) {
+                    if(array_key_exists('id', $v)) {
+                        $options[$v['id']] = $v['nombre'];
+                    } else {
+                        $options[$k] = $v['nombre'];
+                    }
                 }
             } catch (\Exception $e) {
                 continue;
